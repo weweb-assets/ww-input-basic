@@ -1,0 +1,27 @@
+{
+    "name": "ww-form-input",
+    "type": "wwObject",
+    "wewebPublic": "true",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/WeWeb-Public/ww-form-input"
+    },
+    "version": "0.0.1",
+    "private": true,
+    "scripts": {
+        "build": "weweb-build",
+        "serve": "weweb-serve",
+        "upload": "weweb-upload"
+    },
+    "dependencies": {
+        "vue": "^2.6.10"
+    },
+    "devDependencies": {
+        "weweb-client": "^1.0.42"
+    },
+    "browserslist": [
+        "> 1%",
+        "last 2 versions",
+        "not ie <= 8"
+    ]
+}

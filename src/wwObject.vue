@@ -213,6 +213,7 @@ export default {
             }
             wwLib.wwObjectHover.removeLock();
         }
+        /* wwManager:end */
     },
     created() {
         this.wwObject.content.data = this.wwObject.content.data || {}

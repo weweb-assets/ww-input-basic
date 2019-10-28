@@ -17,7 +17,7 @@
         "vue": "^2.6.10"
     },
     "devDependencies": {
-        "weweb-client": "^1.0.42"
+        "weweb-client": "^1.0.50"
     },
     "browserslist": [
         "> 1%",

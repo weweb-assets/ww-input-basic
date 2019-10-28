@@ -1,12 +1,6 @@
 <template>
     <div class="elem-input">
-        <input class="input" 
-            :type="wwObject.content.data.config.type"
-            :name="wwObject.content.data.config.name" 
-            :required="wwObject.content.data.config.required" 
-            :pattern="wwObject.content.data.config.pattern"
-            :placeholder="wwLang.getText(wwObject.content.data.config.placeholder)" 
-            :style="style" />
+        <input class="input" :type="wwObject.content.data.config.type" :name="wwObject.content.data.config.name" :required="wwObject.content.data.config.required" :pattern="wwObject.content.data.config.pattern" :placeholder="wwLang.getText(wwObject.content.data.config.placeholder)" :style="style" />
     </div>
 </template>
 
@@ -215,7 +209,7 @@ export default {
         }
         /* wwManager:end */
     },
-    created() {
+    mounted() {
         this.wwObject.content.data = this.wwObject.content.data || {}
         this.wwObject.content.data.config = this.wwObject.content.data.config || {}
         this.wwObject.content.data.style = this.wwObject.content.data.style || {}

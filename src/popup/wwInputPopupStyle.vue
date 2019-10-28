@@ -47,7 +47,8 @@
                     </div>
                 </div>
                 <div class="title">Ombre</div>
-                <wwManagerSelect class="option" :options="boxShadowOptions" :value="props.boxShadow" @change="setValue('boxShadow', $event)"></wwManagerSelect>
+                <!-- <wwManagerSelect class="option" :options="boxShadowOptions" :value="props.boxShadow" @change="setValue('boxShadow', $event)"></wwManagerSelect> -->
+                <wwManagerShadow class="option" :value="props.boxShadow" @change="setBoxShadow($event)"></wwManagerShadow>
             </div>
         </div>
     </div>
@@ -296,7 +297,7 @@ export default {
                     },
                 ]
             },
-            
+
             /*=============================================m_ÔÔ_m=============================================\
               PROPS
             \================================================================================================*/
@@ -325,7 +326,7 @@ export default {
         init() {
         },
         setResult() {
-            this.options.result.inputStyle = {} 
+            this.options.result.inputStyle = {}
             for (const key in this.props) {
                 this.options.result.inputStyle[key] = this.props[key];
             }
@@ -368,7 +369,15 @@ export default {
                 this.options.data.wwObject.content.data.style.borderWidth = this.props.borderWidth;
             }
             this.updateWwObject();
-        }
+        },
+
+        setBoxShadow(value) {
+            this.props.boxShadow = value;
+            this.options.data.wwObject.content.data.style.boxShadow = value;
+
+            this.updateWwObject();
+            this.$forceUpdate();
+        },
     },
     mounted: function () {
         // this.containerHeight = this.$el.querySelector('.preview').getBoundingClientRect().height - 20;

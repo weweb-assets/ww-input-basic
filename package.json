@@ -1,27 +1,27 @@
 {
-    "name": "ww-form-input",
-    "type": "wwObject",
-    "wewebPublic": "true",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/WeWeb-Public/ww-form-input"
-    },
-    "version": "0.0.1",
-    "private": true,
-    "scripts": {
-        "build": "weweb-build",
-        "serve": "weweb-serve",
-        "upload": "weweb-upload"
-    },
-    "dependencies": {
-        "vue": "^2.6.10"
-    },
-    "devDependencies": {
-        "weweb-client": "^1.0.50"
-    },
-    "browserslist": [
-        "> 1%",
-        "last 2 versions",
-        "not ie <= 8"
-    ]
+	"name": "ww-form-input",
+	"type": "wwObject",
+	"wewebPublic": "true",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/WeWeb-Public/ww-form-input"
+	},
+	"version": "0.0.1",
+	"private": true,
+	"scripts": {
+		"build": "weweb-build",
+		"serve": "weweb-serve",
+		"create-config": "weweb-config"
+	},
+	"dependencies": {
+		"vue": "^2.6.11"
+	},
+	"devDependencies": {
+		"weweb-client": "^1.1.1"
+	},
+	"browserslist": [
+		"> 1%",
+		"last 2 versions",
+		"not ie <= 8"
+	]
 }

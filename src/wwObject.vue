@@ -201,6 +201,7 @@ export default {
                         this.wwObject.content.data.config.pattern = result.inputConfig.pattern;
                     }
                     this.wwObjectCtrl.update(this.wwObject);
+                    this.wwObjectCtrl.globalEdit(result);
                 }
             } catch (err) {
                 wwLib.wwLog.error('ERROR', err)

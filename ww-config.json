@@ -7,7 +7,7 @@
 				"type": "text",
 				"name": "name",
 				"required": true,
-				"pattern": "undefined",
+				"pattern": "",
 				"placeholder": {
 					"en": "Name",
 					"fr": "Nom"

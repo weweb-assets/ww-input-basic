@@ -6,7 +6,7 @@
 		"type": "git",
 		"url": "https://github.com/WeWeb-Public/ww-form-input"
 	},
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"private": true,
 	"scripts": {
 		"build": "weweb-build",

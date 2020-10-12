@@ -106,7 +106,6 @@ export default {
         }
         .options {
             display: flex;
-            justify-content: center;
             align-items: center;
             flex-direction: column;
             padding: 50px 0;

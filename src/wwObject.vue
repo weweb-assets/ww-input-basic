@@ -71,7 +71,7 @@ export default {
 .ww-form-input {
     width: 100%;
     outline: none;
-    ::placeholder {
+    &::placeholder {
         color: inherit;
         opacity: 0.7;
     }

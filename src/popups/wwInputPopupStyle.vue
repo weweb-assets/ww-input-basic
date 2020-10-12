@@ -60,17 +60,11 @@ export default {
                 this.options.result.style[key] = this.props[key];
             }
         },
-        /*=============================================m_ÔÔ_m=============================================\
-          PROPS
-        \================================================================================================*/
-        updateWwObject() {
-            this.setResult();
-        },
         setValue(prop, value) {
             this.options.data.style = this.options.data.style || {};
             this.props[prop] = value;
             this.options.data.style[prop] = value;
-            this.updateWwObject();
+            this.setResult();
         },
     },
     created() {
@@ -93,16 +87,6 @@ export default {
         font-family: 'Monserrat', sans-serif;
         @media (min-width: 992px) {
             flex-direction: row;
-        }
-        .preview {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #efefef;
-            border: 2px solid #cacaca;
-            @media (min-width: 992px) {
-                flex-basis: 50%;
-            }
         }
         .options {
             display: flex;

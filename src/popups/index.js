@@ -3,7 +3,7 @@ import './stories';
 export default async function openPopup(content) {
     try {
         const options = {
-            firstPage: 'WWFORM_INPUT_OPTIONS',
+            firstPage: 'WWFORM_INPUT_CONFIG',
             data: { ...content },
         };
         return await wwLib.wwPopups.open(options);

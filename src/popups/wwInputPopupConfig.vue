@@ -37,13 +37,26 @@
                     label="Pattern"
                 ></wwManagerInput>
             </div>
+            <div class="elem">
+                <div class="title">Texte</div>
+                <div class="elem-row">
+                    <wwManagerColorSelect :value="result.style.color" @change="result.style.color = $event" />
+                    <wwManagerSlider
+                        class="slider"
+                        :options="fontSizeOptions"
+                        :value="result.style.fontSize"
+                        @change="result.style.fontSize = $event"
+                    />
+                    <div class="value">{{ result.style.fontSize }} rem</div>
+                </div>
+            </div>
         </div>
     </div>
 </template>
 
 <script>
 export default {
-    name: 'wwInputPopupStyle',
+    name: 'wwInputPopupConfig',
     props: {
         options: {
             type: Object,
@@ -57,12 +70,21 @@ export default {
             content: this.options.data,
             langs: wwLib.wwWebsiteData.getCurrentPage().langs,
             result: {
+                style: {
+                    color: 'black',
+                    fontSize: 1,
+                },
                 config: {
                     type: undefined,
                     required: undefined,
                     placeholder: undefined,
                     pattern: undefined,
                 },
+            },
+            fontSizeOptions: {
+                min: 0,
+                max: 5,
+                digits: 1,
             },
             typeOptions: {
                 type: 'text',
@@ -128,6 +150,8 @@ export default {
             this.result.config.name = this.content.config.name;
             this.result.config.placeholder = this.content.config.placeholder;
             this.result.config.pattern = this.content.config.pattern;
+            this.result.style.color = this.content.style.color;
+            this.result.style.fontSize = this.content.style.fontSize;
             this.options.result = this.result;
         },
     },
@@ -143,9 +167,12 @@ export default {
         display: flex;
         padding: 20px;
         flex-direction: column;
-        overflow: auto;
         width: 100%;
         align-items: center;
+        .elem-row {
+            display: flex;
+            align-items: center;
+        }
         .elem {
             margin: 10px;
             width: 90%;
@@ -158,6 +185,9 @@ export default {
             }
             .input + .input {
                 margin-top: 5px;
+            }
+            .slider {
+                flex-basis: 70%;
             }
             .select {
                 width: 33%;

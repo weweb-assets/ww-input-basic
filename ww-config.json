@@ -1,56 +1,31 @@
 {
-	"componentPath": "./src/wwObject.vue",
-	"content": {
-		"type": "ww-form-input",
-		"data": {
-			"config": {
-				"type": "text",
-				"name": "name",
-				"required": true,
-				"pattern": "",
-				"placeholder": {
-					"en": "Name",
-					"fr": "Nom"
-				}
-			},
-			"style": {
-				"fontSize": 1,
-				"color": "black",
-				"backgroundColor": "white",
-				"borderRadius": 5,
-				"borderWidth": 2,
-				"borderColor": "grey",
-				"borderStyle": "solid",
-				"padding": 15
-			}
-		}
-	},
-	"upsales": {
-		"wwAnalytics": {
-			"click": true
-		}
-	},
-	"cmsOptions": {
-		"displayName": {
-			"en": "Form Input",
-			"fr": "Entrée de Formulaire"
-		},
-		"wwObjectHover": {
-			"pointerEvents": true
-		},
-		"wwObjectMenu": {
-			"items": [
-				{
-					"name": "OPTIONS",
-					"text": {
-						"en": "Options...",
-						"fr": "Options..."
-					},
-					"main": true,
-					"icon": "wwi wwi-edit-other",
-					"action": "options"
-				}
-			]
-		}
-	}
+    "componentPath": "./src/wwObject.vue",
+    "editor": {
+        "label": {
+            "fr": "Entrée de Formulaire",
+            "en": "Form Input"
+        },
+        "styleOptions": {
+            "color": {
+                "path": "style.color",
+                "label": { "en": "Color", "fr": "Couleur" },
+                "type": "Color"
+            },
+            "fontSize": {
+                "path": "style.fontSize",
+                "type": "Length",
+                "label": {
+                    "en": "Font size",
+                    "fr": "Taille du texte"
+                },
+                "options": {
+                    "unitChoices": [
+                        { "value": "px", "label": "px", "min": 10, "max": 50 },
+                        { "value": "em", "label": "em", "min": 1, "max": 50 },
+                        { "value": "rem", "label": "rem", "min": 1, "max": 50 }
+                    ]
+                }
+            }
+        }
+    }
 }

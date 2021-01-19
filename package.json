@@ -7,8 +7,7 @@
     "version": "1.0.0",
     "scripts": {
         "build": "weweb build",
-        "serve": "weweb serve",
-        "create-config": "weweb config"
+        "serve": "weweb serve"
     },
     "dependencies": {
         "vue": "^2.6.12"

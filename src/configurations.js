@@ -16,7 +16,20 @@ const PLACEHOLDER_SETTINGS = {
 };
 
 const TEXTAREA_SETTINGS = {
-    ...PLACEHOLDER_SETTINGS,
+    ...(function () {
+        const placeholders = {};
+        for (const lang of wwLib.$store.getters['websiteData/getPage'].langs) {
+            placeholders[`placeholder_${lang}`] = {
+                path: `globalSettings.placeholder.${lang}`,
+                label: { en: `placeholder (${lang})`, fr: 'fr' },
+                type: 'Textarea',
+                options: {
+                    placeholder: 'Type text',
+                },
+            };
+        }
+        return placeholders;
+    })(),
     rows: {
         path: 'globalSettings.rows',
         label: { en: 'Rows', fr: 'fr' },

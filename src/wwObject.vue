@@ -1,6 +1,6 @@
 <template>
     <input
-        v-if="content.globalSettings"
+        v-if="content.globalSettings && content.globalSettings.type !== 'textarea'"
         class="ww-form-input"
         :class="{ editing: isEditing }"
         :type="content.globalSettings.type"
@@ -8,10 +8,27 @@
         :required="content.globalSettings.required"
         :placeholder="wwLang.getText(content.globalSettings.placeholder)"
         :style="style"
+        :min="content.globalSettings.min"
+        :max="content.globalSettings.max"
+    />
+    <textarea
+        v-else-if="content.globalSettings"
+        class="ww-form-input"
+        :class="{ editing: isEditing }"
+        :type="content.globalSettings.type"
+        :name="content.globalSettings.name"
+        :required="content.globalSettings.required"
+        :placeholder="wwLang.getText(content.globalSettings.placeholder)"
+        :style="[style, { resize: content.globalSettings.resize ? '' : 'none' }]"
+        :rows="content.globalSettings.rows"
     />
 </template>
 
 <script>
+/* wwEditor:start */
+import { getSettingsConfigurations } from './configurations';
+/* wwEditor:end */
+
 export default {
     name: '__COMPONENT_NAME__',
     props: {
@@ -26,6 +43,11 @@ export default {
             name: '',
             required: true,
             placeholder: {},
+            min: 0,
+            max: 10000,
+            rows: 4,
+            cols: 10,
+            resize: false,
         },
         globalStyle: {
             fontSize: '15px',
@@ -33,7 +55,7 @@ export default {
         },
     },
     /* wwEditor:start */
-    wwEditorConfiguration() {
+    wwEditorConfiguration({ content }) {
         return {
             settingsOptions: {
                 name: {
@@ -55,30 +77,18 @@ export default {
                     type: 'TextSelect',
                     options: {
                         options: [
-                            { value: 'text', label: { en: 'Text', fr: 'Texte' } },
+                            { value: 'text', label: { en: 'Short answer', fr: 'Texte' } },
+                            { value: 'textarea', label: { en: 'Long answer', fr: 'Texte' } },
                             { value: 'email', label: { en: 'Email', fr: 'Email' } },
                             { value: 'password', label: { en: 'Password', fr: 'Mot de passe' } },
-                            { value: 'tel', label: { en: 'Phone', fr: 'Téléphone' } },
                             { value: 'number', label: { en: 'Number', fr: 'Nombre' } },
                             { value: 'date', label: { en: 'Date', fr: 'Date' } },
                             { value: 'time', label: { en: 'Time', fr: 'Heure' } },
+                            { value: 'tel', label: { en: 'Phone', fr: 'Téléphone' } },
                         ],
                     },
                 },
-                ...(function () {
-                    const placeholders = {};
-                    for (const lang of wwLib.$store.getters['websiteData/getPage'].langs) {
-                        placeholders[`placeholder_${lang}`] = {
-                            path: `globalSettings.placeholder.${lang}`,
-                            label: { en: `placeholder (${lang})`, fr: 'fr' },
-                            type: 'Text',
-                            options: {
-                                placeholder: 'firstname',
-                            },
-                        };
-                    }
-                    return placeholders;
-                })(),
+                ...getSettingsConfigurations(content.globalSettings.type),
             },
         };
     },

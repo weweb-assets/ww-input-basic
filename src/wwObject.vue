@@ -1,13 +1,12 @@
 <template>
     <input
-        v-if="content.config"
+        v-if="content.globalSettings"
         class="ww-form-input"
         :class="{ editing: isEditing }"
-        :type="content.config.type"
-        :name="content.config.name"
-        :required="content.config.required"
-        :pattern="content.config.pattern"
-        :placeholder="wwLang.getText(content.config.placeholder)"
+        :type="content.globalSettings.type"
+        :name="content.globalSettings.name"
+        :required="content.globalSettings.required"
+        :placeholder="wwLang.getText(content.globalSettings.placeholder)"
         :style="style"
     />
 </template>
@@ -22,16 +21,15 @@ export default {
         /* wwEditor:end */
     },
     wwDefaultContent: {
-        config: {
+        globalSettings: {
             type: 'text',
             name: '',
             required: true,
-            pattern: '.*',
             placeholder: {},
         },
-        style: {
-            color: 'black',
+        globalStyle: {
             fontSize: '15px',
+            color: 'black',
         },
     },
     /* wwEditor:start */
@@ -39,7 +37,7 @@ export default {
         return {
             settingsOptions: {
                 name: {
-                    path: 'config.name',
+                    path: 'globalSettings.name',
                     label: { en: 'Name', fr: 'fr' },
                     type: 'Text',
                     options: {
@@ -47,12 +45,12 @@ export default {
                     },
                 },
                 required: {
-                    path: 'config.required',
+                    path: 'globalSettings.required',
                     label: { en: 'Required', fr: 'Requis' },
                     type: 'OnOff',
                 },
                 type: {
-                    path: 'config.type',
+                    path: 'globalSettings.type',
                     label: { en: 'Input type', fr: 'fr' },
                     type: 'TextSelect',
                     options: {
@@ -71,7 +69,7 @@ export default {
                     const placeholders = {};
                     for (const lang of wwLib.$store.getters['websiteData/getPage'].langs) {
                         placeholders[`placeholder_${lang}`] = {
-                            path: `config.placeholder.${lang}`,
+                            path: `globalSettings.placeholder.${lang}`,
                             label: { en: `placeholder (${lang})`, fr: 'fr' },
                             type: 'Text',
                             options: {
@@ -99,10 +97,10 @@ export default {
             return false;
         },
         style() {
-            if (!this.content || !this.content.style) return {};
+            if (!this.content || !this.content.globalStyle) return {};
             return {
-                color: this.content.style.color || 'black',
-                fontSize: `${this.content.style.fontSize || '1rem'}`,
+                color: this.content.globalStyle.color || 'black',
+                fontSize: `${this.content.globalStyle.fontSize || '15px'}`,
             };
         },
     },

@@ -7,12 +7,12 @@
         },
         "styleOptions": {
             "color": {
-                "path": "style.color",
+                "path": "globalStyle.color",
                 "label": { "en": "Color", "fr": "Couleur" },
                 "type": "Color"
             },
             "fontSize": {
-                "path": "style.fontSize",
+                "path": "globalStyle.fontSize",
                 "type": "Length",
                 "label": {
                     "en": "Font size",

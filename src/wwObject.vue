@@ -4,7 +4,7 @@
         class="ww-form-input"
         :class="{ editing: isEditing }"
         :type="content.globalSettings.type"
-        :name="content.globalSettings.name"
+        :name="isEditing ? `${content.globalSettings.name}-editing` : content.globalSettings.name"
         :required="content.globalSettings.required"
         :placeholder="wwLang.getText(content.globalSettings.placeholder)"
         :style="style"

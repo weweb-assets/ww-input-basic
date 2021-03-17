@@ -11,6 +11,14 @@
                 "label": { "en": "Color", "fr": "Couleur" },
                 "type": "Color"
             },
+            "fontFamily": {
+                "type": "FontFamily",
+                "path": "globalStyle.fontFamily",
+                "label": {
+                    "en": "Font family",
+                    "fr": "Font"
+                }
+            },
             "fontSize": {
                 "path": "globalStyle.fontSize",
                 "type": "Length",

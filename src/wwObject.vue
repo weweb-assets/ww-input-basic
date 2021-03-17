@@ -51,6 +51,7 @@ export default {
         },
         globalStyle: {
             fontSize: '15px',
+            fontFamily: '',
             color: 'black',
         },
     },
@@ -111,6 +112,7 @@ export default {
             return {
                 color: this.content.globalStyle.color || 'black',
                 fontSize: `${this.content.globalStyle.fontSize || '15px'}`,
+                fontFamily: this.content.globalStyle.fontFamily,
             };
         },
     },

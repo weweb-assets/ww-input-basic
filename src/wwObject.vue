@@ -163,6 +163,12 @@ export default {
             selectedValue: 0,
         };
     },
+    watch: {
+        'content.globalSettings'() {
+            if (!this.$refs.input && !this.$refs.input.value) return;
+            if (this.content.globalSettings.type === 'range') this.selectedValue = this.$refs.input.value;
+        },
+    },
     computed: {
         isEditing() {
             /* wwEditor:start */
@@ -192,6 +198,10 @@ export default {
         rangeVal(event) {
             this.selectedValue = event.target.value;
         },
+    },
+    mounted() {
+        if (!this.$refs.input && !this.$refs.input.value) return;
+        if (this.content.globalSettings.type === 'range') this.selectedValue = this.$refs.input.value;
     },
 };
 </script>

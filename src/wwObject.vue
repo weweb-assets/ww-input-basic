@@ -326,7 +326,7 @@ export default {
     padding: 5px 15px;
     border-radius: 6px;
     position: absolute;
-    z-index: 1;
+    z-index: 20;
     top: 0px;
     left: var(--tooltip-position);
     transform: translateY(-120%);

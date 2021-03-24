@@ -68,36 +68,6 @@ const NUMBER_SETTINGS = {
     },
 };
 
-const RANGE_SETTINGS = {
-    min: {
-        path: 'globalSettings.min',
-        label: { en: 'Min range', fr: 'Min range' },
-        type: 'Number',
-        options: {
-            min: 0,
-            max: 10000,
-        },
-    },
-    max: {
-        path: 'globalSettings.max',
-        label: { en: 'Max range', fr: 'Max range' },
-        type: 'Number',
-        options: {
-            min: 1,
-            max: 10000,
-        },
-    },
-    step: {
-        path: 'globalSettings.step',
-        label: { en: 'Step', fr: 'Step' },
-        type: 'Number',
-        options: {
-            min: 1,
-            max: 100,
-        },
-    },
-};
-
 const DATE_SETTINGS = {};
 
 const TIME_SETTINGS = {};
@@ -108,8 +78,6 @@ export const getSettingsConfigurations = type => {
             return TEXTAREA_SETTINGS;
         case 'number':
             return NUMBER_SETTINGS;
-        case 'range':
-            return RANGE_SETTINGS;
         case 'date':
             return DATE_SETTINGS;
         case 'time':

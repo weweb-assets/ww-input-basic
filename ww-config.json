@@ -1,5 +1,5 @@
 {
-    "componentPath": "./src/wwObject.vue",
+    "componentPath": "./src/wwElement.vue",
     "editor": {
         "label": {
             "fr": "Entrée de Formulaire",

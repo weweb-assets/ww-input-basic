@@ -1,7 +1,7 @@
 const PLACEHOLDER_SETTINGS = {
     ...(function () {
         const placeholders = {};
-        for (const lang of wwLib.$store.getters['websiteData/getPage'].langs) {
+        for (const lang of wwLib.wwWebsiteData.getCurrentPage().langs) {
             placeholders[`placeholder_${lang}`] = {
                 path: `globalSettings.placeholder.${lang}`,
                 label: { en: `placeholder (${lang})`, fr: 'fr' },
@@ -18,7 +18,7 @@ const PLACEHOLDER_SETTINGS = {
 const TEXTAREA_SETTINGS = {
     ...(function () {
         const placeholders = {};
-        for (const lang of wwLib.$store.getters['websiteData/getPage'].langs) {
+        for (const lang of wwLib.wwWebsiteData.getCurrentPage().langs) {
             placeholders[`placeholder_${lang}`] = {
                 path: `globalSettings.placeholder.${lang}`,
                 label: { en: `placeholder (${lang})`, fr: 'fr' },

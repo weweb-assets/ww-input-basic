@@ -111,7 +111,7 @@ export default {
             return {
                 color: this.content.globalStyle.color || 'black',
                 fontSize: `${this.content.globalStyle.fontSize || '15px'}`,
-                fontFamily: this.content.globalStyle.fontFamily,
+                fontFamily: this.content.globalStyle.fontFamily || '',
             };
         },
     },

@@ -3,13 +3,14 @@
         v-if="content.globalSettings && content.globalSettings.type !== 'textarea'"
         class="ww-form-input"
         :class="{ editing: isEditing }"
-        :type="content.globalSettings.type"
+        :type="inputType"
         :name="isEditing ? `${content.globalSettings.name}-editing` : content.globalSettings.name"
         :required="content.globalSettings.required"
         :placeholder="wwLang.getText(content.globalSettings.placeholder)"
         :style="style"
         :min="content.globalSettings.min"
         :max="content.globalSettings.max"
+        :step="step"
     />
     <textarea
         v-else-if="content.globalSettings"
@@ -44,6 +45,7 @@ export default {
             placeholder: {},
             min: 0,
             max: 10000,
+            precision: 0.1,
             rows: 4,
             cols: 10,
             resize: false,
@@ -52,6 +54,35 @@ export default {
             fontSize: '15px',
             fontFamily: '',
             color: 'black',
+        },
+    },
+    /* wwEditor:end */
+    data() {
+        return {
+            wwLang: wwLib.wwLang,
+        };
+    },
+    computed: {
+        isEditing() {
+            /* wwEditor:start */
+            return this.wwEditorState.editMode === wwLib.wwEditorHelper.EDIT_MODES.EDITION;
+            /* wwEditor:end */
+            // eslint-disable-next-line no-unreachable
+            return false;
+        },
+        style() {
+            if (!this.content || !this.content.globalStyle) return {};
+            return {
+                color: this.content.globalStyle.color || 'black',
+                fontSize: `${this.content.globalStyle.fontSize || '15px'}`,
+                fontFamily: this.content.globalStyle.fontFamily || '',
+            };
+        },
+        inputType() {
+            return this.content.globalSettings.type === 'decimal' ? 'number' : this.content.globalSettings.type;
+        },
+        step() {
+            return this.content.globalSettings.type === 'decimal' ? this.content.globalSettings.precision : 1;
         },
     },
     /* wwEditor:start */
@@ -82,6 +113,7 @@ export default {
                             { value: 'email', label: { en: 'Email', fr: 'Email' } },
                             { value: 'password', label: { en: 'Password', fr: 'Mot de passe' } },
                             { value: 'number', label: { en: 'Number', fr: 'Nombre' } },
+                            { value: 'decimal', label: { en: 'Decimal', fr: 'Decimal' } },
                             { value: 'date', label: { en: 'Date', fr: 'Date' } },
                             { value: 'time', label: { en: 'Time', fr: 'Heure' } },
                             { value: 'tel', label: { en: 'Phone', fr: 'Téléphone' } },
@@ -91,29 +123,6 @@ export default {
                 ...getSettingsConfigurations(content.globalSettings.type),
             },
         };
-    },
-    /* wwEditor:end */
-    data() {
-        return {
-            wwLang: wwLib.wwLang,
-        };
-    },
-    computed: {
-        isEditing() {
-            /* wwEditor:start */
-            return this.wwEditorState.editMode === wwLib.wwEditorHelper.EDIT_MODES.EDITION;
-            /* wwEditor:end */
-            // eslint-disable-next-line no-unreachable
-            return false;
-        },
-        style() {
-            if (!this.content || !this.content.globalStyle) return {};
-            return {
-                color: this.content.globalStyle.color || 'black',
-                fontSize: `${this.content.globalStyle.fontSize || '15px'}`,
-                fontFamily: this.content.globalStyle.fontFamily || '',
-            };
-        },
     },
 };
 </script>

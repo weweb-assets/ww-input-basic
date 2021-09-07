@@ -68,6 +68,30 @@ const NUMBER_SETTINGS = {
     },
 };
 
+const DECIMAL_SETTINGS = {
+    precision: {
+        path: 'globalSettings.precision',
+        label: {
+            en: 'Precision',
+            fr: 'Precision',
+        },
+        type: 'TextSelect',
+        options: {
+            options: [
+                { value: 0.1, label: { en: '1.0' } },
+                { value: 0.01, label: { en: '1.00' } },
+                { value: 0.001, label: { en: '1.000' } },
+                { value: 0.0001, label: { en: '1.0000' } },
+                { value: 0.00001, label: { en: '1.00000' } },
+                { value: 0.000001, label: { en: '1.000000' } },
+                { value: 0.0000001, label: { en: '1.0000000' } },
+                { value: 0.00000001, label: { en: '1.00000000' } },
+            ],
+        },
+    },
+    ...NUMBER_SETTINGS,
+};
+
 const DATE_SETTINGS = {};
 
 const TIME_SETTINGS = {};
@@ -78,6 +102,8 @@ export const getSettingsConfigurations = type => {
             return TEXTAREA_SETTINGS;
         case 'number':
             return NUMBER_SETTINGS;
+        case 'decimal':
+            return DECIMAL_SETTINGS;
         case 'date':
             return DATE_SETTINGS;
         case 'time':

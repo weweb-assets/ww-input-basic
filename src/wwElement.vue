@@ -110,7 +110,7 @@ export default {
                     step = 0.00000001;
                     break;
                 default:
-                    step = 0.1;
+                    step = 1;
                     break;
             }
 

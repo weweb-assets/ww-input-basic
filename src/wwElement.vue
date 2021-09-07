@@ -10,7 +10,7 @@
         :style="style"
         :min="content.globalSettings.min"
         :max="content.globalSettings.max"
-        :step="content.globalSettings.precision"
+        :step="step"
     />
     <textarea
         v-else-if="content.globalSettings"
@@ -80,6 +80,9 @@ export default {
         },
         inputType() {
             return this.content.globalSettings.type === 'decimal' ? 'number' : this.content.globalSettings.type;
+        },
+        step() {
+            return this.content.globalSettings.type === 'decimal' ? this.content.globalSettings.precision : 1;
         },
     },
     /* wwEditor:start */

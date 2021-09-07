@@ -10,7 +10,7 @@
         :style="style"
         :min="content.globalSettings.min"
         :max="content.globalSettings.max"
-        :step="decimalStep"
+        :step="content.globalSettings.precision"
     />
     <textarea
         v-else-if="content.globalSettings"
@@ -45,7 +45,7 @@ export default {
             placeholder: {},
             min: 0,
             max: 10000,
-            precision: 1.0,
+            precision: 0.1,
             rows: 4,
             cols: 10,
             resize: false,
@@ -80,41 +80,6 @@ export default {
         },
         inputType() {
             return this.content.globalSettings.type === 'decimal' ? 'number' : this.content.globalSettings.type;
-        },
-        decimalStep() {
-            let step;
-
-            switch (this.content.globalSettings.precision) {
-                case '1.0':
-                    step = 0.1;
-                    break;
-                case '1.00':
-                    step = 0.01;
-                    break;
-                case '1.000':
-                    step = 0.001;
-                    break;
-                case '1.0000':
-                    step = 0.0001;
-                    break;
-                case '1.00000':
-                    step = 0.00001;
-                    break;
-                case '1.000000':
-                    step = 0.000001;
-                    break;
-                case '1.0000000':
-                    step = 0.0000001;
-                    break;
-                case '1.00000000':
-                    step = 0.00000001;
-                    break;
-                default:
-                    step = 1;
-                    break;
-            }
-
-            return step;
         },
     },
     /* wwEditor:start */

@@ -124,6 +124,7 @@ export default {
             },
         };
     },
+    /* wwEditor:end */
 };
 </script>
 

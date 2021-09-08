@@ -82,7 +82,7 @@ export default {
             return this.content.globalSettings.type === 'decimal' ? 'number' : this.content.globalSettings.type;
         },
         step() {
-            return this.content.globalSettings.type === 'decimal' ? this.content.globalSettings.precision : 1;
+            return this.content.globalSettings.type === 'decimal' ? this.content.globalSettings.precision : '1';
         },
     },
     methods: {

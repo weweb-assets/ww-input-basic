@@ -11,6 +11,7 @@
         :min="content.globalSettings.min"
         :max="content.globalSettings.max"
         :step="step"
+        @focusout="formatInput"
     />
     <textarea
         v-else-if="content.globalSettings"
@@ -45,7 +46,7 @@ export default {
             placeholder: {},
             min: 0,
             max: 10000,
-            precision: 0.1,
+            precision: '0.1',
             rows: 4,
             cols: 10,
             resize: false,
@@ -56,7 +57,6 @@ export default {
             color: 'black',
         },
     },
-    /* wwEditor:end */
     data() {
         return {
             wwLang: wwLib.wwLang,
@@ -82,7 +82,15 @@ export default {
             return this.content.globalSettings.type === 'decimal' ? 'number' : this.content.globalSettings.type;
         },
         step() {
-            return this.content.globalSettings.type === 'decimal' ? this.content.globalSettings.precision : 1;
+            return this.content.globalSettings.type === 'decimal' ? this.content.globalSettings.precision : '1';
+        },
+    },
+    methods: {
+        formatInput(event) {
+            if (this.content.globalSettings.type !== 'decimal') return;
+
+            const formatedValue = Number(event.target.value).toFixed(this.step.split('.')[1].length);
+            event.target.value = formatedValue;
         },
     },
     /* wwEditor:start */

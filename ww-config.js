@@ -61,10 +61,10 @@ export default {
             label: { en: 'Placeholder', fr: 'Placeholder' },
             type: 'Text',
             section: 'settings',
-            options: ({ type }) => ({ placeholder: type === 'text' ? 'Firstname' : 'Type text' }),
-            defaultValue: '',
+            options: { placeholder: 'Type text' },
+            defaultValue: { en: '' },
             hidden: ({ type }) => type === 'date' || type === 'time',
-            multilang: true,
+            multiLang: true,
         },
         rows: {
             label: { en: 'Rows', fr: 'Rows' },

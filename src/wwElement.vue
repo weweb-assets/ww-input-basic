@@ -1,66 +1,38 @@
 <template>
     <input
-        v-if="content.globalSettings && content.globalSettings.type !== 'textarea'"
+        v-if="content.type !== 'textarea'"
         class="ww-form-input"
         :class="{ editing: isEditing }"
         :type="inputType"
-        :name="isEditing ? `${content.globalSettings.name}-editing` : content.globalSettings.name"
-        :required="content.globalSettings.required"
-        :placeholder="wwLang.getText(content.globalSettings.placeholder)"
+        :name="isEditing ? `${content.name}-editing` : content.name"
+        :required="content.required"
+        :placeholder="content.placeholder"
         :style="style"
-        :min="content.globalSettings.min"
-        :max="content.globalSettings.max"
+        :min="content.min"
+        :max="content.max"
         :step="step"
         @focusout="formatInput"
     />
     <textarea
-        v-else-if="content.globalSettings"
+        v-else
         class="ww-form-input"
         :class="{ editing: isEditing }"
-        :type="content.globalSettings.type"
-        :name="content.globalSettings.name"
-        :required="content.globalSettings.required"
-        :placeholder="wwLang.getText(content.globalSettings.placeholder)"
-        :style="[style, { resize: content.globalSettings.resize ? '' : 'none' }]"
-        :rows="content.globalSettings.rows"
+        :type="content.type"
+        :name="content.name"
+        :required="content.required"
+        :placeholder="content.placeholder"
+        :style="[style, { resize: content.resize ? '' : 'none' }]"
+        :rows="content.rows"
     />
 </template>
 
 <script>
-/* wwEditor:start */
-import { getSettingsConfigurations } from './configurations';
-/* wwEditor:end */
-
 export default {
     props: {
         content: { type: Object, required: true },
         /* wwEditor:start */
         wwEditorState: { type: Object, required: true },
         /* wwEditor:end */
-    },
-    wwDefaultContent: {
-        globalSettings: {
-            type: 'text',
-            name: '',
-            required: true,
-            placeholder: {},
-            min: 0,
-            max: 10000,
-            precision: '0.1',
-            rows: 4,
-            cols: 10,
-            resize: false,
-        },
-        globalStyle: {
-            fontSize: '15px',
-            fontFamily: '',
-            color: 'black',
-        },
-    },
-    data() {
-        return {
-            wwLang: wwLib.wwLang,
-        };
     },
     computed: {
         isEditing() {
@@ -71,68 +43,26 @@ export default {
             return false;
         },
         style() {
-            if (!this.content || !this.content.globalStyle) return {};
             return {
-                color: this.content.globalStyle.color || 'black',
-                fontSize: `${this.content.globalStyle.fontSize || '15px'}`,
-                fontFamily: this.content.globalStyle.fontFamily || '',
+                color: this.content.color,
+                fontSize: `${this.content.fontSize}`,
+                fontFamily: this.content.fontFamily,
             };
         },
         inputType() {
-            return this.content.globalSettings.type === 'decimal' ? 'number' : this.content.globalSettings.type;
+            return this.content.type === 'decimal' ? 'number' : this.content.type;
         },
         step() {
-            return this.content.globalSettings.type === 'decimal' ? this.content.globalSettings.precision : '1';
+            return this.content.type === 'decimal' ? this.content.precision : '1';
         },
     },
     methods: {
         formatInput(event) {
-            if (this.content.globalSettings.type !== 'decimal') return;
-
+            if (this.content.type !== 'decimal') return;
             const formatedValue = Number(event.target.value).toFixed(this.step.split('.')[1].length);
             event.target.value = formatedValue;
         },
     },
-    /* wwEditor:start */
-    wwEditorConfiguration({ content }) {
-        return {
-            settingsOptions: {
-                name: {
-                    path: 'globalSettings.name',
-                    label: { en: 'Name', fr: 'fr' },
-                    type: 'Text',
-                    options: {
-                        placeholder: 'Name',
-                    },
-                },
-                required: {
-                    path: 'globalSettings.required',
-                    label: { en: 'Required', fr: 'Requis' },
-                    type: 'OnOff',
-                },
-                type: {
-                    path: 'globalSettings.type',
-                    label: { en: 'Input type', fr: 'fr' },
-                    type: 'TextSelect',
-                    options: {
-                        options: [
-                            { value: 'text', label: { en: 'Short answer', fr: 'Texte' } },
-                            { value: 'textarea', label: { en: 'Long answer', fr: 'Texte' } },
-                            { value: 'email', label: { en: 'Email', fr: 'Email' } },
-                            { value: 'password', label: { en: 'Password', fr: 'Mot de passe' } },
-                            { value: 'number', label: { en: 'Number', fr: 'Nombre' } },
-                            { value: 'decimal', label: { en: 'Decimal', fr: 'Decimal' } },
-                            { value: 'date', label: { en: 'Date', fr: 'Date' } },
-                            { value: 'time', label: { en: 'Time', fr: 'Heure' } },
-                            { value: 'tel', label: { en: 'Phone', fr: 'Téléphone' } },
-                        ],
-                    },
-                },
-                ...getSettingsConfigurations(content.globalSettings.type),
-            },
-        };
-    },
-    /* wwEditor:end */
 };
 </script>
 

@@ -55,15 +55,16 @@ export default {
                     { value: 'tel', label: { en: 'Phone', fr: 'Téléphone' } },
                 ],
             },
-            defaultvalue: 'text',
+            defaultValue: 'text',
         },
         placeholder: {
             label: { en: 'Placeholder', fr: 'Placeholder' },
             type: 'Text',
             section: 'settings',
             options: ({ type }) => ({ placeholder: type === 'text' ? 'Firstname' : 'Type text' }),
-            defaultValue: { en: '' },
+            defaultValue: '',
             hidden: ({ type }) => type === 'date' || type === 'time',
+            multilang: true,
         },
         rows: {
             label: { en: 'Rows', fr: 'Rows' },

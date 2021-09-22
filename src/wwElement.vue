@@ -6,7 +6,7 @@
         :type="inputType"
         :name="isEditing ? `${content.name}-editing` : content.name"
         :required="content.required"
-        :placeholder="content.placeholder"
+        :placeholder="wwLang.getText(content.placeholder)"
         :style="style"
         :min="content.min"
         :max="content.max"
@@ -20,7 +20,7 @@
         :type="content.type"
         :name="content.name"
         :required="content.required"
-        :placeholder="content.placeholder"
+        :placeholder="wwLang.getText(content.placeholder)"
         :style="[style, { resize: content.resize ? '' : 'none' }]"
         :rows="content.rows"
     />

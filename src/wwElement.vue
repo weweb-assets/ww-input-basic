@@ -1,15 +1,15 @@
 <template>
     <input
-        v-if="content.type !== 'textarea'"
+        v-if="content.globalSettings.type !== 'textarea'"
         class="ww-form-input"
         :class="{ editing: isEditing }"
         :type="inputType"
-        :name="isEditing ? `${content.name}-editing` : content.name"
-        :required="content.required"
-        :placeholder="wwLang.getText(content.placeholder)"
+        :name="isEditing ? `${content.globalSettings.name}-editing` : content.globalSettings.name"
+        :required="content.globalSettings.required"
+        :placeholder="wwLang.getText(content.globalSettings.placeholder)"
         :style="style"
-        :min="content.min"
-        :max="content.max"
+        :min="content.globalSettings.min"
+        :max="content.globalSettings.max"
         :step="step"
         @focusout="formatInput"
     />
@@ -17,12 +17,12 @@
         v-else
         class="ww-form-input"
         :class="{ editing: isEditing }"
-        :type="content.type"
-        :name="content.name"
-        :required="content.required"
-        :placeholder="wwLang.getText(content.placeholder)"
-        :style="[style, { resize: content.resize ? '' : 'none' }]"
-        :rows="content.rows"
+        :type="content.globalSettings.type"
+        :name="content.globalSettings.name"
+        :required="content.globalSettings.required"
+        :placeholder="wwLang.getText(content.globalSettings.placeholder)"
+        :style="[style, { resize: content.globalSettings.resize ? '' : 'none' }]"
+        :rows="content.globalSettings.rows"
     />
 </template>
 
@@ -44,21 +44,21 @@ export default {
         },
         style() {
             return {
-                color: this.content.color,
-                fontSize: `${this.content.fontSize}`,
-                fontFamily: this.content.fontFamily,
+                color: this.content.globalStyle.color,
+                fontSize: this.content.globalStyle.fontSize,
+                fontFamily: this.content.globalStyle.fontFamily,
             };
         },
         inputType() {
-            return this.content.type === 'decimal' ? 'number' : this.content.type;
+            return this.content.globalSettings.type === 'decimal' ? 'number' : this.content.globalSettings.type;
         },
         step() {
-            return this.content.type === 'decimal' ? this.content.precision : '1';
+            return this.content.globalSettings.type === 'decimal' ? this.content.globalSettings.precision : '1';
         },
     },
     methods: {
         formatInput(event) {
-            if (this.content.type !== 'decimal') return;
+            if (this.content.globalSettings.type !== 'decimal') return;
             const formatedValue = Number(event.target.value).toFixed(this.step.split('.')[1].length);
             event.target.value = formatedValue;
         },

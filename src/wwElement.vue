@@ -1,6 +1,6 @@
-<template v-if="content.globalSettings">
+<template>
     <input
-        v-if="content.globalSettings.type !== 'textarea'"
+        v-if="content.globalSettings && content.globalSettings.type !== 'textarea'"
         class="ww-form-input"
         :class="{ editing: isEditing }"
         :type="inputType"
@@ -14,7 +14,7 @@
         @focusout="formatInput"
     />
     <textarea
-        v-else
+        v-else-if="content.globalSettings"
         class="ww-form-input"
         :class="{ editing: isEditing }"
         :type="content.globalSettings.type"

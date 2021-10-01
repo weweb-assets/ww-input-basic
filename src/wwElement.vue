@@ -1,4 +1,4 @@
-<template>
+<template v-if="content.globalSettings">
     <input
         v-if="content.globalSettings.type !== 'textarea'"
         class="ww-form-input"

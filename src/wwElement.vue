@@ -50,9 +50,11 @@ export default {
             };
         },
         inputType() {
+            if (!this.content.globalSettings) return 'text';
             return this.content.globalSettings.type === 'decimal' ? 'number' : this.content.globalSettings.type;
         },
         step() {
+            if (!this.content.globalSettings) return '1';
             return this.content.globalSettings.type === 'decimal' ? this.content.globalSettings.precision : '1';
         },
     },

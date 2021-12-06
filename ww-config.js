@@ -69,31 +69,34 @@ export default {
                         label: { en: 'Placeholder', fr: 'Placeholder' },
                         type: 'Text',
                         options: { placeholder: 'Type text' },
-                        hidden: ({ type }) => type === 'date' || type === 'time',
+                        hidden: content =>
+                            content.globalSettings.type === 'date' || content.globalSettings.type === 'time',
                         multiLang: true,
                     },
                     rows: {
                         label: { en: 'Rows', fr: 'Rows' },
                         type: 'Number',
                         options: { min: 1, max: 25 },
-                        hidden: ({ type }) => type !== 'textarea',
+                        hidden: content => content.globalSettings.type !== 'textarea',
                     },
                     resize: {
                         label: { en: 'Resize', fr: 'Resize' },
                         type: 'OnOff',
-                        hidden: ({ type }) => type !== 'textarea',
+                        hidden: content => content.globalSettings.type !== 'textarea',
                     },
                     min: {
                         label: { en: 'Min number', fr: 'Min number' },
                         type: 'Number',
                         options: { min: 0, max: 100 },
-                        hidden: ({ type }) => type !== 'number' && type !== 'decimal',
+                        hidden: content =>
+                            content.globalSettings.type !== 'number' && content.globalSettings.type !== 'decimal',
                     },
                     max: {
                         label: { en: 'Max number', fr: 'Max number' },
                         type: 'Number',
                         options: { min: 0, max: 10000 },
-                        hidden: ({ type }) => type !== 'number' && type !== 'decimal',
+                        hidden: content =>
+                            content.globalSettings.type !== 'number' && content.globalSettings.type !== 'decimal',
                     },
                     precision: {
                         label: { en: 'Precision', fr: 'Precision' },
@@ -110,7 +113,7 @@ export default {
                                 { value: '0.00000001', label: { en: '1.00000000' } },
                             ],
                         },
-                        hidden: ({ type }) => type !== 'decimal',
+                        hidden: content => content.globalSettings.type !== 'decimal',
                     },
                 },
             },

@@ -8,7 +8,6 @@
         :name="isEditing ? `${content.globalSettings.name}-editing` : content.globalSettings.name"
         :required="content.globalSettings.required"
         :placeholder="wwLang.getText(content.globalSettings.placeholder)"
-        lang="en"
         :style="style"
         :min="content.globalSettings.min"
         :max="content.globalSettings.max"

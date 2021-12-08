@@ -39,6 +39,28 @@ export default {
             section: 'settings',
             options: {
                 item: {
+                    variable: {
+                        label: {
+                            en: 'Associated variable',
+                        },
+                        type: 'Variable',
+                        options: {
+                            types: ['String', 'Number', 'Query'],
+                        },
+                        section: 'settings',
+                        bindable: true,
+                        defaultValue: null,
+                    },
+                    initialValue: {
+                        label: {
+                            en: 'Initial value',
+                        },
+                        type: 'Text',
+                        section: 'settings',
+                        bindable: true,
+                        hidden: content => content.globalSettings.variable,
+                        defaultValue: '',
+                    },
                     name: {
                         label: { en: 'Name', fr: 'Nom' },
                         type: 'Text',
@@ -64,6 +86,23 @@ export default {
                                 { value: 'tel', label: { en: 'Phone', fr: 'Téléphone' } },
                             ],
                         },
+                    },
+                    precision: {
+                        label: { en: 'Precision', fr: 'Precision' },
+                        type: 'TextSelect',
+                        options: {
+                            options: [
+                                { value: '0.1', label: { en: '1.0' } },
+                                { value: '0.01', label: { en: '1.00' } },
+                                { value: '0.001', label: { en: '1.000' } },
+                                { value: '0.0001', label: { en: '1.0000' } },
+                                { value: '0.00001', label: { en: '1.00000' } },
+                                { value: '0.000001', label: { en: '1.000000' } },
+                                { value: '0.0000001', label: { en: '1.0000000' } },
+                                { value: '0.00000001', label: { en: '1.00000000' } },
+                            ],
+                        },
+                        hidden: content => content.globalSettings.type !== 'decimal',
                     },
                     placeholder: {
                         label: { en: 'Placeholder', fr: 'Placeholder' },
@@ -97,23 +136,6 @@ export default {
                         options: { min: 0, max: 10000 },
                         hidden: content =>
                             content.globalSettings.type !== 'number' && content.globalSettings.type !== 'decimal',
-                    },
-                    precision: {
-                        label: { en: 'Precision', fr: 'Precision' },
-                        type: 'TextSelect',
-                        options: {
-                            options: [
-                                { value: '0.1', label: { en: '1.0' } },
-                                { value: '0.01', label: { en: '1.00' } },
-                                { value: '0.001', label: { en: '1.000' } },
-                                { value: '0.0001', label: { en: '1.0000' } },
-                                { value: '0.00001', label: { en: '1.00000' } },
-                                { value: '0.000001', label: { en: '1.000000' } },
-                                { value: '0.0000001', label: { en: '1.0000000' } },
-                                { value: '0.00000001', label: { en: '1.00000000' } },
-                            ],
-                        },
-                        hidden: content => content.globalSettings.type !== 'decimal',
                     },
                 },
             },

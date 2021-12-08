@@ -88,7 +88,7 @@ export default {
     /* wwEditor:start */
     watch: {
         'content.globalSettings.initialValue'(value) {
-            if (value !== undefined && this.content.variable) this.value = value;
+            if (value !== undefined && !this.content.variable) this.value = value;
         },
     },
     /* wwEditor:end */

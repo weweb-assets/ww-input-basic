@@ -94,7 +94,8 @@ export default {
     },
     /* wwEditor:end */
     mounted() {
-        if (this.content.initialValue) this.value = this.content.initialValue;
+        if (this.content.globalSettings.initialValue !== undefined && this.content.globalSettings.initialValue)
+            this.value = this.content.globalSettings.initialValue;
     },
     methods: {
         formatInput(event) {

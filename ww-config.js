@@ -48,8 +48,8 @@ export default {
                             types: ['String', 'Number', 'Query'],
                         },
                         section: 'settings',
-                        bindable: true,
                         defaultValue: null,
+                        hidden: content => !content.variable,
                     },
                     initialValue: {
                         label: {

@@ -19,7 +19,7 @@
         class="ww-form-input"
         :class="{ editing: isEditing }"
         :type="content.type"
-        :name="content.name"
+        :name="wwElementState.name"
         :required="content.required"
         :placeholder="wwLang.getText(content.placeholder)"
         :style="[style, { resize: content.resize ? '' : 'none' }]"

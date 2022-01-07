@@ -35,7 +35,6 @@ export default {
         wwEditorState: { type: Object, required: true },
         /* wwEditor:end */
         uid: { type: String, required: true },
-        wwElementState: { type: Object, required: true },
     },
     emits: ['trigger-event'],
     setup(props) {

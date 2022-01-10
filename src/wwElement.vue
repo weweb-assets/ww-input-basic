@@ -55,8 +55,8 @@ export default {
                 return this.variableValue;
             },
             set(value) {
+                value = this.formatInput(value);
                 if (value !== this.variableValue) {
-                    value = this.formatInput(value);
                     this.$emit('trigger-event', { name: 'change', event: { value } });
                     this.setValue(value);
                 }
@@ -78,7 +78,6 @@ export default {
             return this.content.type === 'decimal' ? this.content.precision : '1';
         },
     },
-    /* wwEditor:start */
     watch: {
         'content.value'(value) {
             this.value = value;
@@ -87,7 +86,6 @@ export default {
             this.value = this.formatInput(this.value);
         },
     },
-    /* wwEditor:end */
     methods: {
         formatInput(value) {
             if (this.content.type !== 'decimal') return value;

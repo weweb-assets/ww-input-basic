@@ -5,7 +5,7 @@
         class="ww-form-input"
         :class="{ editing: isEditing }"
         :type="inputType"
-        :name="isEditing ? `${wwElementState.name}-editing` : wwElementState.name"
+        :name="wwElementState.name"
         :required="content.required"
         :placeholder="wwLang.getText(content.placeholder)"
         :style="style"

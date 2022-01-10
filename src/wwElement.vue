@@ -1,36 +1,33 @@
 <template>
     <input
-        v-if="content.globalSettings && content.globalSettings.type !== 'textarea'"
+        v-if="content.type !== 'textarea'"
         v-model="value"
         class="ww-form-input"
         :class="{ editing: isEditing }"
         :type="inputType"
-        :name="isEditing ? `${content.globalSettings.name}-editing` : content.globalSettings.name"
-        :required="content.globalSettings.required"
-        :placeholder="wwLang.getText(content.globalSettings.placeholder)"
+        :name="wwElementState.name"
+        :required="content.required"
+        :placeholder="wwLang.getText(content.placeholder)"
         :style="style"
-        :min="content.globalSettings.min"
-        :max="content.globalSettings.max"
+        :min="content.min"
+        :max="content.max"
         :step="step"
-        @focusout="formatInput"
     />
     <textarea
-        v-else-if="content.globalSettings"
+        v-else-if="content"
         v-model="value"
         class="ww-form-input"
         :class="{ editing: isEditing }"
-        :type="content.globalSettings.type"
-        :name="content.globalSettings.name"
-        :required="content.globalSettings.required"
-        :placeholder="wwLang.getText(content.globalSettings.placeholder)"
-        :style="[style, { resize: content.globalSettings.resize ? '' : 'none' }]"
-        :rows="content.globalSettings.rows"
+        :type="content.type"
+        :name="wwElementState.name"
+        :required="content.required"
+        :placeholder="wwLang.getText(content.placeholder)"
+        :style="[style, { resize: content.resize ? '' : 'none' }]"
+        :rows="content.rows"
     />
 </template>
 
 <script>
-import { computed } from 'vue';
-
 export default {
     props: {
         content: { type: Object, required: true },
@@ -38,18 +35,12 @@ export default {
         wwEditorState: { type: Object, required: true },
         /* wwEditor:end */
         uid: { type: String, required: true },
+        wwElementState: { type: Object, required: true },
     },
     emits: ['trigger-event'],
     setup(props) {
-        const internalVariableId = computed(() => props.content.globalSettings.variable);
-        const variableId = wwLib.wwVariable.useComponentVariable(props.uid, 'value', '', internalVariableId);
-
-        return { variableId };
-    },
-    data() {
-        return {
-            internalValue: '',
-        };
+        const { value: variableValue, setValue } = wwLib.wwVariable.useComponentVariable(props.uid, 'value', '');
+        return { variableValue, setValue };
     },
     computed: {
         isEditing() {
@@ -61,47 +52,44 @@ export default {
         },
         value: {
             get() {
-                if (this.variableId) return wwLib.wwVariable.getValue(this.variableId);
-                return this.internalValue;
+                return this.variableValue;
             },
             set(value) {
-                this.$emit('trigger-event', { name: 'change', event: { value } });
-                this.internalValue = value;
-                if (this.variableId) wwLib.wwVariable.updateValue(this.variableId, value);
+                value = this.formatInput(value);
+                if (value !== this.variableValue) {
+                    this.$emit('trigger-event', { name: 'change', event: { value } });
+                    this.setValue(value);
+                }
             },
         },
         style() {
             return {
-                color: this.content.globalStyle.color,
-                fontSize: this.content.globalStyle.fontSize,
-                fontFamily: this.content.globalStyle.fontFamily,
+                color: this.content.color,
+                fontSize: this.content.fontSize,
+                fontFamily: this.content.fontFamily,
             };
         },
         inputType() {
-            if (!this.content.globalSettings) return 'text';
-            return this.content.globalSettings.type === 'decimal' ? 'number' : this.content.globalSettings.type;
+            if (!this.content) return 'text';
+            return this.content.type === 'decimal' ? 'number' : this.content.type;
         },
         step() {
-            if (!this.content.globalSettings) return '1';
-            return this.content.globalSettings.type === 'decimal' ? this.content.globalSettings.precision : '1';
+            if (!this.content) return '1';
+            return this.content.type === 'decimal' ? this.content.precision : '1';
         },
     },
-    /* wwEditor:start */
     watch: {
-        'content.globalSettings.initialValue'(value) {
-            if (value !== undefined && !this.content.variable) this.value = value;
+        'content.value'(value) {
+            this.value = value;
         },
-    },
-    /* wwEditor:end */
-    mounted() {
-        if (this.content.globalSettings.initialValue !== undefined && this.content.globalSettings.initialValue)
-            this.value = this.content.globalSettings.initialValue;
+        'content.precision'() {
+            this.value = this.formatInput(this.value);
+        },
     },
     methods: {
-        formatInput(event) {
-            if (this.content.globalSettings.type !== 'decimal') return;
-            const formatedValue = Number(event.target.value).toFixed(this.step.split('.')[1].length).replace(',', '.');
-            this.value = formatedValue;
+        formatInput(value) {
+            if (this.content.type !== 'decimal') return value;
+            return Number(value).toFixed(this.step.split('.')[1].length).replace(',', '.');
         },
     },
 };

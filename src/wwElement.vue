@@ -46,10 +46,10 @@ export default {
         const step = computed(() => {
             return props.content.type === 'decimal' ? props.content.precision : '1';
         });
-        const formatValue = value => {
+        function formatValue(value) {
             if (props.content.type !== 'decimal') return value;
             return Number(value).toFixed(step.value.split('.')[1].length).replace(',', '.');
-        };
+        }
 
         const { value: variableValue, setValue } = wwLib.wwVariable.useComponentVariable(
             props.uid,
@@ -89,12 +89,13 @@ export default {
             this.setValue(newValue);
             this.$emit('trigger-event', { name: 'initValueChange', event: { value: newValue } });
         },
+        /* wwEditor:start */
         'content.precision'(newValue, OldValue) {
             if (newValue === OldValue) return;
             const value = this.formatValue(this.value);
             this.setValue(value);
-            this.$emit('trigger-event', { name: 'initValueChange', event: { value: value } });
         },
+        /* wwEditor:end */
     },
     methods: {
         handleManualInput(value) {

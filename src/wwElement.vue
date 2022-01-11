@@ -42,6 +42,7 @@ export default {
     emits: ['trigger-event'],
     setup(props) {
         const formatValue = (type, step, value) => {
+            if (!type || !step) return value;
             if (type !== 'decimal') return value;
             return Number(value).toFixed(step.split('.')[1].length).replace(',', '.');
         };

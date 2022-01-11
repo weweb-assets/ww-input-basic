@@ -85,22 +85,22 @@ export default {
     },
     watch: {
         'content.value'(newValue, OldValue) {
+            if (this.content.type === 'decimal') newValue = this.formatValue(this.content.type, this.step, newValue);
             if (newValue === OldValue) return;
-            if (this.content.type === 'decimal') newValue = this.formatInput(this.content.type, this.step, newValue);
             this.setValue(newValue);
             this.$emit('trigger-event', { name: 'initValueChange', event: { value: newValue } });
         },
         'content.precision'(newValue, OldValue) {
             if (newValue === OldValue) return;
-            const value = this.formatInput(this.content.type, this.step, this.value);
+            const value = this.formatValue(this.content.type, this.step, this.value);
             this.setValue(value);
             this.$emit('trigger-event', { name: 'initValueChange', event: { value: value } });
         },
     },
     methods: {
         handleManualInput(value) {
+            if (this.content.type === 'decimal') value = this.formatValue(this.content.type, this.step, value);
             if (value === this.value) return;
-            if (this.content.type === 'decimal') value = this.formatInput(this.content.type, this.step, value);
             this.setValue(value);
             this.$emit('trigger-event', { name: 'change', event: { value } });
         },

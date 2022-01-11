@@ -30,6 +30,8 @@
 </template>
 
 <script>
+import { computed } from 'vue';
+
 export default {
     props: {
         content: { type: Object, required: true },
@@ -41,21 +43,21 @@ export default {
     },
     emits: ['trigger-event'],
     setup(props) {
-        const formatValue = (type, step, value) => {
-            if (!type || !step) return value;
-            if (type !== 'decimal') return value;
-            return Number(value).toFixed(step.split('.')[1].length).replace(',', '.');
+        const step = computed(() => {
+            return props.content.type === 'decimal' ? props.content.precision : '1';
+        });
+        const formatValue = value => {
+            if (props.content.type !== 'decimal') return value;
+            return Number(value).toFixed(step.value.split('.')[1].length).replace(',', '.');
         };
 
         const { value: variableValue, setValue } = wwLib.wwVariable.useComponentVariable(
             props.uid,
             'value',
-            props.content.value === undefined
-                ? ''
-                : formatValue(props.content.type, props.content.step, props.content.value)
+            props.content.value === undefined ? '' : formatValue(props.content.value)
         );
 
-        return { variableValue, setValue, formatValue };
+        return { variableValue, setValue, formatValue, step };
     },
     computed: {
         isEditing() {
@@ -79,28 +81,24 @@ export default {
             if (!this.content) return 'text';
             return this.content.type === 'decimal' ? 'number' : this.content.type;
         },
-        step() {
-            if (!this.content) return '1';
-            return this.content.type === 'decimal' ? this.content.precision : '1';
-        },
     },
     watch: {
         'content.value'(newValue, OldValue) {
-            if (this.content.type === 'decimal') newValue = this.formatValue(this.content.type, this.step, newValue);
+            if (this.content.type === 'decimal') newValue = this.formatValue(newValue);
             if (newValue === OldValue) return;
             this.setValue(newValue);
             this.$emit('trigger-event', { name: 'initValueChange', event: { value: newValue } });
         },
         'content.precision'(newValue, OldValue) {
             if (newValue === OldValue) return;
-            const value = this.formatValue(this.content.type, this.step, this.value);
+            const value = this.formatValue(this.value);
             this.setValue(value);
             this.$emit('trigger-event', { name: 'initValueChange', event: { value: value } });
         },
     },
     methods: {
         handleManualInput(value) {
-            if (this.content.type === 'decimal') value = this.formatValue(this.content.type, this.step, value);
+            if (this.content.type === 'decimal') value = this.formatValue(value);
             if (value === this.value) return;
             this.setValue(value);
             this.$emit('trigger-event', { name: 'change', event: { value } });

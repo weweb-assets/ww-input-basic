@@ -2,6 +2,10 @@ export default {
     editor: {
         label: { en: 'Form Input', fr: 'Entrée de Formulaire' },
     },
+    triggerEvents: [
+        { name: 'change', label: { en: 'On change' }, event: { value: '' } },
+        { name: 'initValueChange', label: { en: 'On init value change' }, event: { value: '' } },
+    ],
     properties: {
         color: {
             label: { en: 'Color', fr: 'Couleur' },
@@ -27,7 +31,7 @@ export default {
         },
         value: {
             label: {
-                en: 'Value',
+                en: 'Init value',
             },
             type: 'Text',
             section: 'settings',

@@ -83,9 +83,9 @@ export default {
         },
     },
     watch: {
-        'content.value'(newValue, OldValue) {
+        'content.value'(newValue) {
             if (this.content.type === 'decimal') newValue = this.formatValue(newValue);
-            if (newValue === OldValue) return;
+            if (newValue === this.value) return;
             this.setValue(newValue);
             this.$emit('trigger-event', { name: 'initValueChange', event: { value: newValue } });
         },

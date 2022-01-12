@@ -1,7 +1,7 @@
 <template>
     <input
         v-if="content.type !== 'textarea'"
-        v-model="value"
+        :value="value"
         class="ww-form-input"
         :class="{ editing: isEditing }"
         :type="inputType"
@@ -12,10 +12,11 @@
         :min="content.min"
         :max="content.max"
         :step="step"
+        @input="handleManualInput($event.target.value)"
     />
     <textarea
         v-else-if="content"
-        v-model="value"
+        :value="value"
         class="ww-form-input"
         :class="{ editing: isEditing }"
         :type="content.type"
@@ -24,10 +25,13 @@
         :placeholder="wwLang.getText(content.placeholder)"
         :style="[style, { resize: content.resize ? '' : 'none' }]"
         :rows="content.rows"
+        @input="handleManualInput($event.target.value)"
     />
 </template>
 
 <script>
+import { computed } from 'vue';
+
 export default {
     props: {
         content: { type: Object, required: true },
@@ -39,8 +43,21 @@ export default {
     },
     emits: ['trigger-event'],
     setup(props) {
-        const { value: variableValue, setValue } = wwLib.wwVariable.useComponentVariable(props.uid, 'value', '');
-        return { variableValue, setValue };
+        const step = computed(() => {
+            return props.content.type === 'decimal' ? props.content.precision : '1';
+        });
+        function formatValue(value) {
+            if (props.content.type !== 'decimal') return value;
+            return Number(value).toFixed(step.value.split('.')[1].length).replace(',', '.');
+        }
+
+        const { value: variableValue, setValue } = wwLib.wwVariable.useComponentVariable(
+            props.uid,
+            'value',
+            props.content.value === undefined ? '' : formatValue(props.content.value)
+        );
+
+        return { variableValue, setValue, formatValue, step };
     },
     computed: {
         isEditing() {
@@ -50,17 +67,8 @@ export default {
             // eslint-disable-next-line no-unreachable
             return false;
         },
-        value: {
-            get() {
-                return this.variableValue;
-            },
-            set(value) {
-                value = this.formatInput(value);
-                if (value !== this.variableValue) {
-                    this.$emit('trigger-event', { name: 'change', event: { value } });
-                    this.setValue(value);
-                }
-            },
+        value() {
+            return this.variableValue;
         },
         style() {
             return {
@@ -73,23 +81,28 @@ export default {
             if (!this.content) return 'text';
             return this.content.type === 'decimal' ? 'number' : this.content.type;
         },
-        step() {
-            if (!this.content) return '1';
-            return this.content.type === 'decimal' ? this.content.precision : '1';
-        },
     },
     watch: {
-        'content.value'(value) {
-            this.value = value;
+        'content.value'(newValue) {
+            if (this.content.type === 'decimal') newValue = this.formatValue(newValue);
+            if (newValue === this.value) return;
+            this.setValue(newValue);
+            this.$emit('trigger-event', { name: 'initValueChange', event: { value: newValue } });
         },
-        'content.precision'() {
-            this.value = this.formatInput(this.value);
+        /* wwEditor:start */
+        'content.precision'(newValue, OldValue) {
+            if (newValue === OldValue) return;
+            const value = this.formatValue(this.value);
+            this.setValue(value);
         },
+        /* wwEditor:end */
     },
     methods: {
-        formatInput(value) {
-            if (this.content.type !== 'decimal') return value;
-            return Number(value).toFixed(this.step.split('.')[1].length).replace(',', '.');
+        handleManualInput(value) {
+            if (this.content.type === 'decimal') value = this.formatValue(value);
+            if (value === this.value) return;
+            this.setValue(value);
+            this.$emit('trigger-event', { name: 'change', event: { value } });
         },
     },
 };

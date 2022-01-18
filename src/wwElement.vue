@@ -13,6 +13,7 @@
         :max="content.max"
         :step="step"
         @input="handleManualInput($event.target.value)"
+        @blur="correctDecimalValue()"
     />
     <textarea
         v-else-if="content"
@@ -48,7 +49,10 @@ export default {
         });
         function formatValue(value) {
             if (props.content.type !== 'decimal') return value;
-            return Number(value).toFixed(step.value.split('.')[1].length).replace(',', '.');
+            value = `${value}`.replace(',', '.');
+            const length = value.indexOf('.') !== -1 ? step.value.split('.')[1].length : 0;
+            const newValue = parseFloat(Number(value).toFixed(length).replace(',', '.'));
+            return newValue;
         }
 
         const { value: variableValue, setValue } = wwLib.wwVariable.useComponentVariable(
@@ -99,10 +103,29 @@ export default {
     },
     methods: {
         handleManualInput(value) {
-            if (this.content.type === 'decimal') value = this.formatValue(value);
-            if (value === this.value) return;
-            this.setValue(value);
-            this.$emit('trigger-event', { name: 'change', event: { value } });
+            let newValue;
+            if (this.inputType === 'number' && value.length) {
+                try {
+                    newValue = parseFloat(value);
+                } catch (error) {
+                    newValue = value;
+                }
+            } else {
+                newValue = value;
+            }
+
+            if (newValue === this.value) return;
+            this.setValue(newValue);
+            this.$emit('trigger-event', { name: 'change', event: { value: newValue } });
+        },
+        correctDecimalValue() {
+            if (this.content.type === 'decimal') {
+                const newValue = this.formatValue(this.value);
+
+                if (newValue === this.value) return;
+                this.setValue(newValue);
+                this.$emit('trigger-event', { name: 'change', event: { value: newValue } });
+            }
         },
     },
 };

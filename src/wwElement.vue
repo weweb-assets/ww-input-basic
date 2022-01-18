@@ -12,7 +12,7 @@
         :min="content.min"
         :max="content.max"
         :step="step"
-        @input="handleManualInput($event.target.value, $event)"
+        @input="handleManualInput($event.target.value)"
         @blur="correctDecimalValue()"
     />
     <textarea

@@ -103,21 +103,26 @@ export default {
     },
     methods: {
         handleManualInput(value) {
-            if (value === this.value) return;
+            let newValue;
             if (this.inputType === 'number' && value.length) {
                 try {
-                    this.setValue(parseFloat(value));
+                    newValue = parseFloat(value);
                 } catch (error) {
-                    this.setValue(value);
+                    newValue = value;
                 }
             } else {
-                this.setValue(value);
+                newValue = value;
             }
-            this.$emit('trigger-event', { name: 'change', event: { value } });
+
+            if (newValue === this.value) return;
+            this.setValue(newValue);
+            this.$emit('trigger-event', { name: 'change', event: { value: newValue } });
         },
         correctDecimalValue() {
             if (this.content.type === 'decimal') {
                 const newValue = this.formatValue(this.value);
+
+                if (newValue === this.value) return;
                 this.setValue(newValue);
                 this.$emit('trigger-event', { name: 'change', event: { value: newValue } });
             }

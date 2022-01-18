@@ -12,7 +12,6 @@
         :min="content.min"
         :max="content.max"
         :step="step"
-        ref="input"
         @input="handleManualInput($event.target.value, $event)"
         @blur="correctDecimalValue()"
     />

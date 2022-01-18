@@ -12,7 +12,9 @@
         :min="content.min"
         :max="content.max"
         :step="step"
-        @input="handleManualInput($event.target.value)"
+        ref="input"
+        @input="handleManualInput($event.target.value, $event)"
+        @blur="correctDecimalValue()"
     />
     <textarea
         v-else-if="content"
@@ -48,7 +50,10 @@ export default {
         });
         function formatValue(value) {
             if (props.content.type !== 'decimal') return value;
-            return Number(value).toFixed(step.value.split('.')[1].length).replace(',', '.');
+            value = `${value}`.replace(',', '.');
+            const length = value.indexOf('.') !== -1 ? step.value.split('.')[1].length : 0;
+            const newValue = parseFloat(Number(value).toFixed(length).replace(',', '.'));
+            return newValue;
         }
 
         const { value: variableValue, setValue } = wwLib.wwVariable.useComponentVariable(
@@ -99,10 +104,24 @@ export default {
     },
     methods: {
         handleManualInput(value) {
-            if (this.content.type === 'decimal') value = this.formatValue(value);
             if (value === this.value) return;
-            this.setValue(value);
+            if (this.inputType === 'number' && value.length) {
+                try {
+                    this.setValue(parseFloat(value));
+                } catch (error) {
+                    this.setValue(value);
+                }
+            } else {
+                this.setValue(value);
+            }
             this.$emit('trigger-event', { name: 'change', event: { value } });
+        },
+        correctDecimalValue() {
+            if (this.content.type === 'decimal') {
+                const newValue = this.formatValue(this.value);
+                this.setValue(newValue);
+                this.$emit('trigger-event', { name: 'change', event: { value: newValue } });
+            }
         },
     },
 };

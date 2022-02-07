@@ -89,6 +89,7 @@ export default {
             section: 'settings',
             hidden: content => content.type === 'date' || content.type === 'time',
             multiLang: true,
+            bindable: true,
             defaultValue: {},
         },
         rows: {

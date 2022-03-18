@@ -13,7 +13,6 @@
         :max="content.max"
         :step="step"
         @input="handleManualInput($event.target.value)"
-        @blur="correctDecimalValue()"
     />
     <textarea
         v-else-if="content"
@@ -48,20 +47,33 @@ export default {
             return props.content.type === 'decimal' ? props.content.precision : '1';
         });
         function formatValue(value) {
-            if (props.content.type !== 'decimal') return value;
-            value = `${value}`.replace(',', '.');
-            const length = value.indexOf('.') !== -1 ? step.value.split('.')[1].length : 0;
-            const newValue = parseFloat(Number(value).toFixed(length).replace(',', '.'));
-            return newValue;
+            let formattedValue = value
+            
+            if (props.content.type === 'decimal') {
+                value = `${value}`.replace(',', '.');
+                const length = value.indexOf('.') !== -1 ? step.value.split('.')[1].length : 0;
+                formattedValue = parseFloat(Number(value).toFixed(length).replace(',', '.'));
+            }
+
+            if (props.content.type === 'number') {
+                try {
+                    formattedValue = parseFloat(value);
+                } catch (error) {
+                    return value
+                }
+            }
+
+            return formattedValue
         }
 
-        const { value: variableValue, setValue } = wwLib.wwVariable.useComponentVariable(
-            props.uid,
-            'value',
-            props.content.value === undefined ? '' : formatValue(props.content.value)
-        );
+        const { value: variableValue, setValue } = wwLib.wwVariable.useComponentVariable({
+            uid: props.uid,
+            name: 'value',
+            defaultValue: props.content.value,
+            sanitizer: value => value === undefined ? '' : formatValue(value)
+        });
 
-        return { variableValue, setValue, formatValue, step };
+        return { variableValue, setValue, step };
     },
     computed: {
         isEditing() {
@@ -87,46 +99,25 @@ export default {
         },
     },
     watch: {
-        'content.value'(newValue) {
-            if (this.content.type === 'decimal') newValue = this.formatValue(newValue);
-            if (newValue === this.value) return;
-            this.setValue(newValue);
-            this.$emit('trigger-event', { name: 'initValueChange', event: { value: newValue } });
+        'content.value'(value) {
+            const { newValue, hasChanged } = this.setValue(value);
+            if (hasChanged) {
+                this.$emit('trigger-event', { name: 'initValueChange', event: { value: newValue } });
+            }
         },
         /* wwEditor:start */
-        'content.precision'(newValue, OldValue) {
-            if (newValue === OldValue) return;
-            const value = this.formatValue(this.value);
-            this.setValue(value);
+        'content.precision'(newValue) {
+            this.setValue(newValue);
         },
         /* wwEditor:end */
     },
     methods: {
         handleManualInput(value) {
-            let newValue;
-            if (this.inputType === 'number' && value.length) {
-                try {
-                    newValue = parseFloat(value);
-                } catch (error) {
-                    newValue = value;
-                }
-            } else {
-                newValue = value;
-            }
-
-            if (newValue === this.value) return;
-            this.setValue(newValue);
-            this.$emit('trigger-event', { name: 'change', event: { value: newValue } });
-        },
-        correctDecimalValue() {
-            if (this.content.type === 'decimal') {
-                const newValue = this.formatValue(this.value);
-
-                if (newValue === this.value) return;
-                this.setValue(newValue);
+            const { newValue, hasChanged } = this.setValue(value);
+            if (hasChanged) {
                 this.$emit('trigger-event', { name: 'change', event: { value: newValue } });
             }
-        },
+        }
     },
 };
 </script>

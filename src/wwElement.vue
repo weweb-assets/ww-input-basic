@@ -1,7 +1,7 @@
 <template>
     <input
-        v-if="content.type !== 'textarea'"
-        :value="value"
+        v-if="inputType === 'number'"
+        v-model.number="internalValue"
         class="ww-form-input"
         :class="{ editing: isEditing }"
         :type="inputType"
@@ -12,11 +12,24 @@
         :min="content.min"
         :max="content.max"
         :step="step"
-        @input="handleManualInput($event.target.value)"
+    />
+    <input
+        v-else-if="content.type !== 'textarea'"
+        v-model="internalValue"
+        class="ww-form-input"
+        :class="{ editing: isEditing }"
+        :type="inputType"
+        :name="wwElementState.name"
+        :required="content.required"
+        :placeholder="wwLang.getText(content.placeholder)"
+        :style="style"
+        :min="content.min"
+        :max="content.max"
+        :step="step"
     />
     <textarea
         v-else-if="content"
-        :value="value"
+        v-model="internalValue"
         class="ww-form-input"
         :class="{ editing: isEditing }"
         :type="content.type"
@@ -25,7 +38,6 @@
         :placeholder="wwLang.getText(content.placeholder)"
         :style="[style, { resize: content.resize ? '' : 'none' }]"
         :rows="content.rows"
-        @input="handleManualInput($event.target.value)"
     />
 </template>
 
@@ -47,30 +59,26 @@ export default {
             return props.content.type === 'decimal' ? props.content.precision : '1';
         });
         function formatValue(value) {
-            let formattedValue = value
-            
+            if (!value) return '';
+
             if (props.content.type === 'decimal') {
-                value = `${value}`.replace(',', '.');
-                const length = value.indexOf('.') !== -1 ? step.value.split('.')[1].length : 0;
-                formattedValue = parseFloat(Number(value).toFixed(length).replace(',', '.'));
+                const replaced = String(value).replace(',', '.');
+                const precision = replaced.indexOf('.') !== -1 ? step.value.split('.')[1].length : 0;
+                return parseFloat(Number(replaced).toFixed(precision).replace(',', '.'));
             }
 
             if (props.content.type === 'number') {
-                try {
-                    formattedValue = parseFloat(value);
-                } catch (error) {
-                    return value
-                }
+                return isNaN(parseFloat(value)) ? 0 : parseFloat(value);
             }
 
-            return formattedValue
+            return String(value);
         }
 
         const { value: variableValue, setValue } = wwLib.wwVariable.useComponentVariable({
             uid: props.uid,
             name: 'value',
             defaultValue: props.content.value,
-            sanitizer: value => value === undefined ? '' : formatValue(value)
+            sanitizer: value => formatValue(value),
         });
 
         return { variableValue, setValue, step };
@@ -83,8 +91,16 @@ export default {
             // eslint-disable-next-line no-unreachable
             return false;
         },
-        value() {
-            return this.variableValue;
+        internalValue: {
+            get() {
+                return this.variableValue;
+            },
+            set(value) {
+                const { newValue, hasChanged } = this.setValue(value);
+                if (hasChanged) {
+                    this.$emit('trigger-event', { name: 'change', event: { value: newValue } });
+                }
+            },
         },
         style() {
             return {
@@ -106,18 +122,10 @@ export default {
             }
         },
         /* wwEditor:start */
-        'content.precision'(newValue) {
-            this.setValue(newValue);
+        'content.precision'() {
+            this.setValue(this.internalValue);
         },
         /* wwEditor:end */
-    },
-    methods: {
-        handleManualInput(value) {
-            const { newValue, hasChanged } = this.setValue(value);
-            if (hasChanged) {
-                this.$emit('trigger-event', { name: 'change', event: { value: newValue } });
-            }
-        }
     },
 };
 </script>

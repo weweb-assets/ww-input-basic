@@ -55,11 +55,12 @@ export default {
             return newValue;
         }
 
-        const { value: variableValue, setValue } = wwLib.wwVariable.useComponentVariable(
-            props.uid,
-            'value',
-            props.content.value === undefined ? '' : formatValue(props.content.value)
-        );
+        const { value: variableValue, setValue } = wwLib.wwVariable.useComponentVariable({
+            uid: props.uid,
+            name: 'value',
+            type: computed(() => (['decimal', 'number'].includes(props.content.type) ? 'number' : 'string')),
+            defaultValue: props.content.value === undefined ? '' : formatValue(props.content.value),
+        });
 
         return { variableValue, setValue, formatValue, step };
     },

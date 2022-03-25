@@ -77,8 +77,8 @@ export default {
         const { value: variableValue, setValue } = wwLib.wwVariable.useComponentVariable({
             uid: props.uid,
             name: 'value',
-            defaultValue: props.content.value,
-            sanitizer: value => formatValue(value),
+            type: computed(() => (['decimal', 'number'].includes(props.content.type) ? 'number' : 'string')),
+            defaultValue: props.content.value === undefined ? '' : formatValue(props.content.value),
         });
 
         return { variableValue, setValue, step };

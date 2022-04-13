@@ -84,6 +84,9 @@ export default {
         },
         inputType() {
             if (!this.content) return 'text';
+            if (this.content.type === 'password') {
+                return this.content.displayPassword ? 'text' : 'password'
+            }
             return this.content.type === 'decimal' ? 'number' : this.content.type;
         },
     },

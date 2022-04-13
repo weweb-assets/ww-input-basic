@@ -57,6 +57,16 @@ export default {
             section: 'settings',
             defaultValue: 'text',
         },
+        displayPassword: {
+            label: {
+                'en': 'Display password'
+            },
+            section: 'settings',
+            type: 'OnOff',
+            bindable: true,
+            defaultValue: false,
+            hidden: content => content.type !== 'password'
+        },
         required: {
             label: { en: 'Required', fr: 'Requis' },
             type: 'OnOff',

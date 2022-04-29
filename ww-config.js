@@ -1,4 +1,8 @@
 export default {
+    inherit: {
+        type: 'ww-text',
+        exclude: ['text'],
+    },
     editor: {
         label: { en: 'Form Input', fr: 'Entrée de Formulaire' },
     },
@@ -7,28 +11,6 @@ export default {
         { name: 'initValueChange', label: { en: 'On init value change' }, event: { value: '' } },
     ],
     properties: {
-        color: {
-            label: { en: 'Color', fr: 'Couleur' },
-            type: 'Color',
-            defaultValue: 'black',
-        },
-        fontFamily: {
-            type: 'FontFamily',
-            label: { en: 'Font family', fr: 'Font' },
-            defaultValue: '',
-        },
-        fontSize: {
-            type: 'Length',
-            label: { en: 'Font size', fr: 'Taille du texte' },
-            options: {
-                unitChoices: [
-                    { value: 'px', label: 'px', min: 10, max: 50 },
-                    { value: 'em', label: 'em', min: 1, max: 50 },
-                    { value: 'rem', label: 'rem', min: 1, max: 50 },
-                ],
-            },
-            defaultValue: '15px',
-        },
         value: {
             label: {
                 en: 'Init value',
@@ -66,6 +48,13 @@ export default {
             bindable: true,
             defaultValue: false,
             hidden: content => content.type !== 'password'
+        },
+        readonly: {
+            label: { en: 'Read only', fr: 'Lecture seule' },
+            type: 'OnOff',
+            section: 'settings',
+            bindable: true,
+            defaultValue: false,
         },
         required: {
             label: { en: 'Required', fr: 'Requis' },

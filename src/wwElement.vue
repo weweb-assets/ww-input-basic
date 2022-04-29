@@ -112,12 +112,15 @@ export default {
             this.setValue(newValue);
             this.$emit('trigger-event', { name: 'initValueChange', event: { value: newValue } });
         },
-        isReadonly(value) {
-            if (value) {
-                this.$emit('add-state', 'readonly');
-            } else {
-                this.$emit('remove-state', 'readonly');
-            }
+        isReadonly: {
+            immediate: true,
+            handler(value) {
+                if (value) {
+                    this.$emit('add-state', 'readonly');
+                } else {
+                    this.$emit('remove-state', 'readonly');
+                }
+            },
         },
         /* wwEditor:start */
         'content.precision'(newValue, OldValue) {

@@ -1,5 +1,5 @@
 <template>
-    <wwText v-if="isReadonly" :text="value"></wwText>
+    <wwText v-if="isReadonly" :text="`${value}`"></wwText>
     <template v-else>
         <input
             v-if="content.type !== 'textarea'"

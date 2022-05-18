@@ -12,8 +12,8 @@
         :min="content.min"
         :max="content.max"
         :step="step"
-        @input="handleManualInput($event.target.value)"
-        @blur="correctDecimalValue()"
+        @input="handleManualInput($event)"
+        @blur="correctDecimalValue($event)"
     />
     <textarea
         v-else-if="content"
@@ -26,7 +26,7 @@
         :placeholder="wwLang.getText(content.placeholder)"
         :style="[style, { resize: content.resize ? '' : 'none' }]"
         :rows="content.rows"
-        @input="handleManualInput($event.target.value)"
+        @input="handleManualInput($event)"
     />
 </template>
 
@@ -85,7 +85,7 @@ export default {
         inputType() {
             if (!this.content) return 'text';
             if (this.content.type === 'password') {
-                return this.content.displayPassword ? 'text' : 'password'
+                return this.content.displayPassword ? 'text' : 'password';
             }
             return this.content.type === 'decimal' ? 'number' : this.content.type;
         },
@@ -106,7 +106,8 @@ export default {
         /* wwEditor:end */
     },
     methods: {
-        handleManualInput(value) {
+        handleManualInput(event) {
+            const value = event.target.value;
             let newValue;
             if (this.inputType === 'number' && value.length) {
                 try {
@@ -120,15 +121,15 @@ export default {
 
             if (newValue === this.value) return;
             this.setValue(newValue);
-            this.$emit('trigger-event', { name: 'change', event: { value: newValue } });
+            this.$emit('trigger-event', { name: 'change', event: { domEvent: event, value: newValue } });
         },
-        correctDecimalValue() {
+        correctDecimalValue(event) {
             if (this.content.type === 'decimal') {
                 const newValue = this.formatValue(this.value);
 
                 if (newValue === this.value) return;
                 this.setValue(newValue);
-                this.$emit('trigger-event', { name: 'change', event: { value: newValue } });
+                this.$emit('trigger-event', { name: 'change', event: { domEvent: event, value: newValue } });
             }
         },
     },

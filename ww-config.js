@@ -41,13 +41,13 @@ export default {
         },
         displayPassword: {
             label: {
-                'en': 'Display password'
+                en: 'Display password',
             },
             section: 'settings',
             type: 'OnOff',
             bindable: true,
             defaultValue: false,
-            hidden: content => content.type !== 'password'
+            hidden: content => content.type !== 'password',
         },
         readonly: {
             label: { en: 'Read only', fr: 'Lecture seule' },
@@ -55,6 +55,7 @@ export default {
             section: 'settings',
             bindable: true,
             defaultValue: false,
+            hidden: (content, sidePanelContent, boundProps, wwProps) => !!(wwProps && wwProps.readonly !== undefined),
         },
         required: {
             label: { en: 'Required', fr: 'Requis' },

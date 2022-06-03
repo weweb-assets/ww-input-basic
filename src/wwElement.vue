@@ -1,33 +1,36 @@
 <template>
-    <input
-        v-if="content.type !== 'textarea'"
-        :value="value"
-        class="ww-form-input"
-        :class="{ editing: isEditing }"
-        :type="inputType"
-        :name="wwElementState.name"
-        :required="content.required"
-        :placeholder="wwLang.getText(content.placeholder)"
-        :style="style"
-        :min="content.min"
-        :max="content.max"
-        :step="step"
-        @input="handleManualInput($event)"
-        @blur="correctDecimalValue($event)"
-    />
-    <textarea
-        v-else-if="content"
-        :value="value"
-        class="ww-form-input"
-        :class="{ editing: isEditing }"
-        :type="content.type"
-        :name="wwElementState.name"
-        :required="content.required"
-        :placeholder="wwLang.getText(content.placeholder)"
-        :style="[style, { resize: content.resize ? '' : 'none' }]"
-        :rows="content.rows"
-        @input="handleManualInput($event)"
-    />
+    <wwText v-if="isReadonly" :text="`${value}`"></wwText>
+    <template v-else>
+        <input
+            v-if="content.type !== 'textarea'"
+            :value="value"
+            class="ww-form-input"
+            :class="{ editing: isEditing }"
+            :type="inputType"
+            :name="wwElementState.name"
+            :required="content.required"
+            :placeholder="wwLang.getText(content.placeholder)"
+            :style="style"
+            :min="content.min"
+            :max="content.max"
+            :step="step"
+            @input="handleManualInput($event)"
+            @blur="correctDecimalValue($event)"
+        />
+        <textarea
+            v-else-if="content"
+            :value="value"
+            class="ww-form-input"
+            :class="{ editing: isEditing }"
+            :type="content.type"
+            :name="wwElementState.name"
+            :required="content.required"
+            :placeholder="wwLang.getText(content.placeholder)"
+            :style="[style, { resize: content.resize ? '' : 'none' }]"
+            :rows="content.rows"
+            @input="handleManualInput($event)"
+        />
+    </template>
 </template>
 
 <script>
@@ -42,13 +45,19 @@ export default {
         uid: { type: String, required: true },
         wwElementState: { type: Object, required: true },
     },
-    emits: ['trigger-event'],
+    emits: ['trigger-event', 'add-state', 'remove-state'],
     setup(props) {
+        const type = computed(() => {
+            if (Object.keys(props.wwElementState.props).includes('type')) {
+                return props.wwElementState.props.type;
+            }
+            return props.content.type;
+        });
         const step = computed(() => {
-            return props.content.type === 'decimal' ? props.content.precision : '1';
+            return type.value === 'decimal' ? props.content.precision : '1';
         });
         function formatValue(value) {
-            if (props.content.type !== 'decimal') return value;
+            if (type.value !== 'decimal') return value;
             value = `${value}`.replace(',', '.');
             const length = value.indexOf('.') !== -1 ? step.value.split('.')[1].length : 0;
             const newValue = parseFloat(Number(value).toFixed(length).replace(',', '.'));
@@ -58,11 +67,11 @@ export default {
         const { value: variableValue, setValue } = wwLib.wwVariable.useComponentVariable({
             uid: props.uid,
             name: 'value',
-            type: computed(() => (['decimal', 'number'].includes(props.content.type) ? 'number' : 'string')),
+            type: computed(() => (['decimal', 'number'].includes(type.value) ? 'number' : 'string')),
             defaultValue: props.content.value === undefined ? '' : formatValue(props.content.value),
         });
 
-        return { variableValue, setValue, formatValue, step };
+        return { variableValue, setValue, formatValue, step, type };
     },
     computed: {
         isEditing() {
@@ -76,11 +85,7 @@ export default {
             return this.variableValue;
         },
         style() {
-            return {
-                color: this.content.color,
-                fontSize: this.content.fontSize,
-                fontFamily: this.content.fontFamily,
-            };
+            return wwLib.getTextStyleFromContent(this.content);
         },
         inputType() {
             if (!this.content) return 'text';
@@ -89,13 +94,33 @@ export default {
             }
             return this.content.type === 'decimal' ? 'number' : this.content.type;
         },
+        isReadonly() {
+            /* wwEditor:start */
+            if (this.wwEditorState.isSelected) {
+                return this.wwElementState.states.includes('readonly');
+            }
+            /* wwEditor:end */
+            return this.wwElementState.props.readonly === undefined
+                ? this.content.readonly
+                : this.wwElementState.props.readonly;
+        },
     },
     watch: {
         'content.value'(newValue) {
-            if (this.content.type === 'decimal') newValue = this.formatValue(newValue);
+            if (this.type === 'decimal') newValue = this.formatValue(newValue);
             if (newValue === this.value) return;
             this.setValue(newValue);
             this.$emit('trigger-event', { name: 'initValueChange', event: { value: newValue } });
+        },
+        isReadonly: {
+            immediate: true,
+            handler(value) {
+                if (value) {
+                    this.$emit('add-state', 'readonly');
+                } else {
+                    this.$emit('remove-state', 'readonly');
+                }
+            },
         },
         /* wwEditor:start */
         'content.precision'(newValue, OldValue) {

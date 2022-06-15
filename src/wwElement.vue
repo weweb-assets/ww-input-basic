@@ -166,7 +166,8 @@ export default {
     width: 100%;
     outline: none;
     font-family: inherit;
-    border: inherit;
+    border: none;
+    background-color: inherit;
     &::placeholder {
         color: inherit;
         opacity: 0.7;

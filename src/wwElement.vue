@@ -1,36 +1,34 @@
 <template>
     <wwText v-if="isReadonly" :text="`${value}`"></wwText>
-    <template v-else>
-        <input
-            v-if="content.type !== 'textarea'"
-            :value="value"
-            class="ww-form-input"
-            :class="{ editing: isEditing }"
-            :type="inputType"
-            :name="wwElementState.name"
-            :required="content.required"
-            :placeholder="wwLang.getText(content.placeholder)"
-            :style="style"
-            :min="content.min"
-            :max="content.max"
-            :step="step"
-            @input="handleManualInput($event)"
-            @blur="correctDecimalValue($event)"
-        />
-        <textarea
-            v-else-if="content"
-            :value="value"
-            class="ww-form-input"
-            :class="{ editing: isEditing }"
-            :type="content.type"
-            :name="wwElementState.name"
-            :required="content.required"
-            :placeholder="wwLang.getText(content.placeholder)"
-            :style="[style, { resize: content.resize ? '' : 'none' }]"
-            :rows="content.rows"
-            @input="handleManualInput($event)"
-        />
-    </template>
+    <input
+        v-if="!isReadonly && content.type !== 'textarea'"
+        :value="value"
+        class="ww-form-input"
+        :class="{ editing: isEditing }"
+        :type="inputType"
+        :name="wwElementState.name"
+        :required="content.required"
+        :placeholder="wwLang.getText(content.placeholder)"
+        :style="style"
+        :min="content.min"
+        :max="content.max"
+        :step="step"
+        @input="handleManualInput($event)"
+        @blur="correctDecimalValue($event)"
+    />
+    <textarea
+        v-else-if="!isReadonly && content"
+        :value="value"
+        class="ww-form-input"
+        :class="{ editing: isEditing }"
+        :type="content.type"
+        :name="wwElementState.name"
+        :required="content.required"
+        :placeholder="wwLang.getText(content.placeholder)"
+        :style="[style, { resize: content.resize ? '' : 'none' }]"
+        :rows="content.rows"
+        @input="handleManualInput($event)"
+    />
 </template>
 
 <script>
@@ -164,6 +162,7 @@ export default {
 <style lang="scss" scoped>
 .ww-form-input {
     width: 100%;
+    height: 100%;
     outline: none;
     font-family: inherit;
     border: none;

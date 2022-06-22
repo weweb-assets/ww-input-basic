@@ -1,5 +1,4 @@
 <template>
-    <wwText v-if="isReadonly" :text="`${value}`"></wwText>
     <input
         v-if="!isReadonly && content.type !== 'textarea'"
         :value="value"
@@ -29,6 +28,7 @@
         :rows="content.rows"
         @input="handleManualInput($event)"
     />
+    <wwText v-else-if="isReadonly" :text="`${value}`"></wwText>
 </template>
 
 <script>

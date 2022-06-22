@@ -168,6 +168,7 @@ export default {
     font-family: inherit;
     border: none;
     background-color: inherit;
+    border-radius: inherit;
     &::placeholder {
         color: inherit;
         opacity: 0.7;

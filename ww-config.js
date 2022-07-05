@@ -11,6 +11,19 @@ export default {
         { name: 'initValueChange', label: { en: 'On init value change' }, event: { value: '' } },
     ],
     properties: {
+        placeholderColor: {
+            label: {
+                en: 'Placeholder color',
+            },
+            type: 'Color',
+            options: {
+                nullable: true,
+            },
+            bindable: true,
+            responsive: true,
+            states: true,
+            defaultValue: '#000000ad',
+        },
         value: {
             label: {
                 en: 'Init value',
@@ -62,7 +75,7 @@ export default {
             type: 'OnOff',
             section: 'settings',
             defaultValue: true,
-            bindable: true
+            bindable: true,
         },
         precision: {
             label: { en: 'Precision', fr: 'Precision' },

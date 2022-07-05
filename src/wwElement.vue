@@ -2,7 +2,7 @@
     <input
         v-if="!isReadonly && content.type !== 'textarea'"
         :value="value"
-        class="ww-form-input"
+        class="ww-input-basic"
         :class="{ editing: isEditing }"
         :type="inputType"
         :name="wwElementState.name"
@@ -18,7 +18,7 @@
     <textarea
         v-else-if="!isReadonly && content"
         :value="value"
-        class="ww-form-input"
+        class="ww-input-basic"
         :class="{ editing: isEditing }"
         :type="content.type"
         :name="wwElementState.name"
@@ -83,7 +83,7 @@ export default {
             return this.variableValue;
         },
         style() {
-            return wwLib.getTextStyleFromContent(this.content);
+            return {...wwLib.getTextStyleFromContent(this.content), '--placeholder-color': this.content.placeholderColor};
         },
         inputType() {
             if (!this.content) return 'text';
@@ -160,17 +160,23 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.ww-form-input {
+.ww-input-basic {
     width: 100%;
     height: 100%;
     outline: none;
-    font-family: inherit;
     border: none;
     background-color: inherit;
     border-radius: inherit;
+
     &::placeholder {
-        color: inherit;
-        opacity: 0.7;
+        color: var(--placeholder-color, #000000ad);
+        font-family: inherit;
+        font-size: inherit;
+        font-weight: inherit;
+        line-height: inherit;
+        text-decoration: inherit;
+        letter-spacing: inherit;
+        word-spacing: inherit;
     }
     /* wwEditor:start */
     &.editing {

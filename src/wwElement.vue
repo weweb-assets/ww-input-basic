@@ -12,6 +12,7 @@
         :min="content.min"
         :max="content.max"
         :step="step"
+        v-bind="content.type === 'checkbox' ? { checked: !!value } : {}"
         @input="handleManualInput($event)"
         @blur="correctDecimalValue($event)"
     />

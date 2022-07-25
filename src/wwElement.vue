@@ -3,7 +3,7 @@
         v-if="!isReadonly && content.type !== 'textarea'"
         :value="value"
         class="ww-input-basic"
-        :class="{ editing: isEditing }"
+        :class="{ editing: isEditing, hideArrows: content.hideArrows && inputType === 'number' }"
         :type="inputType"
         :name="wwElementState.name"
         :required="content.required"
@@ -56,6 +56,7 @@ export default {
         });
         function formatValue(value) {
             if (type.value !== 'decimal') return value;
+            if (!this.content.value && this.content.value !== 0) return '';
             value = `${value}`.replace(',', '.');
             const length = value.indexOf('.') !== -1 ? step.value.split('.')[1].length : 0;
             const newValue = parseFloat(Number(value).toFixed(length).replace(',', '.'));
@@ -83,7 +84,10 @@ export default {
             return this.variableValue;
         },
         style() {
-            return {...wwLib.getTextStyleFromContent(this.content), '--placeholder-color': this.content.placeholderColor};
+            return {
+                ...wwLib.getTextStyleFromContent(this.content),
+                '--placeholder-color': this.content.placeholderColor,
+            };
         },
         inputType() {
             if (!this.content) return 'text';
@@ -178,6 +182,16 @@ export default {
         letter-spacing: inherit;
         word-spacing: inherit;
     }
+
+    &.hideArrows::-webkit-outer-spin-button,
+    &.hideArrows::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    &.hideArrows {
+        -moz-appearance: textfield;
+    }
+
     /* wwEditor:start */
     &.editing {
         pointer-events: none;

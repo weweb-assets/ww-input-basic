@@ -136,5 +136,12 @@ export default {
             hidden: content => content.type !== 'number' && content.type !== 'decimal',
             defaultValue: '10000',
         },
+        hideArrows: {
+            label: { en: 'Hide arrows', fr: 'Masquer les flèches' },
+            type: 'OnOff',
+            section: 'settings',
+            hidden: content => content.type !== 'number' && content.type !== 'decimal',
+            defaultValue: false,
+        },
     },
 };

@@ -56,7 +56,7 @@ export default {
         });
         function formatValue(value) {
             if (type.value !== 'decimal') return value;
-            if (!this.content.value && this.content.value !== 0) return '';
+            if (!value && value !== 0) return '';
             value = `${value}`.replace(',', '.');
             const length = value.indexOf('.') !== -1 ? step.value.split('.')[1].length : 0;
             const newValue = parseFloat(Number(value).toFixed(length).replace(',', '.'));

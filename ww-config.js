@@ -127,6 +127,7 @@ export default {
             section: 'settings',
             hidden: content => content.type !== 'number' && content.type !== 'decimal',
             defaultValue: '0',
+            bindable: true,
         },
         max: {
             label: { en: 'Max number', fr: 'Max number' },
@@ -135,6 +136,7 @@ export default {
             section: 'settings',
             hidden: content => content.type !== 'number' && content.type !== 'decimal',
             defaultValue: '10000',
+            bindable: true,
         },
         hideArrows: {
             label: { en: 'Hide arrows', fr: 'Masquer les flèches' },

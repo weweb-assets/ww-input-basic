@@ -34,15 +34,12 @@ export default {
         advancedPlaceholder: {
             label: 'Advanced placeholder',
             type: 'OnOff',
-            bindable: true,
-            responsive: true,
             defaultValue: false,
         },
         forceAnimation: {
             label: { en: 'Force animation' },
             type: 'OnOff',
             defaultValue: false,
-            bindable: true,
             hidden: content => !content.advancedPlaceholder,
         },
         placeholderPosition: {
@@ -213,18 +210,7 @@ export default {
         },
         placeholderElement: {
             hidden: true,
-            defaultValue: {
-                isWwObject: true,
-                type: 'ww-text',
-                state: {
-                    name: 'Placeholder',
-                },
-                content: {
-                    default: {
-                        color: '#B3B3B3',
-                    },
-                },
-            },
+            defaultValue: null,
         },
     },
 };

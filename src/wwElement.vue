@@ -10,7 +10,7 @@
             :type="inputType"
             :name="wwElementState.name"
             :required="content.required"
-            :placeholder="wwLang.getText(content.placeholder)"
+            :placeholder="isAdvancedPlaceholder ? '' : wwLang.getText(content.placeholder)"
             :style="style"
             :min="content.min"
             :max="content.max"
@@ -28,7 +28,7 @@
             :type="content.type"
             :name="wwElementState.name"
             :required="content.required"
-            :placeholder="wwLang.getText(content.placeholder)"
+            :placeholder="isAdvancedPlaceholder ? '' : wwLang.getText(content.placeholder)"
             :style="[style, { resize: content.resize ? '' : 'none' }]"
             :rows="content.rows"
             @input="handleManualInput($event)"
@@ -39,7 +39,7 @@
             :class="{ editing: isEditing }"
             :style="placeholderSyle"
             @click="focusInput"
-            v-if="content.advancedPlaceholder"
+            v-if="isAdvancedPlaceholder"
         >
             <wwElement
                 style="pointerevents: none"
@@ -104,6 +104,7 @@ export default {
                 left: '0px',
             },
             noTransition: false,
+            isMounted: false,
         };
     },
     computed: {
@@ -171,6 +172,9 @@ export default {
                 ? this.content.readonly
                 : this.wwElementState.props.readonly;
         },
+        isAdvancedPlaceholder() {
+            return this.content.advancedPlaceholder && !this.isReadonly;
+        },
     },
     watch: {
         'content.value'(newValue) {
@@ -187,6 +191,10 @@ export default {
                 } else {
                     this.$emit('remove-state', 'readonly');
                 }
+
+                /* wwEditor:start */
+                this.handleObserver();
+                /* wwEditor:end */
             },
         },
         /* wwEditor:start */
@@ -249,7 +257,9 @@ export default {
         },
         /* wwEditor:start */
         handleObserver() {
-            const el = !this.isReadonly && this.content.type !== 'textarea' ? this.$refs.input : this.$refs.textarea;
+            if (!this.isMounted) return;
+            if (this.isReadonly) return;
+            const el = this.content.type !== 'textarea' ? this.$refs.input : this.$refs.textarea;
             this.updatePosition(el);
 
             this.resizeObserver = new ResizeObserver(() => {
@@ -258,7 +268,7 @@ export default {
             this.resizeObserver.observe(el, { box: 'border-box' });
         },
         updatePosition(el) {
-            if (!el) return;
+            if (!el || this.isReadonly) return;
             this.noTransition = true;
 
             this.placeholderPosition.top = el.style.paddingTop;
@@ -271,7 +281,8 @@ export default {
         },
         /* wwEditor:end */
         focusInput() {
-            const el = !this.isReadonly && this.content.type !== 'textarea' ? this.$refs.input : this.$refs.textarea;
+            if (this.isReadonly) return;
+            const el = this.content.type !== 'textarea' ? this.$refs.input : this.$refs.textarea;
             if (el) el.focus();
         },
     },
@@ -280,6 +291,7 @@ export default {
     },
     /* wwEditor:start */
     mounted() {
+        this.isMounted = true;
         this.handleObserver();
     },
     /* wwEditor:end */

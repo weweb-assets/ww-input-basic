@@ -7,7 +7,7 @@ export default {
         label: { en: 'Form Input', fr: 'Entrée de Formulaire' },
     },
     triggerEvents: [
-        { name: 'change', label: { en: 'On change' }, event: { value: '' } },
+        { name: 'change', label: { en: 'On change' }, event: { value: '' }, default: true },
         { name: 'initValueChange', label: { en: 'On init value change' }, event: { value: '' } },
     ],
     properties: {

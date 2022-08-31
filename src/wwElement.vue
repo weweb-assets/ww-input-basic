@@ -255,7 +255,6 @@ export default {
                 this.$emit('trigger-event', { name: 'change', event: { domEvent: event, value: newValue } });
             }
         },
-        /* wwEditor:start */
         handleObserver() {
             if (!this.isMounted) return;
             if (this.isReadonly) return;
@@ -279,7 +278,6 @@ export default {
                 this.noTransition = false;
             }, wwLib.wwUtils.getLengthUnit(this.content.transition)[0]);
         },
-        /* wwEditor:end */
         focusInput() {
             if (this.isReadonly) return;
             const el = this.content.type !== 'textarea' ? this.$refs.input : this.$refs.textarea;

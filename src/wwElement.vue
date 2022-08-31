@@ -20,7 +20,7 @@
         />
         <textarea
             v-else-if="!isReadonly && content"
-            ref="textarea"
+            ref="input"
             v-bind="$attrs"
             :value="value"
             class="ww-input-basic__input"
@@ -33,7 +33,7 @@
             :rows="content.rows"
             @input="handleManualInput($event)"
         />
-        <wwText v-else-if="isReadonly" :text="`${value}`"></wwText>
+        <wwText v-bind="$attrs" v-else-if="isReadonly" :text="`${value}`"></wwText>
         <div
             class="ww-input-basic__placeholder"
             :class="{ editing: isEditing }"
@@ -192,9 +192,7 @@ export default {
                     this.$emit('remove-state', 'readonly');
                 }
 
-                /* wwEditor:start */
                 this.handleObserver();
-                /* wwEditor:end */
             },
         },
         /* wwEditor:start */
@@ -258,7 +256,7 @@ export default {
         handleObserver() {
             if (!this.isMounted) return;
             if (this.isReadonly) return;
-            const el = this.content.type !== 'textarea' ? this.$refs.input : this.$refs.textarea;
+            const el = this.$refs.input;
             this.updatePosition(el);
 
             this.resizeObserver = new ResizeObserver(() => {
@@ -280,7 +278,7 @@ export default {
         },
         focusInput() {
             if (this.isReadonly) return;
-            const el = this.content.type !== 'textarea' ? this.$refs.input : this.$refs.textarea;
+            const el = this.$refs.input;
             if (el) el.focus();
         },
     },

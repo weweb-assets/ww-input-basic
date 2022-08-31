@@ -5,6 +5,12 @@ export default {
     },
     editor: {
         label: { en: 'Form Input', fr: 'Entrée de Formulaire' },
+        customStylePropertiesOrder: [
+            'placeholderColor',
+            'advancedPlaceholder',
+            'forceAnimation',
+            ['placeholderPosition', 'placeholderScaling', 'positioningAjustment', 'transition'],
+        ],
     },
     triggerEvents: [
         { name: 'change', label: { en: 'On change' }, event: { value: '' } },
@@ -23,6 +29,63 @@ export default {
             responsive: true,
             states: true,
             defaultValue: '#000000ad',
+            hidden: content => content.advancedPlaceholder,
+        },
+        advancedPlaceholder: {
+            label: 'Advanced placeholder',
+            type: 'OnOff',
+            defaultValue: false,
+        },
+        forceAnimation: {
+            label: { en: 'Force animation' },
+            type: 'OnOff',
+            defaultValue: false,
+            hidden: content => !content.advancedPlaceholder,
+        },
+        placeholderPosition: {
+            label: { en: 'Active position' },
+            type: 'TextSelect',
+            options: {
+                options: [
+                    { value: 'inside', label: { en: 'Inside' } },
+                    { value: 'outside', label: { en: 'Outside' } },
+                ],
+            },
+            responsive: true,
+            defaultValue: 'outside',
+            hidden: content => !content.advancedPlaceholder,
+        },
+        placeholderScaling: {
+            label: { en: 'Active size' },
+            type: 'Number',
+            options: { min: 0, max: 1, step: 0.1 },
+            responsive: true,
+            defaultValue: 0.8,
+            hidden: content => !content.advancedPlaceholder,
+        },
+        positioningAjustment: {
+            type: 'Length',
+            label: {
+                en: 'Active margin',
+            },
+            options: {
+                unitChoices: [{ value: 'px', label: 'px', min: 0, max: 500 }],
+            },
+            responsive: true,
+            defaultValue: '0px',
+            hidden: content => !content.advancedPlaceholder,
+        },
+        transition: {
+            type: 'Length',
+            label: {
+                en: 'Transition',
+            },
+            options: {
+                unitChoices: [{ value: 'ms', label: 'ms', min: 0, max: 2000 }],
+            },
+            responsive: true,
+            defaultValue: '500ms',
+            hidden: content => !content.advancedPlaceholder,
         },
         value: {
             label: {
@@ -144,6 +207,10 @@ export default {
             section: 'settings',
             hidden: content => content.type !== 'number' && content.type !== 'decimal',
             defaultValue: false,
+        },
+        placeholderElement: {
+            hidden: true,
+            defaultValue: null,
         },
     },
 };

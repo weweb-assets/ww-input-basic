@@ -264,7 +264,7 @@ export default {
             if (!this.isMounted) return;
             if (this.resizeObserver) this.resizeObserver.disconnect();
             const el = this.$refs.input;
-            if (!this.el) return;
+            if (!el) return;
             this.updatePosition(el);
 
             this.resizeObserver = new ResizeObserver(() => {

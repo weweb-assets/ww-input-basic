@@ -33,13 +33,13 @@
             :rows="content.rows"
             @input="handleManualInput($event)"
         />
-        <wwText v-bind="$attrs" v-else-if="isReadonly" :text="`${value}`"></wwText>
+        <wwText v-else-if="isReadonly" v-bind="$attrs" :text="`${value}`"></wwText>
         <div
+            v-if="isAdvancedPlaceholder"
             class="ww-input-basic__placeholder"
             :class="{ editing: isEditing }"
             :style="placeholderSyle"
             @click="focusInput"
-            v-if="isAdvancedPlaceholder"
         >
             <wwElement
                 style="pointerevents: none"
@@ -192,7 +192,9 @@ export default {
                     this.$emit('remove-state', 'readonly');
                 }
 
-                this.handleObserver();
+                this.$nextTick(() => {
+                    this.handleObserver();
+                });
             },
         },
         /* wwEditor:start */
@@ -218,13 +220,18 @@ export default {
             },
         },
         'content.type'() {
-            if (this.resizeObserver) this.resizeObserver.disconnect();
-
             this.$nextTick(() => {
                 this.handleObserver();
             });
         },
         /* wwEditor:end */
+    },
+    beforeUnmount() {
+        this.resizeObserver.disconnect();
+    },
+    mounted() {
+        this.isMounted = true;
+        this.handleObserver();
     },
     methods: {
         handleManualInput(event) {
@@ -255,8 +262,9 @@ export default {
         },
         handleObserver() {
             if (!this.isMounted) return;
-            if (this.isReadonly) return;
+            if (this.resizeObserver) this.resizeObserver.disconnect();
             const el = this.$refs.input;
+            if (!this.el) return;
             this.updatePosition(el);
 
             this.resizeObserver = new ResizeObserver(() => {
@@ -282,15 +290,6 @@ export default {
             if (el) el.focus();
         },
     },
-    beforeUnmount() {
-        this.resizeObserver.disconnect();
-    },
-    /* wwEditor:start */
-    mounted() {
-        this.isMounted = true;
-        this.handleObserver();
-    },
-    /* wwEditor:end */
 };
 </script>
 

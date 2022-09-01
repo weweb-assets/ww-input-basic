@@ -227,7 +227,7 @@ export default {
         /* wwEditor:end */
     },
     beforeUnmount() {
-        this.resizeObserver.disconnect();
+        if (this.resizeObserver) this.resizeObserver.disconnect();
     },
     mounted() {
         this.isMounted = true;

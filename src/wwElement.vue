@@ -295,6 +295,9 @@ export default {
 
 <style lang="scss" scoped>
 .ww-input-basic {
+    width: 100%;
+    height: 100%;
+
     &__input {
         width: 100%;
         height: 100%;

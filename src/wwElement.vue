@@ -16,7 +16,7 @@
             :max="content.max"
             :step="step"
             @input="handleManualInput($event)"
-            @blur="correctDecimalValue($event)"
+            @blur="onBlur($event)"
             @focus="isFocused = true"
         />
         <textarea
@@ -282,6 +282,10 @@ export default {
             const form = this.$refs.input.form;
             console.log(form);
         },
+        onBlur(event) {
+            this.correctDecimalValue(event);
+            this.isFocused = false;
+        },
         correctDecimalValue(event) {
             if (this.content.type === 'decimal') {
                 const newValue = this.formatValue(this.value);
@@ -290,8 +294,6 @@ export default {
                 this.setValue(newValue);
                 this.$emit('trigger-event', { name: 'change', event: { domEvent: event, value: newValue } });
             }
-
-            this.isFocused = false;
         },
         handleObserver() {
             if (!this.isMounted) return;

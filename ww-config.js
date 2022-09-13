@@ -9,7 +9,7 @@ export default {
             'placeholderColor',
             'advancedPlaceholder',
             'forceAnimation',
-            ['placeholderPosition', 'placeholderScaling', 'positioningAjustment', 'transition'],
+            ['animationTrigger', 'placeholderPosition', 'placeholderScaling', 'positioningAjustment', 'transition'],
         ],
     },
     triggerEvents: [
@@ -40,6 +40,19 @@ export default {
             label: { en: 'Force animation' },
             type: 'OnOff',
             defaultValue: false,
+            hidden: content => !content.advancedPlaceholder,
+        },
+        animationTrigger: {
+            label: { en: 'Trigger on' },
+            type: 'TextSelect',
+            options: {
+                options: [
+                    { value: 'focus', label: { en: 'Focus' } },
+                    { value: 'input', label: { en: 'Input' } },
+                ],
+            },
+            responsive: true,
+            defaultValue: 'input',
             hidden: content => !content.advancedPlaceholder,
         },
         placeholderPosition: {

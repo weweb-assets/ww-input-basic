@@ -17,6 +17,7 @@
             :step="step"
             @input="handleManualInput($event)"
             @blur="correctDecimalValue($event)"
+            @focus="isFocused = true"
         />
         <textarea
             v-else-if="!isReadonly && content"
@@ -32,9 +33,12 @@
             :style="[style, { resize: content.resize ? '' : 'none' }]"
             :rows="content.rows"
             @input="handleManualInput($event)"
+            @focus="isFocused = true"
+            @blur="isFocused = false"
         />
         <wwText v-else-if="isReadonly" v-bind="$attrs" :text="`${value}`"></wwText>
         <div
+            ref="placeholder"
             v-if="isAdvancedPlaceholder"
             class="ww-input-basic__placeholder"
             :class="{ editing: isEditing }"
@@ -100,9 +104,9 @@ export default {
             paddingLeft: '0px',
             placeholderPosition: {
                 top: '0px',
-                bottom: '0px',
                 left: '0px',
             },
+            isFocused: false,
             noTransition: false,
             isMounted: false,
             lastDebounceValue: null,
@@ -120,18 +124,7 @@ export default {
             return this.variableValue;
         },
         placeholderSyle() {
-            if (!this.value.length && !this.content.forceAnimation) {
-                return {
-                    top: this.placeholderPosition.top,
-                    bottom: this.placeholderPosition.bottom,
-                    left: this.placeholderPosition.left,
-                    userSelect: 'none',
-                    transform: 'translateY(0%) scale(1)',
-                    transition: this.noTransition ? '0ms' : this.content.transition,
-                };
-            }
-
-            const position =
+            const animatedPosition =
                 this.content.placeholderPosition === 'outside'
                     ? {
                           top: '-' + this.content.positioningAjustment,
@@ -148,7 +141,17 @@ export default {
                           transition: this.noTransition ? '0ms' : this.content.transition,
                       };
 
-            return position;
+            if (this.content.forceAnimation && this.isEditing) return animatedPosition;
+            if (this.content.animationTrigger === 'focus' && this.isFocused) return animatedPosition;
+            if (this.content.animationTrigger === 'input' && this.value.length) return animatedPosition;
+
+            return {
+                top: this.placeholderPosition.top,
+                left: this.placeholderPosition.left,
+                userSelect: 'none',
+                transform: 'translateY(0%) scale(1)',
+                transition: this.noTransition ? '0ms' : this.content.transition,
+            };
         },
         style() {
             return {
@@ -287,6 +290,8 @@ export default {
                 this.setValue(newValue);
                 this.$emit('trigger-event', { name: 'change', event: { domEvent: event, value: newValue } });
             }
+
+            this.isFocused = false;
         },
         handleObserver() {
             if (!this.isMounted) return;
@@ -298,14 +303,15 @@ export default {
             this.resizeObserver = new ResizeObserver(() => {
                 this.updatePosition(el);
             });
-            this.resizeObserver.observe(el, { box: 'border-box' });
+            this.resizeObserver.observe(el, { box: 'content-box' });
         },
         updatePosition(el) {
-            if (!el || this.isReadonly) return;
+            const placeholder = this.$refs.placeholder;
+            if (!el || !placeholder || this.isReadonly) return;
             this.noTransition = true;
 
-            this.placeholderPosition.top = el.style.paddingTop;
-            this.placeholderPosition.bottom = el.style.paddingBottom;
+            const pos = el.getBoundingClientRect().height / 2 - placeholder.getBoundingClientRect().height / 2;
+            this.placeholderPosition.top = pos + 'px';
             this.placeholderPosition.left = el.style.paddingLeft;
 
             setTimeout(() => {
@@ -366,6 +372,7 @@ export default {
     &__placeholder {
         position: absolute;
         cursor: text;
+        height: fit-content;
 
         /* wwEditor:start */
         &.editing {

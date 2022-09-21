@@ -123,21 +123,25 @@ export default {
             return this.variableValue;
         },
         placeholderSyle() {
+            const transition = `transform ${this.noTransition ? '0ms' : this.content.transition} ${
+                this.content.timingFunction
+            }`;
+
             const animatedPosition =
                 this.content.placeholderPosition === 'outside'
                     ? {
                           top: '-' + this.content.positioningAjustment,
                           left: this.placeholderPosition.left,
-                          transform: `translateY(-100%) scale(${this.content.placeholderScaling})`,
+                          transform: `translate3d(0, -100%, 0) scale(${this.content.placeholderScaling})`,
                           transformOrigin: 'left',
-                          transition: this.noTransition ? '0ms' : this.content.transition,
+                          transition,
                       }
                     : {
                           top: this.content.positioningAjustment,
                           left: this.placeholderPosition.left,
-                          transform: `translateY(0%) scale(${this.content.placeholderScaling})`,
+                          transform: `translate3d(0, 0%, 0) scale(${this.content.placeholderScaling})`,
                           transformOrigin: 'left',
-                          transition: this.noTransition ? '0ms' : this.content.transition,
+                          transition,
                       };
 
             if (this.content.forceAnimation && this.isEditing) return animatedPosition;
@@ -148,8 +152,9 @@ export default {
                 top: this.placeholderPosition.top,
                 left: this.placeholderPosition.left,
                 userSelect: 'none',
-                transform: 'translateY(0%) scale(1)',
-                transition: this.noTransition ? '0ms' : this.content.transition,
+                transform: 'translate3d(0, 0%, 0) scale(1)',
+                transformOrigin: 'left',
+                transition,
             };
         },
         style() {
@@ -277,7 +282,7 @@ export default {
             this.resizeObserver = new ResizeObserver(() => {
                 this.updatePosition(el);
             });
-            this.resizeObserver.observe(el, { box: 'content-box' });
+            this.resizeObserver.observe(el, { box: 'device-pixel-content-box' });
         },
         updatePosition(el) {
             const placeholder = this.$refs.placeholder;

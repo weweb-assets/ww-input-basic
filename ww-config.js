@@ -9,7 +9,7 @@ export default {
             'placeholderColor',
             'advancedPlaceholder',
             'forceAnimation',
-            ['placeholderPosition', 'placeholderScaling', 'positioningAjustment', 'transition'],
+            ['placeholderPosition', 'placeholderScaling', 'positioningAjustment', 'transition', 'timingFunction'],
         ],
     },
     triggerEvents: [
@@ -84,7 +84,23 @@ export default {
                 unitChoices: [{ value: 'ms', label: 'ms', min: 0, max: 2000 }],
             },
             responsive: true,
-            defaultValue: '500ms',
+            defaultValue: '400ms',
+            hidden: content => !content.advancedPlaceholder,
+        },
+        timingFunction: {
+            label: { en: 'Timing function' },
+            type: 'TextSelect',
+            options: {
+                options: [
+                    { value: 'cubic-bezier(0, 1.08, 0.76, 1)', label: { en: 'auto' } },
+                    { value: 'ease', label: { en: 'ease' } },
+                    { value: 'ease-in', label: { en: 'ease-in' } },
+                    { value: 'ease-out', label: { en: 'ease-out' } },
+                    { value: 'ease-in-out', label: { en: 'ease-in-out' } },
+                    { value: 'linear', label: { en: 'linear' } },
+                ],
+            },
+            defaultValue: 'cubic-bezier(0, 1.08, 0.76, 1)',
             hidden: content => !content.advancedPlaceholder,
         },
         value: {

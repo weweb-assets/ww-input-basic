@@ -119,14 +119,19 @@ export default {
             return this.variableValue;
         },
         placeholderSyle() {
+            const transition = `transform ${this.noTransition ? '0ms' : this.content.transition} ${
+                this.content.timingFunction
+            }`;
+
             if (!this.value.length && !this.content.forceAnimation) {
                 return {
                     top: this.placeholderPosition.top,
                     bottom: this.placeholderPosition.bottom,
                     left: this.placeholderPosition.left,
                     userSelect: 'none',
-                    transform: 'translateY(0%) scale(1)',
-                    transition: this.noTransition ? '0ms' : this.content.transition,
+                    transform: 'translate3d(0, 0%, 0) scale(1)',
+                    transformOrigin: 'left',
+                    transition,
                 };
             }
 
@@ -135,16 +140,16 @@ export default {
                     ? {
                           top: '-' + this.content.positioningAjustment,
                           left: this.placeholderPosition.left,
-                          transform: `translateY(-100%) scale(${this.content.placeholderScaling})`,
+                          transform: `translate3d(0, -100%, 0) scale(${this.content.placeholderScaling})`,
                           transformOrigin: 'left',
-                          transition: this.noTransition ? '0ms' : this.content.transition,
+                          transition,
                       }
                     : {
                           top: this.content.positioningAjustment,
                           left: this.placeholderPosition.left,
-                          transform: `translateY(0%) scale(${this.content.placeholderScaling})`,
+                          transform: `translate3d(0, 0%, 0) scale(${this.content.placeholderScaling})`,
                           transformOrigin: 'left',
-                          transition: this.noTransition ? '0ms' : this.content.transition,
+                          transition,
                       };
 
             return position;

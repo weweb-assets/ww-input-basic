@@ -104,6 +104,7 @@ export default {
                     { value: 'text', label: { en: 'Short answer', fr: 'Texte' } },
                     { value: 'textarea', label: { en: 'Long answer', fr: 'Texte' } },
                     { value: 'email', label: { en: 'Email', fr: 'Email' } },
+                    { value: 'search', label: { en: 'Search', fr: 'Recherche' } },
                     { value: 'password', label: { en: 'Password', fr: 'Mot de passe' } },
                     { value: 'number', label: { en: 'Number', fr: 'Nombre' } },
                     { value: 'decimal', label: { en: 'Decimal', fr: 'Decimal' } },
@@ -211,6 +212,24 @@ export default {
         placeholderElement: {
             hidden: true,
             defaultValue: null,
+        },
+        debounce: {
+            label: { en: 'Debounce' },
+            type: 'OnOff',
+            section: 'settings',
+            defaultValue: false,
+        },
+        debounceDelay: {
+            type: 'Length',
+            label: {
+                en: 'Delay',
+            },
+            options: {
+                unitChoices: [{ value: 'ms', label: 'ms', min: 1, max: 5000 }],
+            },
+            section: 'settings',
+            defaultValue: '500ms',
+            hidden: content => !content.debounce,
         },
     },
 };

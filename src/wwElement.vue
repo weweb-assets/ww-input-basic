@@ -105,6 +105,7 @@ export default {
             },
             noTransition: false,
             isMounted: false,
+            lastDebounceValue: null,
         };
     },
     computed: {
@@ -174,6 +175,12 @@ export default {
         },
         isAdvancedPlaceholder() {
             return this.content.advancedPlaceholder && !this.isReadonly;
+        },
+        delay() {
+            return wwLib.wwUtils.getLengthUnit(this.content.debounceDelay)[0];
+        },
+        parentForm() {
+            return this.$refs.input;
         },
     },
     watch: {
@@ -248,8 +255,29 @@ export default {
             }
 
             if (newValue === this.value) return;
-            this.setValue(newValue);
-            this.$emit('trigger-event', { name: 'change', event: { domEvent: event, value: newValue } });
+
+            if (this.content.debounce) {
+                if (this.debounce) {
+                    clearTimeout(this.debounce);
+                }
+                this.debounce = setTimeout(() => {
+                    this.lastDebounceValue = event.target.value;
+
+                    console.log('in debounce', this.content.debounceDelay);
+
+                    this.setValue(newValue);
+                    this.$emit('trigger-event', {
+                        name: 'change',
+                        event: { domEvent: event, value: this.lastDebounceValue },
+                    });
+                }, this.delay);
+            } else {
+                this.setValue(newValue);
+                this.$emit('trigger-event', { name: 'change', event: { domEvent: event, value: newValue } });
+            }
+
+            const form = this.$refs.input.form;
+            console.log(form);
         },
         correctDecimalValue(event) {
             if (this.content.type === 'decimal') {
@@ -297,6 +325,8 @@ export default {
 .ww-input-basic {
     width: 100%;
     height: 100%;
+
+    border: 2px solid red;
 
     &__input {
         width: 100%;

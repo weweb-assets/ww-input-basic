@@ -16,7 +16,8 @@
             :max="content.max"
             :step="step"
             @input="handleManualInput($event)"
-            @blur="correctDecimalValue($event)"
+            @blur="onBlur($event)"
+            @focus="isFocused = true"
         />
         <textarea
             v-else-if="!isReadonly && content"
@@ -32,9 +33,12 @@
             :style="[style, { resize: content.resize ? '' : 'none' }]"
             :rows="content.rows"
             @input="handleManualInput($event)"
+            @focus="isFocused = true"
+            @blur="isFocused = false"
         />
         <wwText v-else-if="isReadonly" v-bind="$attrs" :text="`${value}`"></wwText>
         <div
+            ref="placeholder"
             v-if="isAdvancedPlaceholder"
             class="ww-input-basic__placeholder"
             :class="{ editing: isEditing }"
@@ -100,9 +104,9 @@ export default {
             paddingLeft: '0px',
             placeholderPosition: {
                 top: '0px',
-                bottom: '0px',
                 left: '0px',
             },
+            isFocused: false,
             noTransition: false,
             isMounted: false,
         };
@@ -119,35 +123,39 @@ export default {
             return this.variableValue;
         },
         placeholderSyle() {
-            if (!this.value.length && !this.content.forceAnimation) {
-                return {
-                    top: this.placeholderPosition.top,
-                    bottom: this.placeholderPosition.bottom,
-                    left: this.placeholderPosition.left,
-                    userSelect: 'none',
-                    transform: 'translateY(0%) scale(1)',
-                    transition: this.noTransition ? '0ms' : this.content.transition,
-                };
-            }
+            const transition = `transform ${this.noTransition ? '0ms' : this.content.transition} ${
+                this.content.timingFunction
+            }`;
 
-            const position =
+            const animatedPosition =
                 this.content.placeholderPosition === 'outside'
                     ? {
                           top: '-' + this.content.positioningAjustment,
                           left: this.placeholderPosition.left,
-                          transform: `translateY(-100%) scale(${this.content.placeholderScaling})`,
+                          transform: `translate3d(0, -100%, 0) scale(${this.content.placeholderScaling})`,
                           transformOrigin: 'left',
-                          transition: this.noTransition ? '0ms' : this.content.transition,
+                          transition,
                       }
                     : {
                           top: this.content.positioningAjustment,
                           left: this.placeholderPosition.left,
-                          transform: `translateY(0%) scale(${this.content.placeholderScaling})`,
+                          transform: `translate3d(0, 0%, 0) scale(${this.content.placeholderScaling})`,
                           transformOrigin: 'left',
-                          transition: this.noTransition ? '0ms' : this.content.transition,
+                          transition,
                       };
 
-            return position;
+            if (this.content.forceAnimation && this.isEditing) return animatedPosition;
+            if (this.content.animationTrigger === 'focus' && this.isFocused) return animatedPosition;
+            if (this.content.animationTrigger === 'input' && this.value.length) return animatedPosition;
+
+            return {
+                top: this.placeholderPosition.top,
+                left: this.placeholderPosition.left,
+                userSelect: 'none',
+                transform: 'translate3d(0, 0%, 0) scale(1)',
+                transformOrigin: 'left',
+                transition,
+            };
         },
         style() {
             return {
@@ -251,6 +259,10 @@ export default {
             this.setValue(newValue);
             this.$emit('trigger-event', { name: 'change', event: { domEvent: event, value: newValue } });
         },
+        onBlur(event) {
+            this.correctDecimalValue(event);
+            this.isFocused = false;
+        },
         correctDecimalValue(event) {
             if (this.content.type === 'decimal') {
                 const newValue = this.formatValue(this.value);
@@ -270,14 +282,15 @@ export default {
             this.resizeObserver = new ResizeObserver(() => {
                 this.updatePosition(el);
             });
-            this.resizeObserver.observe(el, { box: 'border-box' });
+            this.resizeObserver.observe(el, { box: 'device-pixel-content-box' });
         },
         updatePosition(el) {
-            if (!el || this.isReadonly) return;
+            const placeholder = this.$refs.placeholder;
+            if (!el || !placeholder || this.isReadonly) return;
             this.noTransition = true;
 
-            this.placeholderPosition.top = el.style.paddingTop;
-            this.placeholderPosition.bottom = el.style.paddingBottom;
+            const pos = el.getBoundingClientRect().height / 2 - placeholder.getBoundingClientRect().height / 2;
+            this.placeholderPosition.top = pos + 'px';
             this.placeholderPosition.left = el.style.paddingLeft;
 
             setTimeout(() => {
@@ -336,6 +349,7 @@ export default {
     &__placeholder {
         position: absolute;
         cursor: text;
+        height: fit-content;
 
         /* wwEditor:start */
         &.editing {

@@ -298,6 +298,10 @@ export default {
             if (this.content.type === 'textarea') return;
             this.correctDecimalValue(event);
         },
+        onBlur(event) {
+            this.correctDecimalValue(event);
+            this.isFocused = false;
+        },
         correctDecimalValue(event) {
             if (this.content.type === 'decimal') {
                 const newValue = this.formatValue(this.value);

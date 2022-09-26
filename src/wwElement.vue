@@ -34,7 +34,7 @@
             :rows="content.rows"
             @input="handleManualInput($event)"
             @focus="isFocused = true"
-            @blur="isFocused = false"
+            @blur="onBlur"
         />
         <wwText v-else-if="isReadonly" v-bind="$attrs" :text="`${value}`"></wwText>
         <div
@@ -101,6 +101,7 @@ export default {
     data() {
         return {
             resizeObserver: null,
+            elementFocused: false,
             paddingLeft: '0px',
             placeholderPosition: {
                 top: '0px',
@@ -192,6 +193,9 @@ export default {
         },
     },
     watch: {
+        elementFocused(val) {
+            console.log(val);
+        },
         'content.value'(newValue) {
             if (this.type === 'decimal') newValue = this.formatValue(newValue);
             if (newValue === this.value) return;
@@ -243,10 +247,16 @@ export default {
     },
     beforeUnmount() {
         if (this.resizeObserver) this.resizeObserver.disconnect();
+        wwLib.getFrontDocument().removeEventListener('keyup', event => {
+            this.onKeyEnter(event);
+        });
     },
     mounted() {
         this.isMounted = true;
         this.handleObserver();
+        wwLib.getFrontDocument().addEventListener('keyup', event => {
+            this.onKeyEnter(event);
+        });
     },
     methods: {
         handleManualInput(event) {
@@ -271,8 +281,6 @@ export default {
                 this.debounce = setTimeout(() => {
                     this.lastDebounceValue = event.target.value;
 
-                    console.log('in debounce', this.content.debounceDelay);
-
                     this.setValue(newValue);
                     this.$emit('trigger-event', {
                         name: 'change',
@@ -283,13 +291,12 @@ export default {
                 this.setValue(newValue);
                 this.$emit('trigger-event', { name: 'change', event: { domEvent: event, value: newValue } });
             }
-
-            const form = this.$refs.input.form;
-            console.log(form);
         },
         onBlur(event) {
-            this.correctDecimalValue(event);
             this.isFocused = false;
+
+            if (this.content.type === 'textarea') return;
+            this.correctDecimalValue(event);
         },
         correctDecimalValue(event) {
             if (this.content.type === 'decimal') {
@@ -299,6 +306,10 @@ export default {
                 this.setValue(newValue);
                 this.$emit('trigger-event', { name: 'change', event: { domEvent: event, value: newValue } });
             }
+        },
+        onKeyEnter(event) {
+            if (event.key === 'Enter' && this.isFocused)
+                this.$emit('trigger-event', { name: 'onEnterKey', event: { value: this.value } });
         },
         handleObserver() {
             if (!this.isMounted) return;

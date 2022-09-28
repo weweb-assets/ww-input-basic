@@ -3,7 +3,7 @@
         <input
             v-if="!isReadonly && content.type !== 'textarea'"
             ref="input"
-            v-bind="$attrs"
+            v-bind="{ ...$attrs, ...(wwElementState.props.attributes || {}) }"
             :value="value"
             class="ww-input-basic__input"
             :class="{ editing: isEditing, hideArrows: content.hideArrows && inputType === 'number' }"
@@ -21,7 +21,7 @@
         <textarea
             v-else-if="!isReadonly && content"
             ref="input"
-            v-bind="$attrs"
+            v-bind="{ ...$attrs, ...(wwElementState.props.attributes || {}) }"
             :value="value"
             class="ww-input-basic__input"
             :class="{ editing: isEditing }"
@@ -33,7 +33,11 @@
             :rows="content.rows"
             @input="handleManualInput($event)"
         />
-        <wwText v-else-if="isReadonly" v-bind="$attrs" :text="`${value}`"></wwText>
+        <wwText
+            v-else-if="isReadonly"
+            v-bind="{ ...$attrs, ...(wwElementState.props.attributes || {}) }"
+            :text="`${value}`"
+        ></wwText>
         <div
             v-if="isAdvancedPlaceholder"
             class="ww-input-basic__placeholder"

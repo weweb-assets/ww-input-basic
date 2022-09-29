@@ -38,8 +38,8 @@
         />
         <wwText v-else-if="isReadonly" v-bind="$attrs" :text="`${value}`"></wwText>
         <div
-            ref="placeholder"
             v-if="isAdvancedPlaceholder"
+            ref="placeholder"
             class="ww-input-basic__placeholder"
             :class="{ editing: isEditing }"
             :style="placeholderSyle"
@@ -297,6 +297,7 @@ export default {
                 this.noTransition = false;
             }, wwLib.wwUtils.getLengthUnit(this.content.transition)[0]);
         },
+        // /!\ Use externally
         focusInput() {
             if (this.isReadonly) return;
             const el = this.$refs.input;

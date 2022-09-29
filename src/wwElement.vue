@@ -354,8 +354,6 @@ export default {
     width: 100%;
     height: 100%;
 
-    border: 2px solid red;
-
     &__input {
         width: 100%;
         height: 100%;

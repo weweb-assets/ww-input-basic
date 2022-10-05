@@ -123,7 +123,7 @@ export default {
             return this.variableValue;
         },
         placeholderSyle() {
-            const transition = `transform ${this.noTransition ? '0ms' : this.content.transition} ${
+            const transition = `all ${this.noTransition ? '0ms' : this.content.transition} ${
                 this.content.timingFunction
             }`;
 

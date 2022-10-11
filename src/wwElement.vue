@@ -123,7 +123,7 @@ export default {
             return this.variableValue;
         },
         placeholderSyle() {
-            const transition = `transform ${this.noTransition ? '0ms' : this.content.transition} ${
+            const transition = `all ${this.noTransition ? '0ms' : this.content.transition} ${
                 this.content.timingFunction
             }`;
 
@@ -145,8 +145,8 @@ export default {
                       };
 
             if (this.content.forceAnimation && this.isEditing) return animatedPosition;
+            if (this.value.length) return animatedPosition;
             if (this.content.animationTrigger === 'focus' && this.isFocused) return animatedPosition;
-            if (this.content.animationTrigger === 'input' && this.value.length) return animatedPosition;
 
             return {
                 top: this.placeholderPosition.top,

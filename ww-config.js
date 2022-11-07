@@ -138,6 +138,7 @@ export default {
             section: 'settings',
             bindable: true,
             defaultValue: '',
+            /* wwEditor:start */
             bindingValidation: {
                 validations: [
                     {
@@ -149,6 +150,7 @@ export default {
                 ],
                 tooltip: 'A string or a number depending on the type of input chosen: `42`, `"My message"`',
             },
+            /* wwEditor:end */
         },
         type: {
             label: { en: 'Input type', fr: 'Input type' },

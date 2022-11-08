@@ -37,6 +37,13 @@ export default {
             states: true,
             defaultValue: '#000000ad',
             hidden: content => content.advancedPlaceholder,
+            /* wwEditor:start */
+            bindingValidation: {
+                cssSupports: 'color',
+                type: 'string',
+                tooltip: 'A string that represents a color code: `"rebeccapurple" | "#00ff00" | "rgb(214, 122, 127)"`',
+            },
+            /* wwEditor:end */
         },
         advancedPlaceholder: {
             label: 'Advanced placeholder',
@@ -131,6 +138,19 @@ export default {
             section: 'settings',
             bindable: true,
             defaultValue: '',
+            /* wwEditor:start */
+            bindingValidation: {
+                validations: [
+                    {
+                        type: 'string',
+                    },
+                    {
+                        type: 'number',
+                    },
+                ],
+                tooltip: 'A string or a number depending on the type of input chosen: `42`, `"My message"`',
+            },
+            /* wwEditor:end */
         },
         type: {
             label: { en: 'Input type', fr: 'Input type' },
@@ -160,6 +180,12 @@ export default {
             bindable: true,
             defaultValue: false,
             hidden: content => content.type !== 'password',
+            /* wwEditor:start */
+            bindingValidation: {
+                type: 'boolean',
+                tooltip: 'A boolean that defines if the input should display the password: `true | false`',
+            },
+            /* wwEditor:end */
         },
         readonly: {
             label: { en: 'Read only', fr: 'Lecture seule' },
@@ -168,6 +194,12 @@ export default {
             bindable: true,
             defaultValue: false,
             hidden: (content, sidePanelContent, boundProps, wwProps) => !!(wwProps && wwProps.readonly !== undefined),
+            /* wwEditor:start */
+            bindingValidation: {
+                type: 'boolean',
+                tooltip: 'A boolean that defines if the input is in readonly: `true | false`',
+            },
+            /* wwEditor:end */
         },
         required: {
             label: { en: 'Required', fr: 'Requis' },
@@ -175,6 +207,12 @@ export default {
             section: 'settings',
             defaultValue: true,
             bindable: true,
+            /* wwEditor:start */
+            bindingValidation: {
+                type: 'boolean',
+                tooltip: 'A boolean that defines if the input is required: `true | false`',
+            },
+            /* wwEditor:end */
         },
         precision: {
             label: { en: 'Precision', fr: 'Precision' },
@@ -204,6 +242,19 @@ export default {
             multiLang: true,
             bindable: true,
             defaultValue: {},
+            /* wwEditor:start */
+            bindingValidation: {
+                validations: [
+                    {
+                        type: 'string',
+                    },
+                    {
+                        type: 'number',
+                    },
+                ],
+                tooltip: 'A string or a number depending on the type of input chosen: `42`, `"My placeholder"`',
+            },
+            /* wwEditor:end */
         },
         rows: {
             label: { en: 'Rows', fr: 'Rows' },
@@ -227,6 +278,12 @@ export default {
             hidden: content => content.type !== 'number' && content.type !== 'decimal',
             defaultValue: '0',
             bindable: true,
+            /* wwEditor:start */
+            bindingValidation: {
+                type: 'number',
+                tooltip: 'A number that defines the minimum value: `50`',
+            },
+            /* wwEditor:end */
         },
         max: {
             label: { en: 'Max number', fr: 'Max number' },
@@ -236,6 +293,12 @@ export default {
             hidden: content => content.type !== 'number' && content.type !== 'decimal',
             defaultValue: '10000',
             bindable: true,
+            /* wwEditor:start */
+            bindingValidation: {
+                type: 'number',
+                tooltip: 'A number that defines the maximum value: `500`',
+            },
+            /* wwEditor:end */
         },
         hideArrows: {
             label: { en: 'Hide arrows', fr: 'Masquer les flèches' },

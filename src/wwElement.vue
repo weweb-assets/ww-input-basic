@@ -193,9 +193,6 @@ export default {
         },
     },
     watch: {
-        elementFocused(val) {
-            console.log(val);
-        },
         'content.value'(newValue) {
             if (this.type === 'decimal') newValue = this.formatValue(newValue);
             if (newValue === this.value) return;

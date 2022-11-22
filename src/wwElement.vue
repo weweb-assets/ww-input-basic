@@ -1,7 +1,7 @@
 <template>
     <div class="ww-input-basic" :class="{ editing: isEditing }">
         <input
-            v-if="!isReadonly && content.type !== 'textarea'"
+            v-if="content.type !== 'textarea'"
             ref="input"
             v-bind="$attrs"
             :value="value"
@@ -9,6 +9,7 @@
             :class="{ editing: isEditing, hideArrows: content.hideArrows && inputType === 'number' }"
             :type="inputType"
             :name="wwElementState.name"
+            :readonly="content.readonly"
             :required="content.required"
             :placeholder="isAdvancedPlaceholder ? '' : wwLang.getText(content.placeholder)"
             :style="style"
@@ -20,7 +21,7 @@
             @focus="isFocused = true"
         />
         <textarea
-            v-else-if="!isReadonly && content"
+            v-else
             ref="input"
             v-bind="$attrs"
             :value="value"
@@ -28,6 +29,7 @@
             :class="{ editing: isEditing }"
             :type="content.type"
             :name="wwElementState.name"
+            :readonly="content.readonly"
             :required="content.required"
             :placeholder="isAdvancedPlaceholder ? '' : wwLang.getText(content.placeholder)"
             :style="[style, { resize: content.resize ? '' : 'none' }]"
@@ -36,7 +38,6 @@
             @focus="isFocused = true"
             @blur="isFocused = false"
         />
-        <wwText v-else-if="isReadonly" v-bind="$attrs" :text="`${value}`"></wwText>
         <div
             v-if="isAdvancedPlaceholder"
             ref="placeholder"

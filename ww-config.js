@@ -5,6 +5,7 @@ export default {
     },
     editor: {
         label: { en: 'Form Input', fr: 'Entrée de Formulaire' },
+        icon:"text-input", 
         customStylePropertiesOrder: [
             'placeholderColor',
             'advancedPlaceholder',

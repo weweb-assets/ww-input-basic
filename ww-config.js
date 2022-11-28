@@ -5,7 +5,14 @@ export default {
     },
     editor: {
         label: { en: 'Form Input', fr: 'Entrée de Formulaire' },
-        icon:"text-input", 
+        icon: 'text-input',
+        customSettingsPropertiesOrder: [
+            'value',
+            ['type', 'precision', 'min', 'max', 'hideArrows', 'displayPassword', 'rows', 'resize'],
+            ['placeholder'],
+            ['readonly', 'required'],
+            ['debounce', 'debounceDelay'],
+        ],
         customStylePropertiesOrder: [
             'placeholderColor',
             'advancedPlaceholder',
@@ -23,6 +30,7 @@ export default {
     triggerEvents: [
         { name: 'change', label: { en: 'On change' }, event: { value: '' }, default: true },
         { name: 'initValueChange', label: { en: 'On init value change' }, event: { value: '' } },
+        { name: 'onEnterKey', label: { en: 'On enter key' }, event: { value: '' }, default: true },
     ],
     properties: {
         placeholderColor: {
@@ -161,6 +169,7 @@ export default {
                     { value: 'text', label: { en: 'Short answer', fr: 'Texte' } },
                     { value: 'textarea', label: { en: 'Long answer', fr: 'Texte' } },
                     { value: 'email', label: { en: 'Email', fr: 'Email' } },
+                    { value: 'search', label: { en: 'Search', fr: 'Recherche' } },
                     { value: 'password', label: { en: 'Password', fr: 'Mot de passe' } },
                     { value: 'number', label: { en: 'Number', fr: 'Nombre' } },
                     { value: 'decimal', label: { en: 'Decimal', fr: 'Decimal' } },
@@ -307,6 +316,24 @@ export default {
             section: 'settings',
             hidden: content => content.type !== 'number' && content.type !== 'decimal',
             defaultValue: false,
+        },
+        debounce: {
+            label: { en: 'Debounce' },
+            type: 'OnOff',
+            section: 'settings',
+            defaultValue: false,
+        },
+        debounceDelay: {
+            type: 'Length',
+            label: {
+                en: 'Delay',
+            },
+            options: {
+                unitChoices: [{ value: 'ms', label: 'ms', min: 1, max: 5000 }],
+            },
+            section: 'settings',
+            defaultValue: '500ms',
+            hidden: content => !content.debounce,
         },
         placeholderElement: {
             hidden: true,

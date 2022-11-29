@@ -110,6 +110,7 @@ export default {
             isFocused: false,
             noTransition: false,
             isMounted: false,
+            lastDebounceValue: null,
         };
     },
     computed: {
@@ -122,6 +123,9 @@ export default {
         },
         value() {
             return this.variableValue;
+        },
+        delay() {
+            return wwLib.wwUtils.getLengthUnit(this.content.debounceDelay)[0];
         },
         placeholderSyle() {
             const transition = `all ${this.noTransition ? '0ms' : this.content.transition} ${
@@ -237,10 +241,18 @@ export default {
     },
     beforeUnmount() {
         if (this.resizeObserver) this.resizeObserver.disconnect();
+
+        wwLib.getFrontDocument().removeEventListener('keyup', event => {
+            this.onKeyEnter(event);
+        });
     },
     mounted() {
         this.isMounted = true;
         this.handleObserver();
+
+        wwLib.getFrontDocument().addEventListener('keyup', event => {
+            this.onKeyEnter(event);
+        });
     },
     methods: {
         handleManualInput(event) {
@@ -257,8 +269,26 @@ export default {
             }
 
             if (newValue === this.value) return;
-            this.setValue(newValue);
-            this.$emit('trigger-event', { name: 'change', event: { domEvent: event, value: newValue } });
+            if (this.content.debounce) {
+                if (this.debounce) {
+                    clearTimeout(this.debounce);
+                }
+                this.debounce = setTimeout(() => {
+                    this.lastDebounceValue = event.target.value;
+                    this.setValue(newValue);
+                    this.$emit('trigger-event', {
+                        name: 'change',
+                        event: { domEvent: event, value: this.lastDebounceValue },
+                    });
+                }, this.delay);
+            } else {
+                this.setValue(newValue);
+                this.$emit('trigger-event', { name: 'change', event: { domEvent: event, value: newValue } });
+            }
+        },
+        onKeyEnter(event) {
+            if (event.key === 'Enter' && this.isFocused)
+                this.$emit('trigger-event', { name: 'onEnterKey', event: { value: this.value } });
         },
         onBlur(event) {
             this.correctDecimalValue(event);

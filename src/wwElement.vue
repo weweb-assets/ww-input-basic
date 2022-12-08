@@ -225,7 +225,6 @@ export default {
         },
         inputRef() {
             this.$nextTick(() => {
-                console.log('inputRef watch');
                 this.handleObserver();
             });
         },

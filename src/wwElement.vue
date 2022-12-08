@@ -57,7 +57,7 @@
 </template>
 
 <script>
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 
 export default {
     inheritAttrs: false,
@@ -97,11 +97,12 @@ export default {
             defaultValue: props.content.value === undefined ? '' : formatValue(props.content.value),
         });
 
-        return { variableValue, setValue, formatValue, step, type };
+        const inputRef = ref('input');
+
+        return { variableValue, setValue, formatValue, step, type, inputRef };
     },
     data() {
         return {
-            resizeObserver: null,
             paddingLeft: '0px',
             placeholderPosition: {
                 top: '0px',
@@ -216,8 +217,29 @@ export default {
             const value = this.formatValue(this.value);
             this.setValue(value);
         },
+        /* wwEditor:end */
+        'content.type'() {
+            this.$nextTick(() => {
+                this.handleObserver();
+            });
+        },
+        inputRef() {
+            this.$nextTick(() => {
+                console.log('inputRef watch');
+                this.handleObserver();
+            });
+        },
         'content.advancedPlaceholder': {
             async handler(value) {
+                this.$nextTick(() => {
+                    this.handleObserver();
+                });
+
+                /* wwEditor:start */
+                if (this.wwEditorState.isACopy) {
+                    return;
+                }
+
                 let placeholderElement = null;
 
                 if (value) {
@@ -230,29 +252,21 @@ export default {
                 }
 
                 this.$emit('update:content:effect', { placeholderElement });
+                /* wwEditor:end */
             },
         },
-        'content.type'() {
-            this.$nextTick(() => {
-                this.handleObserver();
-            });
-        },
-        /* wwEditor:end */
     },
     beforeUnmount() {
-        if (this.resizeObserver) this.resizeObserver.disconnect();
+        if (this.resizeObserverContent) this.resizeObserverContent.disconnect();
+        if (this.resizeObserverBorder) this.resizeObserverBorder.disconnect();
 
-        wwLib.getFrontDocument().removeEventListener('keyup', event => {
-            this.onKeyEnter(event);
-        });
+        wwLib.getFrontDocument().removeEventListener('keyup', this.onKeyEnter);
     },
     mounted() {
         this.isMounted = true;
         this.handleObserver();
 
-        wwLib.getFrontDocument().addEventListener('keyup', event => {
-            this.onKeyEnter(event);
-        });
+        wwLib.getFrontDocument().addEventListener('keyup', this.onKeyEnter);
     },
     methods: {
         handleManualInput(event) {
@@ -305,22 +319,27 @@ export default {
         },
         handleObserver() {
             if (!this.isMounted) return;
-            if (this.resizeObserver) this.resizeObserver.disconnect();
+            if (this.resizeObserverContent) this.resizeObserverContent.disconnect();
+            if (this.resizeObserverBorder) this.resizeObserverBorder.disconnect();
             const el = this.$refs.input;
             if (!el) return;
-            this.updatePosition(el);
 
-            this.resizeObserver = new ResizeObserver(() => {
+            // We need both Observers because one of them works outside a ww-modal, while the other in a ww-modal
+            this.resizeObserverContent = new ResizeObserver(() => {
                 this.updatePosition(el);
             });
-            this.resizeObserver.observe(el, { box: 'device-pixel-content-box' });
+            this.resizeObserverBorder = new ResizeObserver(() => {
+                this.updatePosition(el);
+            });
+            this.resizeObserverContent.observe(el, { box: 'content-box' });
+            this.resizeObserverBorder.observe(el, { box: 'border-box' });
         },
         updatePosition(el) {
             const placeholder = this.$refs.placeholder;
             if (!el || !placeholder || this.isReadonly) return;
             this.noTransition = true;
 
-            const pos = el.getBoundingClientRect().height / 2 - placeholder.getBoundingClientRect().height / 2;
+            const pos = el.clientHeight / 2 - placeholder.clientHeight / 2;
             this.placeholderPosition.top = pos + 'px';
             this.placeholderPosition.left = el.style.paddingLeft;
 

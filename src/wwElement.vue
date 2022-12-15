@@ -1,7 +1,7 @@
 <template>
     <div class="ww-input-basic" :class="{ editing: isEditing }">
         <input
-            v-if="!isReadonly && content.type !== 'textarea'"
+            v-if="content.type !== 'textarea'"
             ref="input"
             v-bind="{ ...$attrs, ...(wwElementState.props.attributes || {}) }"
             :value="value"
@@ -9,6 +9,7 @@
             :class="{ editing: isEditing, hideArrows: content.hideArrows && inputType === 'number' }"
             :type="inputType"
             :name="wwElementState.name"
+            :readonly="content.readonly"
             :required="content.required"
             :placeholder="isAdvancedPlaceholder ? '' : wwLang.getText(content.placeholder)"
             :style="style"
@@ -16,10 +17,11 @@
             :max="content.max"
             :step="step"
             @input="handleManualInput($event)"
-            @blur="correctDecimalValue($event)"
+            @blur="onBlur($event)"
+            @focus="isFocused = true"
         />
         <textarea
-            v-else-if="!isReadonly && content"
+            v-else
             ref="input"
             v-bind="{ ...$attrs, ...(wwElementState.props.attributes || {}) }"
             :value="value"
@@ -27,19 +29,18 @@
             :class="{ editing: isEditing }"
             :type="content.type"
             :name="wwElementState.name"
+            :readonly="content.readonly"
             :required="content.required"
             :placeholder="isAdvancedPlaceholder ? '' : wwLang.getText(content.placeholder)"
             :style="[style, { resize: content.resize ? '' : 'none' }]"
             :rows="content.rows"
             @input="handleManualInput($event)"
+            @focus="isFocused = true"
+            @blur="isFocused = false"
         />
-        <wwText
-            v-else-if="isReadonly"
-            v-bind="{ ...$attrs, ...(wwElementState.props.attributes || {}) }"
-            :text="`${value}`"
-        ></wwText>
         <div
             v-if="isAdvancedPlaceholder"
+            ref="placeholder"
             class="ww-input-basic__placeholder"
             :class="{ editing: isEditing }"
             :style="placeholderSyle"
@@ -56,7 +57,7 @@
 </template>
 
 <script>
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 
 export default {
     inheritAttrs: false,
@@ -96,19 +97,21 @@ export default {
             defaultValue: props.content.value === undefined ? '' : formatValue(props.content.value),
         });
 
-        return { variableValue, setValue, formatValue, step, type };
+        const inputRef = ref('input');
+
+        return { variableValue, setValue, formatValue, step, type, inputRef };
     },
     data() {
         return {
-            resizeObserver: null,
             paddingLeft: '0px',
             placeholderPosition: {
                 top: '0px',
-                bottom: '0px',
                 left: '0px',
             },
+            isFocused: false,
             noTransition: false,
             isMounted: false,
+            lastDebounceValue: null,
         };
     },
     computed: {
@@ -122,36 +125,43 @@ export default {
         value() {
             return this.variableValue;
         },
+        delay() {
+            return wwLib.wwUtils.getLengthUnit(this.content.debounceDelay)[0];
+        },
         placeholderSyle() {
-            if (!this.value.length && !this.content.forceAnimation) {
-                return {
-                    top: this.placeholderPosition.top,
-                    bottom: this.placeholderPosition.bottom,
-                    left: this.placeholderPosition.left,
-                    userSelect: 'none',
-                    transform: 'translateY(0%) scale(1)',
-                    transition: this.noTransition ? '0ms' : this.content.transition,
-                };
-            }
+            const transition = `all ${this.noTransition ? '0ms' : this.content.transition} ${
+                this.content.timingFunction
+            }`;
 
-            const position =
+            const animatedPosition =
                 this.content.placeholderPosition === 'outside'
                     ? {
                           top: '-' + this.content.positioningAjustment,
                           left: this.placeholderPosition.left,
-                          transform: `translateY(-100%) scale(${this.content.placeholderScaling})`,
+                          transform: `translate3d(0, -100%, 0) scale(${this.content.placeholderScaling})`,
                           transformOrigin: 'left',
-                          transition: this.noTransition ? '0ms' : this.content.transition,
+                          transition,
                       }
                     : {
                           top: this.content.positioningAjustment,
                           left: this.placeholderPosition.left,
-                          transform: `translateY(0%) scale(${this.content.placeholderScaling})`,
+                          transform: `translate3d(0, 0%, 0) scale(${this.content.placeholderScaling})`,
                           transformOrigin: 'left',
-                          transition: this.noTransition ? '0ms' : this.content.transition,
+                          transition,
                       };
 
-            return position;
+            if (this.content.forceAnimation && this.isEditing) return animatedPosition;
+            if (this.value.length) return animatedPosition;
+            if (this.content.animationTrigger === 'focus' && this.isFocused) return animatedPosition;
+
+            return {
+                top: this.placeholderPosition.top,
+                left: this.placeholderPosition.left,
+                userSelect: 'none',
+                transform: 'translate3d(0, 0%, 0) scale(1)',
+                transformOrigin: 'left',
+                transition,
+            };
         },
         style() {
             return {
@@ -207,8 +217,28 @@ export default {
             const value = this.formatValue(this.value);
             this.setValue(value);
         },
+        /* wwEditor:end */
+        'content.type'() {
+            this.$nextTick(() => {
+                this.handleObserver();
+            });
+        },
+        inputRef() {
+            this.$nextTick(() => {
+                this.handleObserver();
+            });
+        },
         'content.advancedPlaceholder': {
             async handler(value) {
+                this.$nextTick(() => {
+                    this.handleObserver();
+                });
+
+                /* wwEditor:start */
+                if (this.wwEditorState.isACopy) {
+                    return;
+                }
+
                 let placeholderElement = null;
 
                 if (value) {
@@ -221,21 +251,21 @@ export default {
                 }
 
                 this.$emit('update:content:effect', { placeholderElement });
+                /* wwEditor:end */
             },
         },
-        'content.type'() {
-            this.$nextTick(() => {
-                this.handleObserver();
-            });
-        },
-        /* wwEditor:end */
     },
     beforeUnmount() {
-        if (this.resizeObserver) this.resizeObserver.disconnect();
+        if (this.resizeObserverContent) this.resizeObserverContent.disconnect();
+        if (this.resizeObserverBorder) this.resizeObserverBorder.disconnect();
+
+        wwLib.getFrontDocument().removeEventListener('keyup', this.onKeyEnter);
     },
     mounted() {
         this.isMounted = true;
         this.handleObserver();
+
+        wwLib.getFrontDocument().addEventListener('keyup', this.onKeyEnter);
     },
     methods: {
         handleManualInput(event) {
@@ -252,8 +282,30 @@ export default {
             }
 
             if (newValue === this.value) return;
-            this.setValue(newValue);
-            this.$emit('trigger-event', { name: 'change', event: { domEvent: event, value: newValue } });
+            if (this.content.debounce) {
+                if (this.debounce) {
+                    clearTimeout(this.debounce);
+                }
+                this.debounce = setTimeout(() => {
+                    this.lastDebounceValue = event.target.value;
+                    this.setValue(newValue);
+                    this.$emit('trigger-event', {
+                        name: 'change',
+                        event: { domEvent: event, value: this.lastDebounceValue },
+                    });
+                }, this.delay);
+            } else {
+                this.setValue(newValue);
+                this.$emit('trigger-event', { name: 'change', event: { domEvent: event, value: newValue } });
+            }
+        },
+        onKeyEnter(event) {
+            if (event.key === 'Enter' && this.isFocused)
+                this.$emit('trigger-event', { name: 'onEnterKey', event: { value: this.value } });
+        },
+        onBlur(event) {
+            this.correctDecimalValue(event);
+            this.isFocused = false;
         },
         correctDecimalValue(event) {
             if (this.content.type === 'decimal') {
@@ -266,28 +318,35 @@ export default {
         },
         handleObserver() {
             if (!this.isMounted) return;
-            if (this.resizeObserver) this.resizeObserver.disconnect();
+            if (this.resizeObserverContent) this.resizeObserverContent.disconnect();
+            if (this.resizeObserverBorder) this.resizeObserverBorder.disconnect();
             const el = this.$refs.input;
             if (!el) return;
-            this.updatePosition(el);
 
-            this.resizeObserver = new ResizeObserver(() => {
+            // We need both Observers because one of them works outside a ww-modal, while the other in a ww-modal
+            this.resizeObserverContent = new ResizeObserver(() => {
                 this.updatePosition(el);
             });
-            this.resizeObserver.observe(el, { box: 'border-box' });
+            this.resizeObserverBorder = new ResizeObserver(() => {
+                this.updatePosition(el);
+            });
+            this.resizeObserverContent.observe(el, { box: 'content-box' });
+            this.resizeObserverBorder.observe(el, { box: 'border-box' });
         },
         updatePosition(el) {
-            if (!el || this.isReadonly) return;
+            const placeholder = this.$refs.placeholder;
+            if (!el || !placeholder || this.isReadonly) return;
             this.noTransition = true;
 
-            this.placeholderPosition.top = el.style.paddingTop;
-            this.placeholderPosition.bottom = el.style.paddingBottom;
+            const pos = el.clientHeight / 2 - placeholder.clientHeight / 2;
+            this.placeholderPosition.top = pos + 'px';
             this.placeholderPosition.left = el.style.paddingLeft;
 
             setTimeout(() => {
                 this.noTransition = false;
             }, wwLib.wwUtils.getLengthUnit(this.content.transition)[0]);
         },
+        // /!\ Use externally
         focusInput() {
             if (this.isReadonly) return;
             const el = this.$refs.input;
@@ -340,6 +399,7 @@ export default {
     &__placeholder {
         position: absolute;
         cursor: text;
+        height: fit-content;
 
         /* wwEditor:start */
         &.editing {

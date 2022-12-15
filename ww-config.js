@@ -5,16 +5,32 @@ export default {
     },
     editor: {
         label: { en: 'Form Input', fr: 'Entrée de Formulaire' },
+        icon: 'text-input',
+        customSettingsPropertiesOrder: [
+            'value',
+            ['type', 'precision', 'min', 'max', 'hideArrows', 'displayPassword', 'rows', 'resize'],
+            ['placeholder'],
+            ['readonly', 'required'],
+            ['debounce', 'debounceDelay'],
+        ],
         customStylePropertiesOrder: [
             'placeholderColor',
             'advancedPlaceholder',
             'forceAnimation',
-            ['placeholderPosition', 'placeholderScaling', 'positioningAjustment', 'transition'],
+            [
+                'animationTrigger',
+                'placeholderPosition',
+                'placeholderScaling',
+                'positioningAjustment',
+                'transition',
+                'timingFunction',
+            ],
         ],
     },
     triggerEvents: [
         { name: 'change', label: { en: 'On change' }, event: { value: '' }, default: true },
         { name: 'initValueChange', label: { en: 'On init value change' }, event: { value: '' } },
+        { name: 'onEnterKey', label: { en: 'On enter key' }, event: { value: '' }, default: true },
     ],
     properties: {
         placeholderColor: {
@@ -30,6 +46,13 @@ export default {
             states: true,
             defaultValue: '#000000ad',
             hidden: content => content.advancedPlaceholder,
+            /* wwEditor:start */
+            bindingValidation: {
+                cssSupports: 'color',
+                type: 'string',
+                tooltip: 'A string that represents a color code: `"rebeccapurple" | "#00ff00" | "rgb(214, 122, 127)"`',
+            },
+            /* wwEditor:end */
         },
         advancedPlaceholder: {
             label: 'Advanced placeholder',
@@ -40,6 +63,19 @@ export default {
             label: { en: 'Force animation' },
             type: 'OnOff',
             defaultValue: false,
+            hidden: content => !content.advancedPlaceholder,
+        },
+        animationTrigger: {
+            label: { en: 'Trigger on' },
+            type: 'TextSelect',
+            options: {
+                options: [
+                    { value: 'focus', label: { en: 'Focus' } },
+                    { value: 'input', label: { en: 'Input' } },
+                ],
+            },
+            responsive: true,
+            defaultValue: 'input',
             hidden: content => !content.advancedPlaceholder,
         },
         placeholderPosition: {
@@ -84,7 +120,23 @@ export default {
                 unitChoices: [{ value: 'ms', label: 'ms', min: 0, max: 2000 }],
             },
             responsive: true,
-            defaultValue: '500ms',
+            defaultValue: '400ms',
+            hidden: content => !content.advancedPlaceholder,
+        },
+        timingFunction: {
+            label: { en: 'Timing function' },
+            type: 'TextSelect',
+            options: {
+                options: [
+                    { value: 'cubic-bezier(0, 1.08, 0.76, 1)', label: { en: 'auto' } },
+                    { value: 'ease', label: { en: 'ease' } },
+                    { value: 'ease-in', label: { en: 'ease-in' } },
+                    { value: 'ease-out', label: { en: 'ease-out' } },
+                    { value: 'ease-in-out', label: { en: 'ease-in-out' } },
+                    { value: 'linear', label: { en: 'linear' } },
+                ],
+            },
+            defaultValue: 'cubic-bezier(0, 1.08, 0.76, 1)',
             hidden: content => !content.advancedPlaceholder,
         },
         value: {
@@ -95,6 +147,19 @@ export default {
             section: 'settings',
             bindable: true,
             defaultValue: '',
+            /* wwEditor:start */
+            bindingValidation: {
+                validations: [
+                    {
+                        type: 'string',
+                    },
+                    {
+                        type: 'number',
+                    },
+                ],
+                tooltip: 'A string or a number depending on the type of input chosen: `42`, `"My message"`',
+            },
+            /* wwEditor:end */
         },
         type: {
             label: { en: 'Input type', fr: 'Input type' },
@@ -104,6 +169,7 @@ export default {
                     { value: 'text', label: { en: 'Short answer', fr: 'Texte' } },
                     { value: 'textarea', label: { en: 'Long answer', fr: 'Texte' } },
                     { value: 'email', label: { en: 'Email', fr: 'Email' } },
+                    { value: 'search', label: { en: 'Search', fr: 'Recherche' } },
                     { value: 'password', label: { en: 'Password', fr: 'Mot de passe' } },
                     { value: 'number', label: { en: 'Number', fr: 'Nombre' } },
                     { value: 'decimal', label: { en: 'Decimal', fr: 'Decimal' } },
@@ -124,6 +190,12 @@ export default {
             bindable: true,
             defaultValue: false,
             hidden: content => content.type !== 'password',
+            /* wwEditor:start */
+            bindingValidation: {
+                type: 'boolean',
+                tooltip: 'A boolean that defines if the input should display the password: `true | false`',
+            },
+            /* wwEditor:end */
         },
         readonly: {
             label: { en: 'Read only', fr: 'Lecture seule' },
@@ -132,6 +204,12 @@ export default {
             bindable: true,
             defaultValue: false,
             hidden: (content, sidePanelContent, boundProps, wwProps) => !!(wwProps && wwProps.readonly !== undefined),
+            /* wwEditor:start */
+            bindingValidation: {
+                type: 'boolean',
+                tooltip: 'A boolean that defines if the input is in readonly: `true | false`',
+            },
+            /* wwEditor:end */
         },
         required: {
             label: { en: 'Required', fr: 'Requis' },
@@ -139,6 +217,12 @@ export default {
             section: 'settings',
             defaultValue: true,
             bindable: true,
+            /* wwEditor:start */
+            bindingValidation: {
+                type: 'boolean',
+                tooltip: 'A boolean that defines if the input is required: `true | false`',
+            },
+            /* wwEditor:end */
         },
         precision: {
             label: { en: 'Precision', fr: 'Precision' },
@@ -168,6 +252,19 @@ export default {
             multiLang: true,
             bindable: true,
             defaultValue: {},
+            /* wwEditor:start */
+            bindingValidation: {
+                validations: [
+                    {
+                        type: 'string',
+                    },
+                    {
+                        type: 'number',
+                    },
+                ],
+                tooltip: 'A string or a number depending on the type of input chosen: `42`, `"My placeholder"`',
+            },
+            /* wwEditor:end */
         },
         rows: {
             label: { en: 'Rows', fr: 'Rows' },
@@ -191,6 +288,12 @@ export default {
             hidden: content => content.type !== 'number' && content.type !== 'decimal',
             defaultValue: '0',
             bindable: true,
+            /* wwEditor:start */
+            bindingValidation: {
+                type: 'number',
+                tooltip: 'A number that defines the minimum value: `50`',
+            },
+            /* wwEditor:end */
         },
         max: {
             label: { en: 'Max number', fr: 'Max number' },
@@ -200,6 +303,12 @@ export default {
             hidden: content => content.type !== 'number' && content.type !== 'decimal',
             defaultValue: '10000',
             bindable: true,
+            /* wwEditor:start */
+            bindingValidation: {
+                type: 'number',
+                tooltip: 'A number that defines the maximum value: `500`',
+            },
+            /* wwEditor:end */
         },
         hideArrows: {
             label: { en: 'Hide arrows', fr: 'Masquer les flèches' },
@@ -207,6 +316,24 @@ export default {
             section: 'settings',
             hidden: content => content.type !== 'number' && content.type !== 'decimal',
             defaultValue: false,
+        },
+        debounce: {
+            label: { en: 'Debounce' },
+            type: 'OnOff',
+            section: 'settings',
+            defaultValue: false,
+        },
+        debounceDelay: {
+            type: 'Length',
+            label: {
+                en: 'Delay',
+            },
+            options: {
+                unitChoices: [{ value: 'ms', label: 'ms', min: 1, max: 5000 }],
+            },
+            section: 'settings',
+            defaultValue: '500ms',
+            hidden: content => !content.debounce,
         },
         placeholderElement: {
             hidden: true,

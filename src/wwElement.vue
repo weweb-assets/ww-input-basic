@@ -112,6 +112,7 @@ export default {
             noTransition: false,
             isMounted: false,
             lastDebounceValue: null,
+            isDebouncing: false,
         };
     },
     computed: {
@@ -152,6 +153,7 @@ export default {
 
             if (this.content.forceAnimation && this.isEditing) return animatedPosition;
             if (this.value.length) return animatedPosition;
+            if (this.isDebouncing) return animatedPosition;
             if (this.content.animationTrigger === 'focus' && this.isFocused) return animatedPosition;
 
             return {
@@ -283,6 +285,7 @@ export default {
 
             if (newValue === this.value) return;
             if (this.content.debounce) {
+                this.isDebouncing = true;
                 if (this.debounce) {
                     clearTimeout(this.debounce);
                 }
@@ -293,6 +296,7 @@ export default {
                         name: 'change',
                         event: { domEvent: event, value: this.lastDebounceValue },
                     });
+                    this.isDebouncing = false;
                 }, this.delay);
             } else {
                 this.setValue(newValue);

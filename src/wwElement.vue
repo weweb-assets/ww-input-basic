@@ -111,7 +111,6 @@ export default {
             isFocused: false,
             noTransition: false,
             isMounted: false,
-            lastDebounceValue: null,
             isDebouncing: false,
         };
     },
@@ -152,7 +151,7 @@ export default {
                       };
 
             if (this.content.forceAnimation && this.isEditing) return animatedPosition;
-            if (this.value.length) return animatedPosition;
+            if (this.value && this.value !== 0) return animatedPosition;
             if (this.isDebouncing) return animatedPosition;
             if (this.content.animationTrigger === 'focus' && this.isFocused) return animatedPosition;
 
@@ -284,22 +283,20 @@ export default {
             }
 
             if (newValue === this.value) return;
+            this.setValue(newValue);
             if (this.content.debounce) {
                 this.isDebouncing = true;
                 if (this.debounce) {
                     clearTimeout(this.debounce);
                 }
                 this.debounce = setTimeout(() => {
-                    this.lastDebounceValue = event.target.value;
-                    this.setValue(newValue);
                     this.$emit('trigger-event', {
                         name: 'change',
-                        event: { domEvent: event, value: this.lastDebounceValue },
+                        event: { domEvent: event, value: newValue },
                     });
                     this.isDebouncing = false;
                 }, this.delay);
             } else {
-                this.setValue(newValue);
                 this.$emit('trigger-event', { name: 'change', event: { domEvent: event, value: newValue } });
             }
         },

@@ -380,20 +380,6 @@ export default {
             letter-spacing: inherit;
             word-spacing: inherit;
         }
-
-        &[type='date']::-webkit-datetime-edit-day-field,
-        &[type='date']::-webkit-datetime-edit-month-field,
-        &[type='date']::-webkit-datetime-edit-year-field {
-            color: var(--placeholder-color, #000000ad);
-            font-family: inherit;
-            font-size: inherit;
-            font-weight: inherit;
-            line-height: inherit;
-            text-decoration: inherit;
-            letter-spacing: inherit;
-            word-spacing: inherit;
-        }
-
         &.hideArrows::-webkit-outer-spin-button,
         &.hideArrows::-webkit-inner-spin-button {
             -webkit-appearance: none;
@@ -427,5 +413,22 @@ export default {
         pointer-events: none;
     }
     /* wwEditor:end */
+}
+
+@media not all and (min-resolution: 0.001dpcm) {
+    @supports (-webkit-appearance: none) and (stroke-color: transparent) {
+        input[type='date']::-webkit-datetime-edit-day-field,
+        input[type='date']::-webkit-datetime-edit-month-field,
+        input[type='date']::-webkit-datetime-edit-year-field {
+            color: var(--placeholder-color, #000000ad);
+            font-family: inherit;
+            font-size: inherit;
+            font-weight: inherit;
+            line-height: inherit;
+            text-decoration: inherit;
+            letter-spacing: inherit;
+            word-spacing: inherit;
+        }
+    }
 }
 </style>

@@ -6,7 +6,11 @@
             v-bind="$attrs"
             :value="value"
             class="ww-input-basic__input"
-            :class="{ editing: isEditing, hideArrows: content.hideArrows && inputType === 'number' }"
+            :class="{
+                editing: isEditing,
+                hideArrows: content.hideArrows && inputType === 'number',
+                'date-placeholder': content.type === 'date' && !value,
+            }"
             :type="inputType"
             :name="wwElementState.name"
             :readonly="content.readonly"
@@ -371,6 +375,17 @@ export default {
         border-radius: inherit;
 
         &::placeholder {
+            color: var(--placeholder-color, #000000ad);
+            font-family: inherit;
+            font-size: inherit;
+            font-weight: inherit;
+            line-height: inherit;
+            text-decoration: inherit;
+            letter-spacing: inherit;
+            word-spacing: inherit;
+        }
+
+        &.date-placeholder {
             color: var(--placeholder-color, #000000ad);
             font-family: inherit;
             font-size: inherit;

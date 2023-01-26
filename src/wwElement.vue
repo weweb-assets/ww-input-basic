@@ -1,5 +1,7 @@
 <template>
     <div class="ww-input-basic" :class="{ editing: isEditing }">
+        Variable value : {{ variableValue }} / Content type : {{ content.type === 'date' }} / Condition :
+        {{ content.type === 'date' && !value }}
         <input
             v-if="content.type !== 'textarea'"
             ref="input"

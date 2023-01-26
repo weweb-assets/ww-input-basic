@@ -386,9 +386,8 @@ export default {
             letter-spacing: inherit;
             word-spacing: inherit;
         }
-        &.date-placeholder::-webkit-datetime-edit-day-field,
-        &.date-placeholder::-webkit-datetime-edit-month-field,
-        &.date-placeholder::-webkit-datetime-edit-year-field {
+
+        &.date-placeholder {
             color: var(--placeholder-color, #000000ad);
             font-family: inherit;
             font-size: inherit;
@@ -398,6 +397,7 @@ export default {
             letter-spacing: inherit;
             word-spacing: inherit;
         }
+
         &.hideArrows::-webkit-outer-spin-button,
         &.hideArrows::-webkit-inner-spin-button {
             -webkit-appearance: none;

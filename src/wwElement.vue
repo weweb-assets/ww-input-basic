@@ -6,7 +6,11 @@
             v-bind="$attrs"
             :value="value"
             class="ww-input-basic__input"
-            :class="{ editing: isEditing, hideArrows: content.hideArrows && inputType === 'number' }"
+            :class="{
+                editing: isEditing,
+                hideArrows: content.hideArrows && inputType === 'number',
+                'date-placeholder': content.type === 'date' && !value,
+            }"
             :type="inputType"
             :name="wwElementState.name"
             :readonly="content.readonly"
@@ -380,6 +384,18 @@ export default {
             letter-spacing: inherit;
             word-spacing: inherit;
         }
+        &.date-placeholder::-webkit-datetime-edit-day-field,
+        &.date-placeholder::-webkit-datetime-edit-month-field,
+        &.date-placeholder::-webkit-datetime-edit-year-field {
+            color: var(--placeholder-color, #000000ad);
+            font-family: inherit;
+            font-size: inherit;
+            font-weight: inherit;
+            line-height: inherit;
+            text-decoration: inherit;
+            letter-spacing: inherit;
+            word-spacing: inherit;
+        }
         &.hideArrows::-webkit-outer-spin-button,
         &.hideArrows::-webkit-inner-spin-button {
             -webkit-appearance: none;
@@ -413,22 +429,5 @@ export default {
         pointer-events: none;
     }
     /* wwEditor:end */
-}
-
-@media not all and (min-resolution: 0.001dpcm) {
-    @supports (-webkit-appearance: none) and (stroke-color: transparent) {
-        input[type='date']::-webkit-datetime-edit-day-field,
-        input[type='date']::-webkit-datetime-edit-month-field,
-        input[type='date']::-webkit-datetime-edit-year-field {
-            color: var(--placeholder-color, #000000ad);
-            font-family: inherit;
-            font-size: inherit;
-            font-weight: inherit;
-            line-height: inherit;
-            text-decoration: inherit;
-            letter-spacing: inherit;
-            word-spacing: inherit;
-        }
-    }
 }
 </style>

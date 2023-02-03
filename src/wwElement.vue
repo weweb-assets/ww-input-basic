@@ -3,7 +3,7 @@
         <input
             v-if="content.type !== 'textarea'"
             ref="input"
-            v-bind="$attrs"
+            v-bind="{ ...$attrs, ...(wwElementState.props.attributes || {}) }"
             :value="value"
             class="ww-input-basic__input"
             :class="{
@@ -13,7 +13,7 @@
             }"
             :type="inputType"
             :name="wwElementState.name"
-            :readonly="content.readonly"
+            :readonly="isReadonly"
             :required="content.required"
             :placeholder="isAdvancedPlaceholder ? '' : wwLang.getText(content.placeholder)"
             :style="style"
@@ -27,13 +27,13 @@
         <textarea
             v-else
             ref="input"
-            v-bind="$attrs"
+            v-bind="{ ...$attrs, ...(wwElementState.props.attributes || {}) }"
             :value="value"
             class="ww-input-basic__input"
             :class="{ editing: isEditing }"
             :type="content.type"
             :name="wwElementState.name"
-            :readonly="content.readonly"
+            :readonly="isReadonly"
             :required="content.required"
             :placeholder="isAdvancedPlaceholder ? '' : wwLang.getText(content.placeholder)"
             :style="[style, { resize: content.resize ? '' : 'none' }]"

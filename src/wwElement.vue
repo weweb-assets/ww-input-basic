@@ -98,7 +98,7 @@ export default {
             uid: props.uid,
             name: 'value',
             type: computed(() => (['decimal', 'number'].includes(type.value) ? 'number' : 'string')),
-            defaultValue: props.content.value === undefined ? '' : formatValue(props.content.value),
+            defaultValue: computed(() => props.content.value === undefined ? '' : formatValue(props.content.value)),
         });
 
         const inputRef = ref('input');

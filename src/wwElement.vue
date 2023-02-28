@@ -83,7 +83,7 @@ export default {
             return props.content.type;
         });
         const step = computed(() => {
-            return type.value === 'decimal' ? props.content.precision : '1';
+            return type.value === 'decimal' || type.value === 'number' ? props.content.step : '1';
         });
         function formatValue(value) {
             if (type.value !== 'decimal') return value;
@@ -98,7 +98,7 @@ export default {
             uid: props.uid,
             name: 'value',
             type: computed(() => (['decimal', 'number'].includes(type.value) ? 'number' : 'string')),
-            defaultValue: computed(() => props.content.value === undefined ? '' : formatValue(props.content.value)),
+            defaultValue: computed(() => (props.content.value === undefined ? '' : formatValue(props.content.value))),
         });
 
         const inputRef = ref('input');

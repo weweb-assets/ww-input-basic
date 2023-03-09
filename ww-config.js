@@ -8,7 +8,7 @@ export default {
         icon: 'text-input',
         customSettingsPropertiesOrder: [
             'value',
-            ['type', 'precision', 'min', 'max', 'hideArrows', 'displayPassword', 'rows', 'resize'],
+            ['type', 'precision', 'min', 'max', 'step', 'hideArrows', 'displayPassword', 'rows', 'resize'],
             ['placeholder'],
             ['readonly', 'required'],
             ['debounce', 'debounceDelay'],
@@ -242,6 +242,18 @@ export default {
             section: 'settings',
             hidden: content => content.type !== 'decimal',
             defaultValue: '0.1',
+        },
+        step: {
+            label: { en: 'Step', fr: 'Step' },
+            section: 'settings',
+            type: 'Number',
+            options: content =>
+                content.type === 'decimal'
+                    ? { min: 0, max: 10 * parseFloat(content.precision), step: parseFloat(content.precision) }
+                    : { min: 1, max: 100, step: 1 },
+            defaultValue: 1,
+            bindable: true,
+            hidden: content => content.type !== 'decimal' && content.type !== 'number',
         },
         placeholder: {
             label: { en: 'Placeholder', fr: 'Placeholder' },

@@ -83,13 +83,13 @@ export default {
             return props.content.type;
         });
         const step = computed(() => {
-            return type.value === 'decimal' || type.value === 'number' ? props.content.step : '1';
+            return type.value === 'decimal' || type.value === 'number' ? props.content.step : 1;
         });
         function formatValue(value) {
             if (type.value !== 'decimal') return value;
             if (!value && value !== 0) return '';
             value = `${value}`.replace(',', '.');
-            const length = value.indexOf('.') !== -1 ? step.value.split('.')[1].length : 0;
+            const length = value.indexOf('.') !== -1 ? props.content.precision.split('.')[1].length : 0;
             const newValue = parseFloat(Number(value).toFixed(length).replace(',', '.'));
             return newValue;
         }

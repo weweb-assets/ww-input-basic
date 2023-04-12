@@ -19,7 +19,7 @@
             :style="style"
             :min="content.min"
             :max="content.max"
-            :step="step"
+            :step="stepAttribute"
             @input="handleManualInput($event)"
             @blur="onBlur($event)"
             @focus="isFocused = true"
@@ -193,6 +193,9 @@ export default {
         },
         isAdvancedPlaceholder() {
             return this.content.advancedPlaceholder && !this.isReadonly;
+        },
+        stepAttribute() {
+            return this.isFocused ? this.step : 'any';
         },
     },
     watch: {

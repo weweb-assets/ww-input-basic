@@ -19,7 +19,7 @@
             :style="style"
             :min="content.min"
             :max="content.max"
-            :step="step"
+            :step="stepAttribute"
             @input="handleManualInput($event)"
             @blur="onBlur($event)"
             @focus="isFocused = true"
@@ -194,6 +194,9 @@ export default {
         isAdvancedPlaceholder() {
             return this.content.advancedPlaceholder && !this.isReadonly;
         },
+        stepAttribute() {
+            return this.isFocused ? this.step : 'any';
+        },
     },
     watch: {
         'content.value'(newValue) {
@@ -276,7 +279,12 @@ export default {
         handleManualInput(event) {
             const value = event.target.value;
             let newValue;
-            if (this.inputType === 'number' && value.length) {
+            if (this.inputType === 'number' && (event.data === '.' || event.data === ',') && value === '') {
+                // I dont know why, but 10. is not a valid number, and event.target.value is empty at this moment
+                // It's probably depending on the system local, so i have put the ',' usecase as well
+                // Returning here prevent the value to be set to null then blinking
+                return;
+            } else if (this.inputType === 'number' && value.length) {
                 try {
                     newValue = parseFloat(value);
                 } catch (error) {
@@ -285,7 +293,6 @@ export default {
             } else {
                 newValue = value;
             }
-
             if (newValue === this.value) return;
             this.setValue(newValue);
             if (this.content.debounce) {

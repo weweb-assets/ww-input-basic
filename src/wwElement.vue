@@ -53,7 +53,7 @@
             <wwElement
                 style="pointerevents: none"
                 v-bind="content.placeholderElement"
-                :states="value.length ? ['active'] : []"
+                :states="value === 0 || (value && value.length) ? ['active'] : []"
                 :ww-props="{ text: wwLang.getText(content.placeholder) || 'Placeholder' }"
             ></wwElement>
         </div>
@@ -284,7 +284,7 @@ export default {
                 // It's probably depending on the system local, so i have put the ',' usecase as well
                 // Returning here prevent the value to be set to null then blinking
                 return;
-            } else if (this.inputType === 'number' && value.length) {
+            } else if (this.inputType === 'number' && (value === 0 || (value && value.length))) {
                 try {
                     newValue = parseFloat(value);
                 } catch (error) {

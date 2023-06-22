@@ -22,7 +22,7 @@
             :step="stepAttribute"
             @input="handleManualInput($event)"
             @blur="onBlur($event)"
-            @focus="isFocused = true"
+            @focus="isReallyFocused = true"
         />
         <textarea
             v-else
@@ -39,8 +39,8 @@
             :style="[style, { resize: content.resize ? '' : 'none' }]"
             :rows="content.rows"
             @input="handleManualInput($event)"
-            @focus="isFocused = true"
-            @blur="isFocused = false"
+            @focus="isReallyFocused = true"
+            @blur="isReallyFocused = false"
         />
         <div
             v-if="isAdvancedPlaceholder"
@@ -112,7 +112,7 @@ export default {
                 top: '0px',
                 left: '0px',
             },
-            isFocused: false,
+            isReallyFocused: false,
             noTransition: false,
             isMounted: false,
             isDebouncing: false,
@@ -191,6 +191,14 @@ export default {
                 ? this.content.readonly
                 : this.wwElementState.props.readonly;
         },
+        isFocused() {
+            /* wwEditor:start */
+            if (this.wwEditorState.isSelected) {
+                return this.wwElementState.states.includes('focus');
+            }
+            /* wwEditor:end */
+            return this.isReallyFocused;
+        },
         isAdvancedPlaceholder() {
             return this.content.advancedPlaceholder && !this.isReadonly;
         },
@@ -262,6 +270,23 @@ export default {
                 /* wwEditor:end */
             },
         },
+        isReallyFocused(isFocused, wasFocused) {
+            if (isFocused && !wasFocused) {
+                this.$emit('trigger-event', { name: 'focus' });
+            } else if (!isFocused && wasFocused) {
+                this.$emit('trigger-event', { name: 'blur' });
+            }
+        },
+        isFocused: {
+            immediate: true,
+            handler(value) {
+                if (value) {
+                    this.$emit('add-state', 'focus');
+                } else {
+                    this.$emit('remove-state', 'focus');
+                }
+            },
+        },
     },
     beforeUnmount() {
         if (this.resizeObserverContent) this.resizeObserverContent.disconnect();
@@ -312,12 +337,12 @@ export default {
             }
         },
         onKeyEnter(event) {
-            if (event.key === 'Enter' && this.isFocused)
+            if (event.key === 'Enter' && this.isReallyFocused)
                 this.$emit('trigger-event', { name: 'onEnterKey', event: { value: this.value } });
         },
         onBlur(event) {
             this.correctDecimalValue(event);
-            this.isFocused = false;
+            this.isReallyFocused = false;
         },
         correctDecimalValue(event) {
             if (this.content.type === 'decimal') {

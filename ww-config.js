@@ -46,7 +46,6 @@ export default {
             bindable: true,
             responsive: true,
             states: true,
-            defaultValue: '#000000ad',
             hidden: content => content.advancedPlaceholder,
             /* wwEditor:start */
             bindingValidation: {
@@ -60,11 +59,13 @@ export default {
             label: 'Advanced placeholder',
             type: 'OnOff',
             defaultValue: false,
+            classes: true,
         },
         forceAnimation: {
             label: { en: 'Force animation' },
             type: 'OnOff',
             defaultValue: false,
+            classes: true,
             hidden: content => !content.advancedPlaceholder,
         },
         animationTrigger: {
@@ -77,6 +78,7 @@ export default {
                 ],
             },
             responsive: true,
+            classes: true,
             defaultValue: 'input',
             hidden: content => !content.advancedPlaceholder,
         },
@@ -90,6 +92,7 @@ export default {
                 ],
             },
             responsive: true,
+            classes: true,
             defaultValue: 'outside',
             hidden: content => !content.advancedPlaceholder,
         },
@@ -98,6 +101,7 @@ export default {
             type: 'Number',
             options: { min: 0, max: 1, step: 0.1 },
             responsive: true,
+            classes: true,
             defaultValue: 0.8,
             hidden: content => !content.advancedPlaceholder,
         },
@@ -111,6 +115,7 @@ export default {
             },
             responsive: true,
             defaultValue: '0px',
+            classes: true,
             hidden: content => !content.advancedPlaceholder,
         },
         transition: {
@@ -123,6 +128,7 @@ export default {
             },
             responsive: true,
             defaultValue: '400ms',
+            classes: true,
             hidden: content => !content.advancedPlaceholder,
         },
         timingFunction: {
@@ -139,6 +145,7 @@ export default {
                 ],
             },
             defaultValue: 'cubic-bezier(0, 1.08, 0.76, 1)',
+            classes: true,
             hidden: content => !content.advancedPlaceholder,
         },
         value: {
@@ -191,6 +198,7 @@ export default {
             type: 'OnOff',
             bindable: true,
             defaultValue: false,
+            classes: true,
             hidden: content => content.type !== 'password',
             /* wwEditor:start */
             bindingValidation: {
@@ -287,12 +295,14 @@ export default {
             section: 'settings',
             hidden: content => content.type !== 'textarea',
             defaultValue: 4,
+            classes: true,
         },
         resize: {
             label: { en: 'Resize', fr: 'Resize' },
             type: 'OnOff',
             hidden: content => content.type !== 'textarea',
             defaultValue: false,
+            classes: true,
         },
         min: {
             label: { en: 'Min number', fr: 'Min number' },
@@ -330,6 +340,7 @@ export default {
             section: 'settings',
             hidden: content => content.type !== 'number' && content.type !== 'decimal',
             defaultValue: false,
+            classes: true,
         },
         debounce: {
             label: { en: 'Debounce' },

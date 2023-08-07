@@ -276,7 +276,7 @@ export default {
                     : { min: 1, max: 100, step: 1 },
             defaultValue: 1,
             bindable: true,
-            hidden: content => content.type !== 'decimal' && content.type !== 'number',
+            hidden: content => content.type !== 'decimal' && content.type !== 'number' && content.type !== 'time',
         },
         timePrecision: {
             label: { en: 'Time precision', fr: 'Time precision' },

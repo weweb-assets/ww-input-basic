@@ -83,7 +83,7 @@ export default {
             return props.content.type;
         });
         const step = computed(() => {
-            return type.value === 'decimal' || type.value === 'number' ? props.content.step : 1;
+            return ['decimal', 'number', 'time'].includes(type.value) ? props.content.step : 1;
         });
         function formatValue(value) {
             if (type.value !== 'decimal') return value;
@@ -203,7 +203,7 @@ export default {
             return this.content.advancedPlaceholder && !this.isReadonly;
         },
         stepAttribute() {
-            return this.isFocused ? this.step : 'any';
+            return !this.isFocused && this.inputType === 'number' ? 'any' : this.step;
         },
     },
     watch: {

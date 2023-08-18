@@ -8,7 +8,18 @@ export default {
         icon: 'text-input',
         customSettingsPropertiesOrder: [
             'value',
-            ['type', 'precision', 'min', 'max', 'step', 'hideArrows', 'displayPassword', 'rows', 'resize'],
+            [
+                'type',
+                'precision',
+                'min',
+                'max',
+                'step',
+                'timePrecision',
+                'hideArrows',
+                'displayPassword',
+                'rows',
+                'resize',
+            ],
             ['placeholder'],
             ['readonly', 'required'],
             ['debounce', 'debounceDelay'],
@@ -266,6 +277,20 @@ export default {
             defaultValue: 1,
             bindable: true,
             hidden: content => content.type !== 'decimal' && content.type !== 'number' && content.type !== 'time',
+        },
+        timePrecision: {
+            label: { en: 'Time precision', fr: 'Time precision' },
+            type: 'TextSelect',
+            options: {
+                options: [
+                    { value: 60, label: { en: 'hh:mm' } },
+                    { value: 1, label: { en: 'hh:mm:ss' } },
+                    { value: 0.1, label: { en: 'hh:mm:ss.s' } },
+                ],
+            },
+            section: 'settings',
+            hidden: content => content.type !== 'decimal',
+            defaultValue: 1,
         },
         placeholder: {
             label: { en: 'Placeholder', fr: 'Placeholder' },

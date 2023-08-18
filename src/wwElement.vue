@@ -83,7 +83,9 @@ export default {
             return props.content.type;
         });
         const step = computed(() => {
-            return ['decimal', 'number', 'time'].includes(type.value) ? props.content.step : 1;
+            if (['decimal', 'number'].includes(type.value)) return props.content.step;
+            if ('time' === type.value) return props.content.timePrecision || 1;
+            return 1;
         });
         function formatValue(value) {
             if (type.value !== 'decimal') return value;

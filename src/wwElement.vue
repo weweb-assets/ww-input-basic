@@ -2,6 +2,7 @@
     <div class="ww-input-basic" :class="{ editing: isEditing }">
         <input
             v-if="content.type !== 'textarea'"
+            :key="'ww-input-basic-' + step"
             ref="input"
             v-bind="{ ...$attrs, ...(wwElementState.props.attributes || {}) }"
             :value="value"

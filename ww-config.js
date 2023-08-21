@@ -288,6 +288,14 @@ export default {
                     { value: 0.1, label: { en: 'hh:mm:ss.s' } },
                 ],
             },
+            bindable: true,
+            /* wwEditor:start */
+            bindingValidation: {
+                type: 'string',
+                tooltip:
+                    'A number representing the step: 60 for minutes only, 1 to enable seconds, 0.1 to enable milliseconds`',
+            },
+            /* wwEditor:end */
             section: 'settings',
             hidden: content => content.type !== 'time',
             defaultValue: 1,

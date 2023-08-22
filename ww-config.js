@@ -8,7 +8,18 @@ export default {
         icon: 'text-input',
         customSettingsPropertiesOrder: [
             'value',
-            ['type', 'precision', 'min', 'max', 'step', 'hideArrows', 'displayPassword', 'rows', 'resize'],
+            [
+                'type',
+                'precision',
+                'min',
+                'max',
+                'step',
+                'timePrecision',
+                'hideArrows',
+                'displayPassword',
+                'rows',
+                'resize',
+            ],
             ['placeholder'],
             ['readonly', 'required'],
             ['debounce', 'debounceDelay'],
@@ -266,6 +277,28 @@ export default {
             defaultValue: 1,
             bindable: true,
             hidden: content => content.type !== 'decimal' && content.type !== 'number',
+        },
+        timePrecision: {
+            label: { en: 'Time precision', fr: 'Time precision' },
+            type: 'TextSelect',
+            options: {
+                options: [
+                    { value: 60, label: { en: 'hh:mm' } },
+                    { value: 1, label: { en: 'hh:mm:ss' } },
+                    { value: 0.1, label: { en: 'hh:mm:ss.s' } },
+                ],
+            },
+            bindable: true,
+            /* wwEditor:start */
+            bindingValidation: {
+                type: 'string',
+                tooltip:
+                    'A number representing the step: 60 for minutes only, 1 to enable seconds, 0.1 to enable milliseconds`',
+            },
+            /* wwEditor:end */
+            section: 'settings',
+            hidden: content => content.type !== 'time',
+            defaultValue: 1,
         },
         placeholder: {
             label: { en: 'Placeholder', fr: 'Placeholder' },

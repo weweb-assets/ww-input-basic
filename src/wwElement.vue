@@ -2,6 +2,7 @@
     <div class="ww-input-basic" :class="{ editing: isEditing }">
         <input
             v-if="content.type !== 'textarea'"
+            :key="'ww-input-basic-' + step"
             ref="input"
             v-bind="{ ...$attrs, ...(wwElementState.props.attributes || {}) }"
             :value="value"
@@ -83,7 +84,9 @@ export default {
             return props.content.type;
         });
         const step = computed(() => {
-            return type.value === 'decimal' || type.value === 'number' ? props.content.step : 1;
+            if (['decimal', 'number'].includes(type.value)) return props.content.step;
+            if ('time' === type.value) return props.content.timePrecision || 1;
+            return 1;
         });
         function formatValue(value) {
             if (type.value !== 'decimal') return value;
@@ -203,7 +206,7 @@ export default {
             return this.content.advancedPlaceholder && !this.isReadonly;
         },
         stepAttribute() {
-            return this.isFocused ? this.step : 'any';
+            return !this.isFocused && this.inputType === 'number' ? 'any' : this.step;
         },
     },
     watch: {
@@ -234,6 +237,11 @@ export default {
             this.setValue(value);
         },
         /* wwEditor:end */
+        'content.timePrecision'(value) {
+            if (typeof this.value !== 'string') return;
+            else if (value === 60) this.setValue(this.value.slice(0, 5));
+            else if (value === 1) this.setValue(this.value.slice(0, 8));
+        },
         'content.type'() {
             this.$nextTick(() => {
                 this.handleObserver();

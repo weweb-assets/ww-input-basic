@@ -198,6 +198,7 @@ export default {
                     { value: 'date', label: { en: 'Date', fr: 'Date' } },
                     { value: 'time', label: { en: 'Time', fr: 'Heure' } },
                     { value: 'tel', label: { en: 'Phone', fr: 'Téléphone' } },
+                    { value: 'color', label: { en: 'Color', fr: 'Couleur' } },
                 ],
             },
             section: 'settings',

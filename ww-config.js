@@ -283,6 +283,7 @@ export default {
             type: 'TextSelect',
             options: {
                 options: [
+                    { value: 3600, label: { en: 'hh' } },
                     { value: 60, label: { en: 'hh:mm' } },
                     { value: 1, label: { en: 'hh:mm:ss' } },
                     { value: 0.1, label: { en: 'hh:mm:ss.s' } },

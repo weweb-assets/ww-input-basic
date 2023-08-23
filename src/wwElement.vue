@@ -239,6 +239,7 @@ export default {
         /* wwEditor:end */
         'content.timePrecision'(value) {
             if (typeof this.value !== 'string') return;
+            else if (value === 3600) this.setValue(this.value.slice(0, 2));
             else if (value === 60) this.setValue(this.value.slice(0, 5));
             else if (value === 1) this.setValue(this.value.slice(0, 8));
         },

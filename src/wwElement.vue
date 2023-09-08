@@ -11,6 +11,7 @@
                 editing: isEditing,
                 hideArrows: content.hideArrows && inputType === 'number',
                 'date-placeholder': content.type === 'date' && !value,
+                '-readonly': isReadonly,
             }"
             :type="inputType"
             :name="wwElementState.name"
@@ -451,6 +452,10 @@ export default {
             pointer-events: none;
         }
         /* wwEditor:end */
+
+        &.-readonly {
+            cursor: inherit;
+        }
     }
 
     &__placeholder {

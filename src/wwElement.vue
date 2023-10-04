@@ -56,7 +56,7 @@
                 style="pointerevents: none"
                 v-bind="content.placeholderElement"
                 :states="value === 0 || (value && value.length) ? ['active'] : []"
-                :ww-props="{ text: wwLang.getText(content.placeholder) || 'Placeholder' }"
+                :ww-props="{ text: wwLang.getText(content.placeholder) }"
             ></wwElement>
         </div>
     </div>

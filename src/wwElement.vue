@@ -105,6 +105,8 @@ export default {
             defaultValue: computed(() => (props.content.value === undefined ? '' : formatValue(props.content.value))),
         });
 
+        console.log(variableValue);
+
         const inputRef = ref('input');
 
         return { variableValue, setValue, formatValue, step, type, inputRef };
@@ -213,6 +215,9 @@ export default {
     watch: {
         'content.value'(newValue) {
             if (this.type === 'decimal') newValue = this.formatValue(newValue);
+            console.log("newValue", newValue);
+            console.log("this.value", this.value);
+            console.log("newValue === this.value", newValue === this.value);
             if (newValue === this.value) return;
             this.setValue(newValue);
             this.$emit('trigger-event', { name: 'initValueChange', event: { value: newValue } });

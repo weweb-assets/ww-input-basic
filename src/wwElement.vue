@@ -310,7 +310,7 @@ export default {
 
         wwLib.getFrontDocument().addEventListener('keyup', this.onKeyEnter);
 
-        if(this.value && this.value !== this.$refs.input.value) {
+        if(this.value !== this.$refs.input.value) {
             this.$refs.input.value = this.value;
         }
     },

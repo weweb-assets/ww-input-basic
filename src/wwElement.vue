@@ -105,8 +105,6 @@ export default {
             defaultValue: computed(() => (props.content.value === undefined ? '' : formatValue(props.content.value))),
         });
 
-        console.log(variableValue);
-
         const inputRef = ref('input');
 
         return { variableValue, setValue, formatValue, step, type, inputRef };
@@ -215,9 +213,6 @@ export default {
     watch: {
         'content.value'(newValue) {
             if (this.type === 'decimal') newValue = this.formatValue(newValue);
-            console.log("newValue", newValue);
-            console.log("this.value", this.value);
-            console.log("newValue === this.value", newValue === this.value);
             if (newValue === this.value) return;
             this.setValue(newValue);
             this.$emit('trigger-event', { name: 'initValueChange', event: { value: newValue } });
@@ -315,11 +310,7 @@ export default {
 
         wwLib.getFrontDocument().addEventListener('keyup', this.onKeyEnter);
 
-        console.log("this.value", this.value);
-        console.log("this.$refs.input.value", this.$refs.input.value);
-
-        if(this.value !== this.$refs.input.value) {
-            console.log("SET INIT VALUE");
+        if(this.value && this.value !== this.$refs.input.value) {
             this.$refs.input.value = this.value;
         }
     },

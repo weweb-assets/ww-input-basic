@@ -314,6 +314,14 @@ export default {
         this.handleObserver();
 
         wwLib.getFrontDocument().addEventListener('keyup', this.onKeyEnter);
+
+        console.log("this.value", this.value);
+        console.log("this.$refs.input.value", this.$refs.input.value);
+
+        if(this.value !== this.$refs.input.value) {
+            console.log("SET INIT VALUE");
+            this.$refs.input.value = this.value;
+        }
     },
     methods: {
         handleManualInput(event) {

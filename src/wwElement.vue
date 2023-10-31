@@ -309,6 +309,10 @@ export default {
         this.handleObserver();
 
         wwLib.getFrontDocument().addEventListener('keyup', this.onKeyEnter);
+
+        if(this.value !== this.$refs.input.value) {
+            this.$refs.input.value = this.value;
+        }
     },
     methods: {
         handleManualInput(event) {

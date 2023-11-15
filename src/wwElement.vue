@@ -204,7 +204,7 @@ export default {
             return this.isReallyFocused;
         },
         isAdvancedPlaceholder() {
-            return this.content.advancedPlaceholder && !this.isReadonly;
+            return this.content.advancedPlaceholder;
         },
         stepAttribute() {
             return !this.isFocused && this.inputType === 'number' ? 'any' : this.step;

@@ -107,7 +107,9 @@ export default {
 
         const inputRef = ref('input');
 
-        return { variableValue, setValue, formatValue, step, type, inputRef };
+        const { createElement } = wwLib.useCreateElement();
+
+        return { variableValue, setValue, formatValue, step, type, inputRef, createElement };
     },
     data() {
         return {
@@ -268,11 +270,11 @@ export default {
                 let placeholderElement = null;
 
                 if (value) {
-                    placeholderElement = await wwLib.createElement(
+                    placeholderElement = await this.createElement(
                         'ww-text',
-                        {},
-                        { name: 'Placeholder' },
-                        this.wwFrontState.sectionId
+                        {
+                            _state: { name: 'Placeholder' },
+                        }
                     );
                 }
 

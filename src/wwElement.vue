@@ -107,9 +107,21 @@ export default {
 
         const inputRef = ref('input');
 
+        /* wwEditor:start */
         const { createElement } = wwLib.useCreateElement();
+        /* wwEditor:end */
 
-        return { variableValue, setValue, formatValue, step, type, inputRef, createElement };
+        return { 
+            variableValue, 
+            setValue, 
+            formatValue, 
+            step, 
+            type, 
+            inputRef, 
+            /* wwEditor:start */
+            createElement 
+            /* wwEditor:end */
+        };
     },
     data() {
         return {

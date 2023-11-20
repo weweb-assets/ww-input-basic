@@ -8,6 +8,11 @@ export default {
         icon: 'text-input',
         customSettingsPropertiesOrder: [
             'value',
+            ['placeholder'],
+            ['readonly', 'required'],
+            ['debounce', 'debounceDelay'],
+        ],
+        customStylePropertiesOrder: [
             [
                 'type',
                 'precision',
@@ -20,11 +25,6 @@ export default {
                 'rows',
                 'resize',
             ],
-            ['placeholder'],
-            ['readonly', 'required'],
-            ['debounce', 'debounceDelay'],
-        ],
-        customStylePropertiesOrder: [
             'placeholderColor',
             'advancedPlaceholder',
             'forceAnimation',
@@ -201,14 +201,12 @@ export default {
                     { value: 'color', label: { en: 'Color', fr: 'Couleur' } },
                 ],
             },
-            section: 'settings',
             defaultValue: 'text',
         },
         displayPassword: {
             label: {
                 en: 'Display password',
             },
-            section: 'settings',
             type: 'OnOff',
             bindable: true,
             defaultValue: false,
@@ -263,13 +261,11 @@ export default {
                     { value: '0.00000001', label: { en: '1.00000000' } },
                 ],
             },
-            section: 'settings',
             hidden: content => content.type !== 'decimal',
             defaultValue: '0.1',
         },
         step: {
             label: { en: 'Step', fr: 'Step' },
-            section: 'settings',
             type: 'Number',
             options: content =>
                 content.type === 'decimal'
@@ -298,7 +294,6 @@ export default {
                     'A number representing the step: 60 for minutes only, 1 to enable seconds, 0.1 to enable milliseconds`',
             },
             /* wwEditor:end */
-            section: 'settings',
             hidden: content => content.type !== 'time',
             defaultValue: 1,
         },
@@ -329,7 +324,6 @@ export default {
             label: { en: 'Rows', fr: 'Rows' },
             type: 'Number',
             options: { min: 1, max: 25 },
-            section: 'settings',
             hidden: content => content.type !== 'textarea',
             defaultValue: 4,
             classes: true,
@@ -345,7 +339,6 @@ export default {
             label: { en: 'Min number', fr: 'Min number' },
             type: 'Number',
             options: { min: 0, max: 100 },
-            section: 'settings',
             hidden: content => content.type !== 'number' && content.type !== 'decimal',
             defaultValue: '0',
             bindable: true,
@@ -360,7 +353,6 @@ export default {
             label: { en: 'Max number', fr: 'Max number' },
             type: 'Number',
             options: { min: 0, max: 10000 },
-            section: 'settings',
             hidden: content => content.type !== 'number' && content.type !== 'decimal',
             defaultValue: '10000',
             bindable: true,
@@ -374,7 +366,6 @@ export default {
         hideArrows: {
             label: { en: 'Hide arrows', fr: 'Masquer les flèches' },
             type: 'OnOff',
-            section: 'settings',
             hidden: content => content.type !== 'number' && content.type !== 'decimal',
             defaultValue: false,
             classes: true,

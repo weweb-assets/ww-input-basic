@@ -137,26 +137,25 @@ export default {
             return wwLib.wwUtils.getLengthUnit(this.content.debounceDelay)[0];
         },
         placeholderSyle() {
-            const transition = `all ${this.noTransition ? '0ms' : this.content.transition} ${
-                this.content.timingFunction
-            }`;
+            const transition = `all ${this.noTransition ? '0ms' : this.content.transition} ${this.content.timingFunction
+                }`;
 
             const animatedPosition =
                 this.content.placeholderPosition === 'outside'
                     ? {
-                          top: '-' + this.content.positioningAjustment,
-                          left: this.placeholderPosition.left,
-                          transform: `translate3d(0, -100%, 0) scale(${this.content.placeholderScaling})`,
-                          transformOrigin: 'left',
-                          transition,
-                      }
+                        top: '-' + this.content.positioningAjustment,
+                        left: this.placeholderPosition.left,
+                        transform: `translate3d(0, -100%, 0) scale(${this.content.placeholderScaling})`,
+                        transformOrigin: 'left',
+                        transition,
+                    }
                     : {
-                          top: this.content.positioningAjustment,
-                          left: this.placeholderPosition.left,
-                          transform: `translate3d(0, 0%, 0) scale(${this.content.placeholderScaling})`,
-                          transformOrigin: 'left',
-                          transition,
-                      };
+                        top: this.content.positioningAjustment,
+                        left: this.placeholderPosition.left,
+                        transform: `translate3d(0, 0%, 0) scale(${this.content.placeholderScaling})`,
+                        transformOrigin: 'left',
+                        transition,
+                    };
 
             if (this.content.forceAnimation && this.isEditing) return animatedPosition;
             if (this.value && this.value !== 0) return animatedPosition;
@@ -310,7 +309,7 @@ export default {
 
         wwLib.getFrontDocument().addEventListener('keyup', this.onKeyEnter);
 
-        if(this.value !== this.$refs.input.value) {
+        if (this.value !== this.$refs.input.value) {
             this.$refs.input.value = this.value;
         }
     },
@@ -447,6 +446,7 @@ export default {
             -webkit-appearance: none;
             margin: 0;
         }
+
         &.hideArrows {
             -moz-appearance: textfield;
         }
@@ -455,6 +455,7 @@ export default {
         &.editing {
             pointer-events: none;
         }
+
         /* wwEditor:end */
 
         &.-readonly {
@@ -471,6 +472,7 @@ export default {
         &.editing {
             cursor: initial;
         }
+
         /* wwEditor:end */
     }
 
@@ -478,6 +480,6 @@ export default {
     &.editing {
         pointer-events: none;
     }
+
     /* wwEditor:end */
-}
-</style>
+}</style>

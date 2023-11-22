@@ -107,7 +107,21 @@ export default {
 
         const inputRef = ref('input');
 
-        return { variableValue, setValue, formatValue, step, type, inputRef };
+        /* wwEditor:start */
+        const { createElement } = wwLib.useCreateElement();
+        /* wwEditor:end */
+
+        return { 
+            variableValue, 
+            setValue, 
+            formatValue, 
+            step, 
+            type, 
+            inputRef, 
+            /* wwEditor:start */
+            createElement 
+            /* wwEditor:end */
+        };
     },
     data() {
         return {
@@ -268,11 +282,11 @@ export default {
                 let placeholderElement = null;
 
                 if (value) {
-                    placeholderElement = await wwLib.createElement(
+                    placeholderElement = await this.createElement(
                         'ww-text',
-                        {},
-                        { name: 'Placeholder' },
-                        this.wwFrontState.sectionId
+                        {
+                            _state: { name: 'Placeholder' },
+                        }
                     );
                 }
 

@@ -8,7 +8,6 @@ export default {
         icon: 'text-input',
         customSettingsPropertiesOrder: [
             'value',
-            
             ['placeholder'],
             ['readonly', 'required'],
             ['debounce', 'debounceDelay'],

@@ -14,7 +14,19 @@ export default {
         ],
         customStylePropertiesOrder: [
             'type',
-            ['precision', 'min', 'max', 'step', 'timePrecision', 'hideArrows', 'displayPassword', 'rows', 'resize'],
+            [
+                'precision',
+                'min',
+                'max',
+                'minDate',
+                'maxDate',
+                'step',
+                'timePrecision',
+                'hideArrows',
+                'displayPassword',
+                'rows',
+                'resize',
+            ],
             'placeholderColor',
             'advancedPlaceholder',
             'forceAnimation',
@@ -350,6 +362,38 @@ export default {
             bindingValidation: {
                 type: 'number',
                 tooltip: 'A number that defines the maximum value: `500`',
+            },
+            /* wwEditor:end */
+        },
+        minDate: {
+            label: { en: 'Min date' },
+            type: 'Text',
+            hidden: content => content.type !== 'date',
+            defaultValue: '',
+            bindable: true,
+            /* wwEditor:start */
+            bindingValidation: {
+                type: 'string',
+                tooltip: 'A string representing a date: `"yyyy-mm-dd"`. This format must be respected.',
+            },
+            propertyHelp: {
+                tooltip: 'A date formated like `yyyy-mm-dd`.',
+            },
+            /* wwEditor:end */
+        },
+        maxDate: {
+            label: { en: 'Max date' },
+            type: 'Text',
+            hidden: content => content.type !== 'date',
+            defaultValue: '',
+            bindable: true,
+            /* wwEditor:start */
+            bindingValidation: {
+                type: 'string',
+                tooltip: 'A string representing a date: `"yyyy-mm-dd"`. This format must be respected.',
+            },
+            propertyHelp: {
+                tooltip: 'A date formated like `yyyy-mm-dd`.',
             },
             /* wwEditor:end */
         },

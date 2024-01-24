@@ -19,8 +19,8 @@
             :required="content.required"
             :placeholder="isAdvancedPlaceholder ? '' : wwLang.getText(content.placeholder)"
             :style="style"
-            :min="min"
-            :max="max"
+            :min="content.min"
+            :max="content.max"
             :step="stepAttribute"
             @input="handleManualInput($event)"
             @blur="onBlur($event)"
@@ -222,22 +222,6 @@ export default {
         },
         stepAttribute() {
             return !this.isFocused && this.inputType === 'number' ? 'any' : this.step;
-        },
-        min() {
-            if(this.type === 'date'){
-                return this.content.minDate;
-            }
-            else {
-            return this.content.min;
-            }
-        },
-        max() {
-            if(this.type === 'date'){
-                return this.content.maxDate;
-            }
-            else {
-            return this.content.max;
-            }
         },
     },
     watch: {

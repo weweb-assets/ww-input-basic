@@ -423,6 +423,19 @@ export default {
             responsive: true,
             hidden: content => !content.debounce,
         },
+        autocomplete: {
+            label: { en: 'Autocomplete', fr: 'Autocomplétion' },
+            type: 'OnOff',
+            section: 'settings',
+            defaultValue: false,
+            bindable: true,
+            /* wwEditor:start */
+            bindingValidation: {
+                type: 'boolean',
+                tooltip: 'A boolean that defines if the autocomplete is activated: `true | false`',
+            },
+            /* wwEditor:end */
+        },
         placeholderElement: {
             hidden: true,
             defaultValue: null,

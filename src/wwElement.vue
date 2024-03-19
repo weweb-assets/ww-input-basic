@@ -17,6 +17,7 @@
             :name="wwElementState.name"
             :readonly="isReadonly"
             :required="content.required"
+            :autocomplete="content.autocomplete ? 'on' : 'off'"
             :placeholder="isAdvancedPlaceholder ? '' : wwLang.getText(content.placeholder)"
             :style="style"
             :min="min"
@@ -111,15 +112,15 @@ export default {
         const { createElement } = wwLib.useCreateElement();
         /* wwEditor:end */
 
-        return { 
-            variableValue, 
-            setValue, 
-            formatValue, 
-            step, 
-            type, 
-            inputRef, 
+        return {
+            variableValue,
+            setValue,
+            formatValue,
+            step,
+            type,
+            inputRef,
             /* wwEditor:start */
-            createElement 
+            createElement,
             /* wwEditor:end */
         };
     },
@@ -224,19 +225,17 @@ export default {
             return !this.isFocused && this.inputType === 'number' ? 'any' : this.step;
         },
         min() {
-            if(this.type === 'date'){
+            if (this.type === 'date') {
                 return this.content.minDate;
-            }
-            else {
-            return this.content.min;
+            } else {
+                return this.content.min;
             }
         },
         max() {
-            if(this.type === 'date'){
+            if (this.type === 'date') {
                 return this.content.maxDate;
-            }
-            else {
-            return this.content.max;
+            } else {
+                return this.content.max;
             }
         },
     },
@@ -298,12 +297,9 @@ export default {
                 let placeholderElement = null;
 
                 if (value) {
-                    placeholderElement = await this.createElement(
-                        'ww-text',
-                        {
-                            _state: { name: 'Placeholder' },
-                        }
-                    );
+                    placeholderElement = await this.createElement('ww-text', {
+                        _state: { name: 'Placeholder' },
+                    });
                 }
 
                 this.$emit('update:content:effect', { placeholderElement });
@@ -340,7 +336,7 @@ export default {
 
         wwLib.getFrontDocument().addEventListener('keyup', this.onKeyEnter);
 
-        if(this.value !== this.$refs.input.value) {
+        if (this.value !== this.$refs.input.value) {
             this.$refs.input.value = this.value;
         }
     },

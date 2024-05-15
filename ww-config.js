@@ -328,6 +328,7 @@ export default {
             options: { min: 1, max: 25 },
             hidden: content => content.type !== 'textarea',
             defaultValue: 4,
+            bindable: true,
             classes: true,
         },
         resize: {

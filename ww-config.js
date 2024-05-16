@@ -327,6 +327,13 @@ export default {
             type: 'Number',
             options: { min: 1, max: 25 },
             hidden: content => content.type !== 'textarea',
+            bindable: true,
+            /* wwEditor:start */
+            bindingValidation: {
+                type: 'number',
+                tooltip: 'A number that defines the number of rows: `5`',
+            },
+            /* wwEditor:end */
             defaultValue: 4,
             classes: true,
         },

@@ -174,7 +174,7 @@ export default {
                       };
 
             if (this.content.forceAnimation && this.isEditing) return animatedPosition;
-            if (this.value && this.value !== 0) return animatedPosition;
+            if (this.value || this.value === 0) return animatedPosition;
             if (this.isDebouncing) return animatedPosition;
             if (this.content.animationTrigger === 'focus' && this.isFocused) return animatedPosition;
 

@@ -412,7 +412,7 @@ export default {
         },
         updatePosition(el) {
             const placeholder = this.$refs.placeholder;
-            if (!el || !placeholder || this.isReadonly) return;
+            if (!el || !placeholder) return;
             this.noTransition = true;
 
             const pos = el.clientHeight / 2 - placeholder.clientHeight / 2;

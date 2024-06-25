@@ -1,18 +1,21 @@
 <template>
-    <div class="ww-input-basic" :class="{ editing: isEditing }">
+    <div class="ww-input-basic" :class="{ editing: isEditing }" v-bind="rootBinding">
         <input
+            :id="$attrs.id"
             v-if="content.type !== 'textarea'"
             :key="'ww-input-basic-' + step"
             ref="input"
-            v-bind="{ ...$attrs, ...(wwElementState.props.attributes || {}) }"
+            v-bind="wwElementState.props.attributes || {}"
             :value="value"
             class="ww-input-basic__input"
-            :class="{
-                editing: isEditing,
-                hideArrows: content.hideArrows && inputType === 'number',
-                'date-placeholder': content.type === 'date' && !value,
-                '-readonly': isReadonly,
-            }"
+            :class="[
+                {
+                    hideArrows: content.hideArrows && inputType === 'number',
+                    'date-placeholder': content.type === 'date' && !value,
+                    '-readonly': isReadonly,
+                },
+                $attrs.class,
+            ]"
             :type="inputType"
             :name="wwElementState.name"
             :readonly="isReadonly"
@@ -30,10 +33,11 @@
         <textarea
             v-else
             ref="input"
-            v-bind="{ ...$attrs, ...(wwElementState.props.attributes || {}) }"
+            :id="$attrs.id"
+            v-bind="wwElementState.props.attributes || {}"
             :value="value"
             class="ww-input-basic__input"
-            :class="{ editing: isEditing }"
+            :class="$attrs.class"
             :type="content.type"
             :name="wwElementState.name"
             :readonly="isReadonly"
@@ -49,7 +53,6 @@
             v-if="isAdvancedPlaceholder"
             ref="placeholder"
             class="ww-input-basic__placeholder"
-            :class="{ editing: isEditing }"
             :style="placeholderSyle"
             @click="focusInput"
         >
@@ -65,6 +68,18 @@
 
 <script>
 import { computed, ref } from 'vue';
+
+const INPUT_STYLE_PROPERTIES = [
+    'padding',
+    'border',
+    'borderLeft',
+    'borderRight',
+    'borderTop',
+    'borderBottom',
+    'borderRadius',
+    'background',
+    'height',
+];
 
 export default {
     inheritAttrs: false,
@@ -187,13 +202,33 @@ export default {
                 transition,
             };
         },
+        rootBinding() {
+            const style = { ...(this.$attrs.style || {}) };
+            INPUT_STYLE_PROPERTIES.forEach(property => {
+                delete style[property];
+            });
+            const bindings = {
+                ...this.$attrs,
+                style,
+            };
+            delete bindings.id;
+            delete bindings.class;
+
+            return bindings;
+        },
         style() {
-            const style =  {
+            const style = {
                 ...wwLib.getTextStyleFromContent(this.content),
                 '--placeholder-color': this.content.placeholderColor,
             };
-            delete style['whiteSpaceCollapse'];   //Create a visual bug in Firefox
-            delete style['whiteSpace'];           //Create a visual bug in Firefox
+            delete style['whiteSpaceCollapse']; //Create a visual bug in Firefox
+            delete style['whiteSpace']; //Create a visual bug in Firefox
+            INPUT_STYLE_PROPERTIES.forEach(property => {
+                if (this.$attrs?.style?.[property]) {
+                    style[property] = this.$attrs?.style?.[property];
+                }
+            });
+
             return style;
         },
         inputType() {
@@ -443,6 +478,19 @@ export default {
 .ww-input-basic {
     width: 100%;
     height: 100%;
+    position: relative;
+
+    /* wwEditor:start */
+    &.editing:after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: initial;
+    }
+    /* wwEditor:end */
 
     &__input {
         width: 100%;
@@ -483,12 +531,6 @@ export default {
             -moz-appearance: textfield;
         }
 
-        /* wwEditor:start */
-        &.editing {
-            pointer-events: none;
-        }
-        /* wwEditor:end */
-
         &.-readonly {
             cursor: inherit;
         }
@@ -498,18 +540,6 @@ export default {
         position: absolute;
         cursor: text;
         height: fit-content;
-
-        /* wwEditor:start */
-        &.editing {
-            cursor: initial;
-        }
-        /* wwEditor:end */
     }
-
-    /* wwEditor:start */
-    &.editing {
-        pointer-events: none;
-    }
-    /* wwEditor:end */
 }
 </style>

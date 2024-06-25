@@ -1,5 +1,5 @@
 <template>
-    <div class="ww-input-basic" :class="{ editing: isEditing }">
+    <div class="ww-input-basic" :class="{ editing: isEditing }" v-bind="wwEditorState.wwTechnicalAttributes">
         <input
             v-if="content.type !== 'textarea'"
             :key="'ww-input-basic-' + step"

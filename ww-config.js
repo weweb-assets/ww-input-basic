@@ -3,6 +3,7 @@ export default {
         type: 'ww-text',
         exclude: ['text'],
     },
+    inheritAttributes: false,
     editor: {
         label: { en: 'Form Input', fr: 'Entrée de Formulaire' },
         icon: 'text-input',

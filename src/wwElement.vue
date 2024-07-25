@@ -415,7 +415,10 @@ export default {
             if (!el || !placeholder) return;
             this.noTransition = true;
 
-            const pos = el.clientHeight / 2 - placeholder.clientHeight / 2;
+            const pos =
+                this.content.type === 'textarea'
+                    ? wwLib.wwUtils.getLengthUnit(el.style.paddingTop)[0]
+                    : el.clientHeight / 2 - placeholder.clientHeight / 2;
             this.placeholderPosition.top = pos + 'px';
             this.placeholderPosition.left = el.style.paddingLeft;
 

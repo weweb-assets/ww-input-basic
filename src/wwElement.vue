@@ -109,7 +109,7 @@ export default {
         const inputRef = ref('input');
 
         /* wwEditor:start */
-        const { createElement } = wwLib.useCreateElement();
+        const { createElement } = wwLib.wwElement.useCreate();
         /* wwEditor:end */
 
         return {
@@ -189,7 +189,7 @@ export default {
         },
         style() {
             return {
-                ...wwLib.getTextStyleFromContent(this.content),
+                ...wwLib.wwUtils.getTextStyleFromContent(this.content),
                 '--placeholder-color': this.content.placeholderColor,
             };
         },

@@ -92,7 +92,7 @@ export default {
         uid: { type: String, required: true },
         wwElementState: { type: Object, required: true },
     },
-    emits: ['trigger-event', 'add-state', 'remove-state', 'update:content:effect'],
+    emits: ['trigger-event', 'add-state', 'remove-state'],
     setup(props) {
         const type = computed(() => {
             if (Object.keys(props.wwElementState.props).includes('type')) {
@@ -123,10 +123,6 @@ export default {
 
         const inputRef = ref('input');
 
-        /* wwEditor:start */
-        const { createElement } = wwLib.useCreateElement();
-        /* wwEditor:end */
-
         return {
             variableValue,
             setValue,
@@ -134,9 +130,6 @@ export default {
             step,
             type,
             inputRef,
-            /* wwEditor:start */
-            createElement,
-            /* wwEditor:end */
         };
     },
     data() {
@@ -320,29 +313,6 @@ export default {
             this.$nextTick(() => {
                 this.handleObserver();
             });
-        },
-        'content.advancedPlaceholder': {
-            async handler(value) {
-                this.$nextTick(() => {
-                    this.handleObserver();
-                });
-
-                /* wwEditor:start */
-                if (this.wwEditorState.isACopy) {
-                    return;
-                }
-
-                let placeholderElement = null;
-
-                if (value) {
-                    placeholderElement = await this.createElement('ww-text', {
-                        _state: { name: 'Placeholder' },
-                    });
-                }
-
-                this.$emit('update:content:effect', { placeholderElement });
-                /* wwEditor:end */
-            },
         },
         isReallyFocused(isFocused, wasFocused) {
             if (isFocused && !wasFocused) {

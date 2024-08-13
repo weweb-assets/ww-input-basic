@@ -445,7 +445,7 @@ export default {
         },
         placeholderElement: {
             hidden: true,
-            defaultValue: null,
+            defaultValue: { isWwObject: true, type: 'ww-text', state: { name: 'Placeholder' } },
         },
     },
 };

@@ -1,88 +1,56 @@
 <template>
-    <div class="ww-input-basic" :class="{ editing: isEditing }" v-bind="rootBinding">
-        <input
-            :id="$attrs.id"
-            v-if="content.type !== 'textarea'"
-            :key="'ww-input-basic-' + step"
-            ref="input"
-            v-bind="wwElementState.props.attributes || {}"
-            :value="value"
-            class="ww-input-basic__input"
-            :class="[
+    <input
+        v-if="content.type !== 'textarea'"
+        :key="'ww-input-basic-' + step"
+        ref="input"
+        v-bind="wwElementState.props.attributes || {}"
+        :value="value"
+        class="ww-input-basic__input"
+        :class="
                 {
                     hideArrows: content.hideArrows && inputType === 'number',
                     'date-placeholder': content.type === 'date' && !value,
                     '-readonly': isReadonly,
+                    editing: isEditing
                 },
-                $attrs.class,
-            ]"
-            :type="inputType"
-            :name="wwElementState.name"
-            :readonly="isReadonly"
-            :required="content.required"
-            :autocomplete="content.autocomplete ? 'on' : 'off'"
-            :placeholder="isAdvancedPlaceholder ? '' : wwLang.getText(content.placeholder)"
-            :style="style"
-            :min="min"
-            :max="max"
-            :step="stepAttribute"
-            @input="handleManualInput($event)"
-            @blur="onBlur($event)"
-            @focus="isReallyFocused = true"
-        />
-        <textarea
-            v-else
-            ref="input"
-            :id="$attrs.id"
-            v-bind="wwElementState.props.attributes || {}"
-            :value="value"
-            class="ww-input-basic__input"
-            :class="$attrs.class"
-            :type="content.type"
-            :name="wwElementState.name"
-            :readonly="isReadonly"
-            :required="content.required"
-            :placeholder="isAdvancedPlaceholder ? '' : wwLang.getText(content.placeholder)"
-            :style="[style, { resize: content.resize ? '' : 'none' }]"
-            :rows="content.rows"
-            @input="handleManualInput($event)"
-            @focus="isReallyFocused = true"
-            @blur="isReallyFocused = false"
-        />
-        <div
-            v-if="isAdvancedPlaceholder"
-            ref="placeholder"
-            class="ww-input-basic__placeholder"
-            :style="placeholderSyle"
-            @click="focusInput"
-        >
-            <wwElement
-                style="pointerevents: none"
-                v-bind="content.placeholderElement"
-                :states="value === 0 || (value && value.length) ? ['active'] : []"
-                :ww-props="{ text: wwLang.getText(content.placeholder) }"
-            ></wwElement>
-        </div>
-    </div>
+            "
+        :type="inputType"
+        :name="wwElementState.name"
+        :readonly="isReadonly"
+        :required="content.required"
+        :autocomplete="content.autocomplete ? 'on' : 'off'"
+        :placeholder="wwLang.getText(content.placeholder)"
+        :style="style"
+        :min="min"
+        :max="max"
+        :step="stepAttribute"
+        @input="handleManualInput($event)"
+        @blur="onBlur($event)"
+        @focus="isReallyFocused = true"
+    />
+    <textarea
+        v-else
+        ref="input"
+        v-bind="wwElementState.props.attributes || {}"
+        :value="value"
+        class="ww-input-basic__input"
+        :type="content.type"
+        :name="wwElementState.name"
+        :readonly="isReadonly"
+        :required="content.required"
+        :placeholder="wwLang.getText(content.placeholder)"
+        :style="[style, { resize: content.resize ? '' : 'none' }]"
+        :rows="content.rows"
+        @input="handleManualInput($event)"
+        @focus="isReallyFocused = true"
+        @blur="isReallyFocused = false"
+    />
 </template>
 
 <script>
 import { computed, ref } from 'vue';
 
-const INPUT_STYLE_PROPERTIES = [
-    'padding',
-    'border',
-    'borderLeft',
-    'borderRight',
-    'borderTop',
-    'borderBottom',
-    'borderRadius',
-    'background',
-    'height',
-];
-
 export default {
-    inheritAttrs: false,
     props: {
         content: { type: Object, required: true },
         /* wwEditor:start */
@@ -123,10 +91,6 @@ export default {
 
         const inputRef = ref('input');
 
-        /* wwEditor:start */
-        const { createElement } = wwLib.useCreateElement();
-        /* wwEditor:end */
-
         return {
             variableValue,
             setValue,
@@ -134,20 +98,12 @@ export default {
             step,
             type,
             inputRef,
-            /* wwEditor:start */
-            createElement,
-            /* wwEditor:end */
         };
     },
     data() {
         return {
             paddingLeft: '0px',
-            placeholderPosition: {
-                top: '0px',
-                left: '0px',
-            },
             isReallyFocused: false,
-            noTransition: false,
             isMounted: false,
             isDebouncing: false,
         };
@@ -165,56 +121,6 @@ export default {
         },
         delay() {
             return wwLib.wwUtils.getLengthUnit(this.content.debounceDelay)[0];
-        },
-        placeholderSyle() {
-            const transition = `all ${this.noTransition ? '0ms' : this.content.transition} ${
-                this.content.timingFunction
-            }`;
-
-            const animatedPosition =
-                this.content.placeholderPosition === 'outside'
-                    ? {
-                          top: '-' + this.content.positioningAjustment,
-                          left: this.placeholderPosition.left,
-                          transform: `translate3d(0, -100%, 0) scale(${this.content.placeholderScaling})`,
-                          transformOrigin: 'left',
-                          transition,
-                      }
-                    : {
-                          top: this.content.positioningAjustment,
-                          left: this.placeholderPosition.left,
-                          transform: `translate3d(0, 0%, 0) scale(${this.content.placeholderScaling})`,
-                          transformOrigin: 'left',
-                          transition,
-                      };
-
-            if (this.content.forceAnimation && this.isEditing) return animatedPosition;
-            if (this.value || this.value === 0) return animatedPosition;
-            if (this.isDebouncing) return animatedPosition;
-            if (this.content.animationTrigger === 'focus' && this.isFocused) return animatedPosition;
-
-            return {
-                top: this.placeholderPosition.top,
-                left: this.placeholderPosition.left,
-                userSelect: 'none',
-                transform: 'translate3d(0, 0%, 0) scale(1)',
-                transformOrigin: 'left',
-                transition,
-            };
-        },
-        rootBinding() {
-            const style = { ...(this.$attrs.style || {}) };
-            INPUT_STYLE_PROPERTIES.forEach(property => {
-                delete style[property];
-            });
-            const bindings = {
-                ...this.$attrs,
-                style,
-            };
-            delete bindings.id;
-            delete bindings.class;
-
-            return bindings;
         },
         style() {
             const style = {
@@ -255,9 +161,6 @@ export default {
             }
             /* wwEditor:end */
             return this.isReallyFocused;
-        },
-        isAdvancedPlaceholder() {
-            return this.content.advancedPlaceholder;
         },
         stepAttribute() {
             return !this.isFocused && this.inputType === 'number' ? 'any' : this.step;
@@ -321,29 +224,6 @@ export default {
                 this.handleObserver();
             });
         },
-        'content.advancedPlaceholder': {
-            async handler(value) {
-                this.$nextTick(() => {
-                    this.handleObserver();
-                });
-
-                /* wwEditor:start */
-                if (this.wwEditorState.isACopy) {
-                    return;
-                }
-
-                let placeholderElement = null;
-
-                if (value) {
-                    placeholderElement = await this.createElement('ww-text', {
-                        _state: { name: 'Placeholder' },
-                    });
-                }
-
-                this.$emit('update:content:effect', { placeholderElement });
-                /* wwEditor:end */
-            },
-        },
         isReallyFocused(isFocused, wasFocused) {
             if (isFocused && !wasFocused) {
                 this.$emit('trigger-event', { name: 'focus' });
@@ -362,16 +242,8 @@ export default {
             },
         },
     },
-    beforeUnmount() {
-        if (this.resizeObserverContent) this.resizeObserverContent.disconnect();
-        if (this.resizeObserverBorder) this.resizeObserverBorder.disconnect();
-
-        wwLib.getFrontDocument().removeEventListener('keyup', this.onKeyEnter);
-    },
     mounted() {
         this.isMounted = true;
-        this.handleObserver();
-
         wwLib.getFrontDocument().addEventListener('keyup', this.onKeyEnter);
 
         if (this.value !== this.$refs.input.value) {
@@ -430,39 +302,6 @@ export default {
                 this.setValue(newValue);
                 this.$emit('trigger-event', { name: 'change', event: { domEvent: event, value: newValue } });
             }
-        },
-        handleObserver() {
-            if (!this.isMounted) return;
-            if (this.resizeObserverContent) this.resizeObserverContent.disconnect();
-            if (this.resizeObserverBorder) this.resizeObserverBorder.disconnect();
-            const el = this.$refs.input;
-            if (!el) return;
-
-            // We need both Observers because one of them works outside a ww-modal, while the other in a ww-modal
-            this.resizeObserverContent = new ResizeObserver(() => {
-                this.updatePosition(el);
-            });
-            this.resizeObserverBorder = new ResizeObserver(() => {
-                this.updatePosition(el);
-            });
-            this.resizeObserverContent.observe(el, { box: 'content-box' });
-            this.resizeObserverBorder.observe(el, { box: 'border-box' });
-        },
-        updatePosition(el) {
-            const placeholder = this.$refs.placeholder;
-            if (!el || !placeholder) return;
-            this.noTransition = true;
-
-            const pos =
-                this.content.type === 'textarea'
-                    ? wwLib.wwUtils.getLengthUnit(el.style.paddingTop)[0]
-                    : el.clientHeight / 2 - placeholder.clientHeight / 2;
-            this.placeholderPosition.top = pos + 'px';
-            this.placeholderPosition.left = el.style.paddingLeft;
-
-            setTimeout(() => {
-                this.noTransition = false;
-            }, wwLib.wwUtils.getLengthUnit(this.content.transition)[0]);
         },
         // /!\ Use externally
         focusInput() {

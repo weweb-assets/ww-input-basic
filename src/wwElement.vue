@@ -6,14 +6,7 @@
         v-bind="wwElementState.props.attributes || {}"
         :value="value"
         class="ww-input-basic__input"
-        :class="
-                {
-                    hideArrows: content.hideArrows && inputType === 'number',
-                    'date-placeholder': content.type === 'date' && !value,
-                    '-readonly': isReadonly,
-                    editing: isEditing
-                },
-            "
+        :class="{hideArrows: content.hideArrows && inputType === 'number', 'date-placeholder': content.type === 'date' && !value, '-readonly': isReadonly, editing: isEditing}"
         :type="inputType"
         :name="wwElementState.name"
         :readonly="isReadonly"

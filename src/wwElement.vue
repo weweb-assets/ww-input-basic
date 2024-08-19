@@ -104,7 +104,6 @@ export default {
         return {
             paddingLeft: '0px',
             isReallyFocused: false,
-            isMounted: false,
             isDebouncing: false,
         };
     },
@@ -195,10 +194,6 @@ export default {
                 } else {
                     this.$emit('remove-state', 'readonly');
                 }
-
-                this.$nextTick(() => {
-                    this.handleObserver();
-                });
             },
         },
         /* wwEditor:start */
@@ -213,16 +208,6 @@ export default {
             else if (value === 3600) this.setValue(this.value.slice(0, 2));
             else if (value === 60) this.setValue(this.value.slice(0, 5));
             else if (value === 1) this.setValue(this.value.slice(0, 8));
-        },
-        'content.type'() {
-            this.$nextTick(() => {
-                this.handleObserver();
-            });
-        },
-        inputRef() {
-            this.$nextTick(() => {
-                this.handleObserver();
-            });
         },
         isReallyFocused(isFocused, wasFocused) {
             if (isFocused && !wasFocused) {
@@ -243,7 +228,6 @@ export default {
         },
     },
     mounted() {
-        this.isMounted = true;
         wwLib.getFrontDocument().addEventListener('keyup', this.onKeyEnter);
 
         if (this.value !== this.$refs.input.value) {
@@ -315,30 +299,8 @@ export default {
 
 <style lang="scss" scoped>
 .ww-input-basic {
-    width: 100%;
-    height: 100%;
-    position: relative;
-
-    /* wwEditor:start */
-    &.editing:after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: initial;
-    }
-    /* wwEditor:end */
-
     &__input {
-        width: 100%;
-        height: 100%;
         outline: none;
-        border: none;
-        background-color: inherit;
-        border-radius: inherit;
-
         &::placeholder {
             color: var(--placeholder-color, #000000ad);
             font-family: inherit;
@@ -373,12 +335,6 @@ export default {
         &.-readonly {
             cursor: inherit;
         }
-    }
-
-    &__placeholder {
-        position: absolute;
-        cursor: text;
-        height: fit-content;
     }
 }
 </style>

@@ -6,7 +6,12 @@
         v-bind="wwElementState.props.attributes || {}"
         :value="value"
         class="ww-input-basic__input"
-        :class="{hideArrows: content.hideArrows && inputType === 'number', 'date-placeholder': content.type === 'date' && !value, '-readonly': isReadonly, editing: isEditing}"
+        :class="{
+            hideArrows: content.hideArrows && inputType === 'number',
+            'date-placeholder': content.type === 'date' && !value,
+            '-readonly': isReadonly,
+            editing: isEditing,
+        }"
         :type="inputType"
         :name="wwElementState.name"
         :readonly="isReadonly"
@@ -27,6 +32,7 @@
         v-bind="wwElementState.props.attributes || {}"
         :value="value"
         class="ww-input-basic__input"
+        :class="{ editing: isEditing }"
         :type="content.type"
         :name="wwElementState.name"
         :readonly="isReadonly"
@@ -294,6 +300,7 @@ export default {
 .ww-input-basic {
     &__input {
         outline: none;
+        position: relative;
         &::placeholder {
             color: var(--placeholder-color, #000000ad);
             font-family: inherit;
@@ -328,6 +335,18 @@ export default {
         &.-readonly {
             cursor: inherit;
         }
+
+        /* wwEditor:start */
+        &.editing::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            pointer-events: none;
+        }
+        /* wwEditor:end */
     }
 }
 </style>

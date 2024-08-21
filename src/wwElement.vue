@@ -20,6 +20,7 @@
             :autocomplete="content.autocomplete ? 'on' : 'off'"
             :placeholder="isAdvancedPlaceholder ? '' : wwLang.getText(content.placeholder)"
             :style="style"
+            :pattern="content.pattern"
             :min="min"
             :max="max"
             :step="stepAttribute"

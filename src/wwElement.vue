@@ -188,10 +188,13 @@ export default {
             };
         },
         style() {
-            return {
+            const style =  {
                 ...wwLib.getTextStyleFromContent(this.content),
                 '--placeholder-color': this.content.placeholderColor,
             };
+            delete style['whiteSpaceCollapse'];   //Create a visual bug in Firefox
+            delete style['whiteSpace'];           //Create a visual bug in Firefox
+            return style;
         },
         inputType() {
             if (!this.content) return 'text';

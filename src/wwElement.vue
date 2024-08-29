@@ -20,7 +20,7 @@
             :autocomplete="content.autocomplete ? 'on' : 'off'"
             :placeholder="isAdvancedPlaceholder ? '' : wwLang.getText(content.placeholder)"
             :style="style"
-            :pattern="content.pattern"
+            :pattern="['tel', 'text', 'search', 'password', 'email'].includes(content.type) ? content.pattern : null"
             :min="min"
             :max="max"
             :step="stepAttribute"

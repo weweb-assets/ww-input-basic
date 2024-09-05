@@ -211,7 +211,7 @@ export default {
         },
         style() {
             const style = {
-                ...wwLib.getTextStyleFromContent(this.content),
+                ...wwLib.wwUtils.getTextStyleFromContent(this.content),
                 '--placeholder-color': this.content.placeholderColor,
             };
             delete style['whiteSpaceCollapse']; //Create a visual bug in Firefox

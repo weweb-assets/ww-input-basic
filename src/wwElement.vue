@@ -49,6 +49,18 @@
 <script>
 import { computed, ref } from 'vue';
 
+const INPUT_STYLE_PROPERTIES = [
+    'padding',
+    'border',
+    'borderLeft',
+    'borderRight',
+    'borderTop',
+    'borderBottom',
+    'borderRadius',
+    'background',
+    'height',
+];
+
 export default {
     props: {
         content: { type: Object, required: true },
@@ -122,7 +134,7 @@ export default {
         },
         style() {
             const style = {
-                ...wwLib.getTextStyleFromContent(this.content),
+                ...wwLib.wwUtils.getTextStyleFromContent(this.content),
                 '--placeholder-color': this.content.placeholderColor,
             };
             delete style['whiteSpaceCollapse']; //Create a visual bug in Firefox

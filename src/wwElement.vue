@@ -5,7 +5,7 @@
         ref="input"
         v-bind="wwElementState.props.attributes || {}"
         :value="value"
-        class="ww-input-basic__input"
+        class="ww-input-basic"
         :class="{
             hideArrows: content.hideArrows && inputType === 'number',
             'date-placeholder': content.type === 'date' && !value,
@@ -31,7 +31,7 @@
         ref="input"
         v-bind="wwElementState.props.attributes || {}"
         :value="value"
-        class="ww-input-basic__input"
+        class="ww-input-basic"
         :class="{ editing: isEditing }"
         :type="content.type"
         :name="wwElementState.name"
@@ -310,55 +310,52 @@ export default {
 
 <style lang="scss" scoped>
 .ww-input-basic {
-    &__input {
-        outline: none;
-        position: relative;
-        &::placeholder {
-            color: var(--placeholder-color, #000000ad);
-            font-family: inherit;
-            font-size: inherit;
-            font-weight: inherit;
-            line-height: inherit;
-            text-decoration: inherit;
-            letter-spacing: inherit;
-            word-spacing: inherit;
-        }
-
-        &.date-placeholder {
-            color: var(--placeholder-color, #000000ad);
-            font-family: inherit;
-            font-size: inherit;
-            font-weight: inherit;
-            line-height: inherit;
-            text-decoration: inherit;
-            letter-spacing: inherit;
-            word-spacing: inherit;
-        }
-
-        &.hideArrows::-webkit-outer-spin-button,
-        &.hideArrows::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-        &.hideArrows {
-            -moz-appearance: textfield;
-        }
-
-        &.-readonly {
-            cursor: inherit;
-        }
-
-        /* wwEditor:start */
-        &.editing::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            left: 0;
-            pointer-events: none;
-        }
-        /* wwEditor:end */
+    outline: none;
+    position: relative;
+    isolation: isolate;
+    &::placeholder {
+        color: var(--placeholder-color, #000000ad);
+        font-family: inherit;
+        font-size: inherit;
+        font-weight: inherit;
+        line-height: inherit;
+        text-decoration: inherit;
+        letter-spacing: inherit;
+        word-spacing: inherit;
     }
+
+    &.date-placeholder {
+        color: var(--placeholder-color, #000000ad);
+        font-family: inherit;
+        font-size: inherit;
+        font-weight: inherit;
+        line-height: inherit;
+        text-decoration: inherit;
+        letter-spacing: inherit;
+        word-spacing: inherit;
+    }
+
+    &.hideArrows::-webkit-outer-spin-button,
+    &.hideArrows::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    &.hideArrows {
+        -moz-appearance: textfield;
+    }
+
+    &.-readonly {
+        cursor: inherit;
+    }
+
+    /* wwEditor:start */
+    &.editing::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        display: block;
+        z-index: 1;
+    }
+    /* wwEditor:end */
 }
 </style>

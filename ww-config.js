@@ -8,7 +8,7 @@ export default {
         icon: 'text-input',
         customSettingsPropertiesOrder: [
             'value',
-            ['placeholder'],
+            ['placeholder', 'pattern'],
             ['readonly', 'required'],
             ['debounce', 'debounceDelay'],
         ],
@@ -319,6 +319,21 @@ export default {
                     },
                 ],
                 tooltip: 'A string or a number depending on the type of input chosen: `42`, `"My placeholder"`',
+            },
+            /* wwEditor:end */
+        },
+        pattern: {
+            label: { en: 'Validation pattern', fr: 'Validation pattern' },
+            type: 'Text',
+            options: { placeholder: '.+@example.com' },
+            section: 'settings',
+            hidden: content => !['tel', 'text', 'search', 'password', 'email'].includes(content.type),
+            bindable: true,
+            defaultValue: '',
+            /* wwEditor:start */
+            bindingValidation: {
+                type: 'string',
+                tooltip: `Must be a regular expression that the input's value must match for the value to pass constraint validation.`,
             },
             /* wwEditor:end */
         },

@@ -20,7 +20,7 @@
             :autocomplete="content.autocomplete ? 'on' : 'off'"
             :placeholder="isAdvancedPlaceholder ? '' : wwLang.getText(content.placeholder)"
             :style="style"
-            :pattern="['tel', 'text', 'search', 'password', 'email'].includes(content.type) ? content.pattern : null"
+            :pattern="pattern"
             :min="min"
             :max="max"
             :step="stepAttribute"
@@ -224,6 +224,11 @@ export default {
         },
         stepAttribute() {
             return !this.isFocused && this.inputType === 'number' ? 'any' : this.step;
+        },
+        pattern() {
+            return ['tel', 'text', 'search', 'password', 'email'].includes(this.content.type)
+                ? this.content.pattern
+                : null;
         },
         min() {
             if (this.type === 'date') {

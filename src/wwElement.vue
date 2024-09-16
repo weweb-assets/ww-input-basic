@@ -49,18 +49,6 @@
 <script>
 import { computed, ref } from 'vue';
 
-const INPUT_STYLE_PROPERTIES = [
-    'padding',
-    'border',
-    'borderLeft',
-    'borderRight',
-    'borderTop',
-    'borderBottom',
-    'borderRadius',
-    'background',
-    'height',
-];
-
 export default {
     props: {
         content: { type: Object, required: true },
@@ -139,11 +127,6 @@ export default {
             };
             delete style['whiteSpaceCollapse']; //Create a visual bug in Firefox
             delete style['whiteSpace']; //Create a visual bug in Firefox
-            INPUT_STYLE_PROPERTIES.forEach(property => {
-                if (this.$attrs?.style?.[property]) {
-                    style[property] = this.$attrs?.style?.[property];
-                }
-            });
 
             return style;
         },

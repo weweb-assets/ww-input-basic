@@ -294,6 +294,7 @@ export default {
 <style lang="scss" scoped>
 .ww-input-basic {
     outline: none;
+    border: none;
     position: relative;
     isolation: isolate;
     &::placeholder {

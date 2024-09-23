@@ -14,7 +14,7 @@
         }"
         :type="inputType"
         :name="wwElementState.name"
-        :readonly="isReadonly"
+        :readonly="isReadonly || isEditing"
         :required="content.required"
         :autocomplete="content.autocomplete ? 'on' : 'off'"
         :placeholder="wwLang.getText(content.placeholder)"
@@ -35,7 +35,7 @@
         :class="{ editing: isEditing }"
         :type="content.type"
         :name="wwElementState.name"
-        :readonly="isReadonly"
+        :readonly="isReadonly || isEditing"
         :required="content.required"
         :placeholder="wwLang.getText(content.placeholder)"
         :style="[style, { resize: content.resize ? '' : 'none' }]"
@@ -333,12 +333,8 @@ export default {
     }
 
     /* wwEditor:start */
-    &.editing::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        display: block;
-        z-index: 1;
+    &.editing {
+        cursor: initial !important;
     }
     /* wwEditor:end */
 }

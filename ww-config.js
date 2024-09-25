@@ -14,6 +14,7 @@ export default {
         ],
         customStylePropertiesOrder: [
             'type',
+            'placeholderColor',
             [
                 'precision',
                 'min',
@@ -26,17 +27,6 @@ export default {
                 'displayPassword',
                 'rows',
                 'resize',
-            ],
-            'placeholderColor',
-            'advancedPlaceholder',
-            'forceAnimation',
-            [
-                'animationTrigger',
-                'placeholderPosition',
-                'placeholderScaling',
-                'positioningAjustment',
-                'transition',
-                'timingFunction',
             ],
         ],
     },
@@ -69,99 +59,6 @@ export default {
                 tooltip: 'A string that represents a color code: `"rebeccapurple" | "#00ff00" | "rgb(214, 122, 127)"`',
             },
             /* wwEditor:end */
-        },
-        advancedPlaceholder: {
-            label: 'Advanced placeholder',
-            type: 'OnOff',
-            defaultValue: false,
-            classes: true,
-        },
-        forceAnimation: {
-            label: { en: 'Force animation' },
-            type: 'OnOff',
-            defaultValue: false,
-            classes: true,
-            hidden: content => !content.advancedPlaceholder,
-        },
-        animationTrigger: {
-            label: { en: 'Trigger on' },
-            type: 'TextSelect',
-            options: {
-                options: [
-                    { value: 'focus', label: { en: 'Focus' } },
-                    { value: 'input', label: { en: 'Input' } },
-                ],
-            },
-            responsive: true,
-            classes: true,
-            defaultValue: 'input',
-            hidden: content => !content.advancedPlaceholder,
-        },
-        placeholderPosition: {
-            label: { en: 'Active position' },
-            type: 'TextSelect',
-            options: {
-                options: [
-                    { value: 'inside', label: { en: 'Inside' } },
-                    { value: 'outside', label: { en: 'Outside' } },
-                ],
-            },
-            responsive: true,
-            classes: true,
-            defaultValue: 'outside',
-            hidden: content => !content.advancedPlaceholder,
-        },
-        placeholderScaling: {
-            label: { en: 'Active size' },
-            type: 'Number',
-            options: { min: 0, max: 1, step: 0.1 },
-            responsive: true,
-            classes: true,
-            defaultValue: 0.8,
-            hidden: content => !content.advancedPlaceholder,
-        },
-        positioningAjustment: {
-            type: 'Length',
-            label: {
-                en: 'Active margin',
-            },
-            options: {
-                unitChoices: [{ value: 'px', label: 'px', min: 0, max: 500 }],
-            },
-            responsive: true,
-            defaultValue: '0px',
-            classes: true,
-            hidden: content => !content.advancedPlaceholder,
-        },
-        transition: {
-            type: 'Length',
-            label: {
-                en: 'Transition',
-            },
-            options: {
-                unitChoices: [{ value: 'ms', label: 'ms', min: 0, max: 2000 }],
-            },
-            responsive: true,
-            defaultValue: '400ms',
-            classes: true,
-            hidden: content => !content.advancedPlaceholder,
-        },
-        timingFunction: {
-            label: { en: 'Timing function' },
-            type: 'TextSelect',
-            options: {
-                options: [
-                    { value: 'cubic-bezier(0, 1.08, 0.76, 1)', label: { en: 'auto' } },
-                    { value: 'ease', label: { en: 'ease' } },
-                    { value: 'ease-in', label: { en: 'ease-in' } },
-                    { value: 'ease-out', label: { en: 'ease-out' } },
-                    { value: 'ease-in-out', label: { en: 'ease-in-out' } },
-                    { value: 'linear', label: { en: 'linear' } },
-                ],
-            },
-            defaultValue: 'cubic-bezier(0, 1.08, 0.76, 1)',
-            classes: true,
-            hidden: content => !content.advancedPlaceholder,
         },
         value: {
             label: {
@@ -442,10 +339,6 @@ export default {
                 tooltip: 'A boolean that defines if the autocomplete is activated: `true | false`',
             },
             /* wwEditor:end */
-        },
-        placeholderElement: {
-            hidden: true,
-            defaultValue: null,
         },
     },
 };

@@ -1,73 +1,55 @@
 <template>
-    <div class="ww-input-basic" :class="{ editing: isEditing }">
-        <input
-            v-if="content.type !== 'textarea'"
-            :key="'ww-input-basic-' + step"
-            ref="input"
-            v-bind="{ ...$attrs, ...(wwElementState.props.attributes || {}) }"
-            :value="value"
-            class="ww-input-basic__input"
-            :class="{
-                editing: isEditing,
-                hideArrows: content.hideArrows && inputType === 'number',
-                'date-placeholder': content.type === 'date' && !value,
-                '-readonly': isReadonly,
-            }"
-            :type="inputType"
-            :name="wwElementState.name"
-            :readonly="isReadonly"
-            :required="content.required"
-            :autocomplete="content.autocomplete ? 'on' : 'off'"
-            :placeholder="isAdvancedPlaceholder ? '' : wwLang.getText(content.placeholder)"
-            :style="style"
-            :min="min"
-            :max="max"
-            :step="stepAttribute"
-            @input="handleManualInput($event)"
-            @blur="onBlur($event)"
-            @focus="isReallyFocused = true"
-        />
-        <textarea
-            v-else
-            ref="input"
-            v-bind="{ ...$attrs, ...(wwElementState.props.attributes || {}) }"
-            :value="value"
-            class="ww-input-basic__input"
-            :class="{ editing: isEditing }"
-            :type="content.type"
-            :name="wwElementState.name"
-            :readonly="isReadonly"
-            :required="content.required"
-            :placeholder="isAdvancedPlaceholder ? '' : wwLang.getText(content.placeholder)"
-            :style="[style, { resize: content.resize ? '' : 'none' }]"
-            :rows="content.rows"
-            @input="handleManualInput($event)"
-            @focus="isReallyFocused = true"
-            @blur="isReallyFocused = false"
-        />
-        <div
-            v-if="isAdvancedPlaceholder"
-            ref="placeholder"
-            class="ww-input-basic__placeholder"
-            :class="{ editing: isEditing }"
-            :style="placeholderSyle"
-            @click="focusInput"
-        >
-            <wwElement
-                style="pointerevents: none"
-                v-bind="content.placeholderElement"
-                :states="value === 0 || (value && value.length) ? ['active'] : []"
-                :ww-props="{ text: wwLang.getText(content.placeholder) }"
-            ></wwElement>
-        </div>
-    </div>
+    <input
+        v-if="content.type !== 'textarea'"
+        :key="'ww-input-basic-' + step"
+        ref="input"
+        v-bind="wwElementState.props.attributes || {}"
+        :value="value"
+        class="ww-input-basic"
+        :class="{
+            hideArrows: content.hideArrows && inputType === 'number',
+            'date-placeholder': content.type === 'date' && !value,
+            '-readonly': isReadonly,
+            editing: isEditing,
+        }"
+        :type="inputType"
+        :name="wwElementState.name"
+        :readonly="isReadonly || isEditing"
+        :required="content.required"
+        :autocomplete="content.autocomplete ? 'on' : 'off'"
+        :placeholder="wwLang.getText(content.placeholder)"
+        :style="style"
+        :min="min"
+        :max="max"
+        :step="stepAttribute"
+        @input="handleManualInput($event)"
+        @blur="onBlur($event)"
+        @focus="isReallyFocused = true"
+    />
+    <textarea
+        v-else
+        ref="input"
+        v-bind="wwElementState.props.attributes || {}"
+        :value="value"
+        class="ww-input-basic"
+        :class="{ editing: isEditing }"
+        :type="content.type"
+        :name="wwElementState.name"
+        :readonly="isReadonly || isEditing"
+        :required="content.required"
+        :placeholder="wwLang.getText(content.placeholder)"
+        :style="[style, { resize: content.resize ? '' : 'none' }]"
+        :rows="content.rows"
+        @input="handleManualInput($event)"
+        @focus="isReallyFocused = true"
+        @blur="isReallyFocused = false"
+    />
 </template>
 
 <script>
 import { computed, ref } from 'vue';
 
 export default {
-    inheritAttrs: false,
     props: {
         content: { type: Object, required: true },
         /* wwEditor:start */
@@ -108,10 +90,6 @@ export default {
 
         const inputRef = ref('input');
 
-        /* wwEditor:start */
-        const { createElement } = wwLib.useCreateElement();
-        /* wwEditor:end */
-
         return {
             variableValue,
             setValue,
@@ -119,21 +97,12 @@ export default {
             step,
             type,
             inputRef,
-            /* wwEditor:start */
-            createElement,
-            /* wwEditor:end */
         };
     },
     data() {
         return {
             paddingLeft: '0px',
-            placeholderPosition: {
-                top: '0px',
-                left: '0px',
-            },
             isReallyFocused: false,
-            noTransition: false,
-            isMounted: false,
             isDebouncing: false,
         };
     },
@@ -151,49 +120,14 @@ export default {
         delay() {
             return wwLib.wwUtils.getLengthUnit(this.content.debounceDelay)[0];
         },
-        placeholderSyle() {
-            const transition = `all ${this.noTransition ? '0ms' : this.content.transition} ${
-                this.content.timingFunction
-            }`;
-
-            const animatedPosition =
-                this.content.placeholderPosition === 'outside'
-                    ? {
-                          top: '-' + this.content.positioningAjustment,
-                          left: this.placeholderPosition.left,
-                          transform: `translate3d(0, -100%, 0) scale(${this.content.placeholderScaling})`,
-                          transformOrigin: 'left',
-                          transition,
-                      }
-                    : {
-                          top: this.content.positioningAjustment,
-                          left: this.placeholderPosition.left,
-                          transform: `translate3d(0, 0%, 0) scale(${this.content.placeholderScaling})`,
-                          transformOrigin: 'left',
-                          transition,
-                      };
-
-            if (this.content.forceAnimation && this.isEditing) return animatedPosition;
-            if (this.value || this.value === 0) return animatedPosition;
-            if (this.isDebouncing) return animatedPosition;
-            if (this.content.animationTrigger === 'focus' && this.isFocused) return animatedPosition;
-
-            return {
-                top: this.placeholderPosition.top,
-                left: this.placeholderPosition.left,
-                userSelect: 'none',
-                transform: 'translate3d(0, 0%, 0) scale(1)',
-                transformOrigin: 'left',
-                transition,
-            };
-        },
         style() {
-            const style =  {
-                ...wwLib.getTextStyleFromContent(this.content),
+            const style = {
+                ...wwLib.wwUtils.getTextStyleFromContent(this.content),
                 '--placeholder-color': this.content.placeholderColor,
             };
-            delete style['whiteSpaceCollapse'];   //Create a visual bug in Firefox
-            delete style['whiteSpace'];           //Create a visual bug in Firefox
+            delete style['whiteSpaceCollapse']; //Create a visual bug in Firefox
+            delete style['whiteSpace']; //Create a visual bug in Firefox
+
             return style;
         },
         inputType() {
@@ -220,9 +154,6 @@ export default {
             }
             /* wwEditor:end */
             return this.isReallyFocused;
-        },
-        isAdvancedPlaceholder() {
-            return this.content.advancedPlaceholder;
         },
         stepAttribute() {
             return !this.isFocused && this.inputType === 'number' ? 'any' : this.step;
@@ -257,10 +188,6 @@ export default {
                 } else {
                     this.$emit('remove-state', 'readonly');
                 }
-
-                this.$nextTick(() => {
-                    this.handleObserver();
-                });
             },
         },
         /* wwEditor:start */
@@ -275,39 +202,6 @@ export default {
             else if (value === 3600) this.setValue(this.value.slice(0, 2));
             else if (value === 60) this.setValue(this.value.slice(0, 5));
             else if (value === 1) this.setValue(this.value.slice(0, 8));
-        },
-        'content.type'() {
-            this.$nextTick(() => {
-                this.handleObserver();
-            });
-        },
-        inputRef() {
-            this.$nextTick(() => {
-                this.handleObserver();
-            });
-        },
-        'content.advancedPlaceholder': {
-            async handler(value) {
-                this.$nextTick(() => {
-                    this.handleObserver();
-                });
-
-                /* wwEditor:start */
-                if (this.wwEditorState.isACopy) {
-                    return;
-                }
-
-                let placeholderElement = null;
-
-                if (value) {
-                    placeholderElement = await this.createElement('ww-text', {
-                        _state: { name: 'Placeholder' },
-                    });
-                }
-
-                this.$emit('update:content:effect', { placeholderElement });
-                /* wwEditor:end */
-            },
         },
         isReallyFocused(isFocused, wasFocused) {
             if (isFocused && !wasFocused) {
@@ -327,16 +221,7 @@ export default {
             },
         },
     },
-    beforeUnmount() {
-        if (this.resizeObserverContent) this.resizeObserverContent.disconnect();
-        if (this.resizeObserverBorder) this.resizeObserverBorder.disconnect();
-
-        wwLib.getFrontDocument().removeEventListener('keyup', this.onKeyEnter);
-    },
     mounted() {
-        this.isMounted = true;
-        this.handleObserver();
-
         wwLib.getFrontDocument().addEventListener('keyup', this.onKeyEnter);
 
         if (this.value !== this.$refs.input.value) {
@@ -396,39 +281,6 @@ export default {
                 this.$emit('trigger-event', { name: 'change', event: { domEvent: event, value: newValue } });
             }
         },
-        handleObserver() {
-            if (!this.isMounted) return;
-            if (this.resizeObserverContent) this.resizeObserverContent.disconnect();
-            if (this.resizeObserverBorder) this.resizeObserverBorder.disconnect();
-            const el = this.$refs.input;
-            if (!el) return;
-
-            // We need both Observers because one of them works outside a ww-modal, while the other in a ww-modal
-            this.resizeObserverContent = new ResizeObserver(() => {
-                this.updatePosition(el);
-            });
-            this.resizeObserverBorder = new ResizeObserver(() => {
-                this.updatePosition(el);
-            });
-            this.resizeObserverContent.observe(el, { box: 'content-box' });
-            this.resizeObserverBorder.observe(el, { box: 'border-box' });
-        },
-        updatePosition(el) {
-            const placeholder = this.$refs.placeholder;
-            if (!el || !placeholder) return;
-            this.noTransition = true;
-
-            const pos =
-                this.content.type === 'textarea'
-                    ? wwLib.wwUtils.getLengthUnit(el.style.paddingTop)[0]
-                    : el.clientHeight / 2 - placeholder.clientHeight / 2;
-            this.placeholderPosition.top = pos + 'px';
-            this.placeholderPosition.left = el.style.paddingLeft;
-
-            setTimeout(() => {
-                this.noTransition = false;
-            }, wwLib.wwUtils.getLengthUnit(this.content.transition)[0]);
-        },
         // /!\ Use externally
         focusInput() {
             if (this.isReadonly) return;
@@ -441,74 +293,48 @@ export default {
 
 <style lang="scss" scoped>
 .ww-input-basic {
-    width: 100%;
-    height: 100%;
-
-    &__input {
-        width: 100%;
-        height: 100%;
-        outline: none;
-        border: none;
-        background-color: inherit;
-        border-radius: inherit;
-
-        &::placeholder {
-            color: var(--placeholder-color, #000000ad);
-            font-family: inherit;
-            font-size: inherit;
-            font-weight: inherit;
-            line-height: inherit;
-            text-decoration: inherit;
-            letter-spacing: inherit;
-            word-spacing: inherit;
-        }
-
-        &.date-placeholder {
-            color: var(--placeholder-color, #000000ad);
-            font-family: inherit;
-            font-size: inherit;
-            font-weight: inherit;
-            line-height: inherit;
-            text-decoration: inherit;
-            letter-spacing: inherit;
-            word-spacing: inherit;
-        }
-
-        &.hideArrows::-webkit-outer-spin-button,
-        &.hideArrows::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-        &.hideArrows {
-            -moz-appearance: textfield;
-        }
-
-        /* wwEditor:start */
-        &.editing {
-            pointer-events: none;
-        }
-        /* wwEditor:end */
-
-        &.-readonly {
-            cursor: inherit;
-        }
+    outline: none;
+    border: none;
+    position: relative;
+    isolation: isolate;
+    &::placeholder {
+        color: var(--placeholder-color, #000000ad);
+        font-family: inherit;
+        font-size: inherit;
+        font-weight: inherit;
+        line-height: inherit;
+        text-decoration: inherit;
+        letter-spacing: inherit;
+        word-spacing: inherit;
     }
 
-    &__placeholder {
-        position: absolute;
-        cursor: text;
-        height: fit-content;
+    &.date-placeholder {
+        color: var(--placeholder-color, #000000ad);
+        font-family: inherit;
+        font-size: inherit;
+        font-weight: inherit;
+        line-height: inherit;
+        text-decoration: inherit;
+        letter-spacing: inherit;
+        word-spacing: inherit;
+    }
 
-        /* wwEditor:start */
-        &.editing {
-            cursor: initial;
-        }
-        /* wwEditor:end */
+    &.hideArrows::-webkit-outer-spin-button,
+    &.hideArrows::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    &.hideArrows {
+        -moz-appearance: textfield;
+    }
+
+    &.-readonly {
+        cursor: inherit;
     }
 
     /* wwEditor:start */
     &.editing {
-        pointer-events: none;
+        cursor: initial !important;
     }
     /* wwEditor:end */
 }

@@ -287,6 +287,10 @@ export default {
             const el = this.$refs.input;
             if (el) el.focus();
         },
+        selectInput() {
+            const el = this.$refs.input;
+            if (el) el.select();
+        },
     },
 };
 </script>

@@ -81,12 +81,25 @@ export default {
             return newValue;
         }
 
-        const { value: variableValue, setValue } = wwLib.wwVariable.useComponentVariable({
+        const { value: variableValue, setValue: setVariableValue } = wwLib.wwVariable.useComponentVariable({
             uid: props.uid,
             name: 'value',
             type: computed(() => (['decimal', 'number'].includes(type.value) ? 'number' : 'string')),
             defaultValue: computed(() => (props.content.value === undefined ? '' : formatValue(props.content.value))),
         });
+
+        function setValue(value) {
+            let newValue = value;
+            if (['decimal', 'number'].includes(type.value)) {
+                newValue = newValue > props.content.max ? props.content.max : newValue;
+                newValue = newValue < props.content.min ? props.content.min : newValue;
+            }
+
+            if (newValue != value) {
+                this.blurInput();
+            }
+            setVariableValue(newValue);
+        }
 
         const inputRef = ref('input');
 
@@ -290,6 +303,10 @@ export default {
         selectInput() {
             const el = this.$refs.input;
             if (el) el.select();
+        },
+        blurInput() {
+            const el = this.$refs.input;
+            if (el) el.blur();
         },
     },
 };

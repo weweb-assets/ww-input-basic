@@ -93,11 +93,12 @@ export default {
             if (['decimal', 'number'].includes(type.value)) {
                 newValue = newValue > props.content.max ? props.content.max : newValue;
                 newValue = newValue < props.content.min ? props.content.min : newValue;
+                // Blur if limit is reached
+                if (newValue != value) {
+                    this.blurInput();
+                }
             }
 
-            if (newValue != value) {
-                this.blurInput();
-            }
             setVariableValue(newValue);
         }
 

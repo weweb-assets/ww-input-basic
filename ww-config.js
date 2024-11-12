@@ -29,6 +29,21 @@ export default {
                 'resize',
             ],
         ],
+        hint: (_, sidePanelContent) => {
+            if (!sidePanelContent.parentSelection) return null;
+            const { header, text, button, args } = sidePanelContent.parentSelection;
+            const sections = ['style', 'settings'];
+            return sections.map(section => ({
+                section,
+                header: header,
+                text: text,
+                button: {
+                    text: button,
+                    action: 'selectParentElement',
+                    args,
+                },
+            }));
+        },
     },
     states: ['focus', 'readonly'],
     actions: [{ label: 'Focus element', action: 'focusInput' }],
@@ -340,5 +355,11 @@ export default {
             },
             /* wwEditor:end */
         },
+        /* wwEditor:start */
+        parentSelection: {
+            editorOnly: true,
+            defaultValue: false,
+        },
+        /* wwEditor:end */
     },
 };

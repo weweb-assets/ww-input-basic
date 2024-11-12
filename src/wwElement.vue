@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 export default {
     props: {
@@ -55,12 +55,36 @@ export default {
         /* wwEditor:start */
         wwFrontState: { type: Object, required: true },
         wwEditorState: { type: Object, required: true },
+        parentSelection: { type: Object, default: () => ({ allow: false, texts: {} }) },
         /* wwEditor:end */
         uid: { type: String, required: true },
         wwElementState: { type: Object, required: true },
     },
-    emits: ['element-event', 'trigger-event', 'add-state', 'remove-state', 'update:content:effect'],
-    setup(props) {
+    emits: [
+        'element-event',
+        'trigger-event',
+        'add-state',
+        'remove-state',
+        'update:content:effect',
+        'update:sidepanel-content',
+    ],
+    setup(props, { emit }) {
+        /* wwEditor:start */
+        const parentSelection = computed(() => props.parentSelection);
+
+        watch(
+            parentSelection,
+            parentSelection => {
+                if (parentSelection.allow && parentSelection.info) {
+                    emit('update:sidepanel-content', { path: 'parentSelection', value: parentSelection.info });
+                } else {
+                    emit('update:sidepanel-content', { path: 'parentSelection', value: null });
+                }
+            },
+            { immediate: true, deep: true }
+        );
+        /* wwEditor:end */
+
         const type = computed(() => {
             if (Object.keys(props.wwElementState.props).includes('type')) {
                 return props.wwElementState.props.type;
@@ -295,6 +319,11 @@ export default {
             const el = this.$refs.input;
             if (el) el.select();
         },
+        /* wwEditor:start */
+        selectParentElement(...args) {
+            wwLib.selectParentByFlag(this.$el, ...args);
+        },
+        /* wwEditor:end */
     },
 };
 </script>

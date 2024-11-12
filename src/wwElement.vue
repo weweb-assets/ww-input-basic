@@ -59,7 +59,7 @@ export default {
         uid: { type: String, required: true },
         wwElementState: { type: Object, required: true },
     },
-    emits: ['trigger-event', 'add-state', 'remove-state', 'update:content:effect'],
+    emits: ['element-event', 'trigger-event', 'add-state', 'remove-state', 'update:content:effect'],
     setup(props) {
         const type = computed(() => {
             if (Object.keys(props.wwElementState.props).includes('type')) {
@@ -258,10 +258,14 @@ export default {
                         name: 'change',
                         event: { domEvent: event, value: newValue },
                     });
+                    // element-event is useful when using inputs inside other coded components.
+                    // See ww-select-input-search => https://github.com/weweb-assets/ww-input-select-search
+                    this.$emit('element-event', { type: 'change', value: { domEvent: event, value: newValue } });
                     this.isDebouncing = false;
                 }, this.delay);
             } else {
                 this.$emit('trigger-event', { name: 'change', event: { domEvent: event, value: newValue } });
+                this.$emit('element-event', { type: 'change', value: { domEvent: event, value: newValue } });
             }
         },
         onKeyEnter(event) {

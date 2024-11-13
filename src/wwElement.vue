@@ -49,7 +49,7 @@
 <script>
 import { computed, ref } from 'vue';
 /* wwEditor:start */
-import useParentSelection from '@/editor/useParentSelection';
+import useParentSelection from './editor/useParentSelection';
 /* wwEditor:end */
 
 export default {

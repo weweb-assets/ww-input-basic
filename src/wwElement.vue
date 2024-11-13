@@ -47,7 +47,10 @@
 </template>
 
 <script>
-import { computed, ref, watch } from 'vue';
+import { computed, ref } from 'vue';
+/* wwEditor:start */
+import useParentSelection from '@/editor/useParentSelection';
+/* wwEditor:end */
 
 export default {
     props: {
@@ -70,19 +73,7 @@ export default {
     ],
     setup(props, { emit }) {
         /* wwEditor:start */
-        const parentSelection = computed(() => props.parentSelection);
-
-        watch(
-            parentSelection,
-            parentSelection => {
-                if (parentSelection.allow && parentSelection.info) {
-                    emit('update:sidepanel-content', { path: 'parentSelection', value: parentSelection.info });
-                } else {
-                    emit('update:sidepanel-content', { path: 'parentSelection', value: null });
-                }
-            },
-            { immediate: true, deep: true }
-        );
+        const { selectParentElement } = useParentSelection(props, emit);
         /* wwEditor:end */
 
         const type = computed(() => {
@@ -121,6 +112,7 @@ export default {
             step,
             type,
             inputRef,
+            selectParentElement,
         };
     },
     data() {
@@ -320,8 +312,8 @@ export default {
             if (el) el.select();
         },
         /* wwEditor:start */
-        selectParentElement(...args) {
-            wwLib.selectParentByFlag(this.$el, ...args);
+        selectParent(...args) {
+            this.selectParentElement(this.$el, ...args);
         },
         /* wwEditor:end */
     },

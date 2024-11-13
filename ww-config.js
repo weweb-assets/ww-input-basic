@@ -39,7 +39,7 @@ export default {
                 text: text,
                 button: {
                     text: button,
-                    action: 'selectParentElement',
+                    action: 'selectParent',
                     args,
                 },
             }));

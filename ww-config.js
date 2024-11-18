@@ -7,13 +7,18 @@ export default {
         label: { en: 'Form Input', fr: 'Entrée de Formulaire' },
         icon: 'text-input',
         customSettingsPropertiesOrder: [
+            'formInfobox',
+            ['fieldName', 'customValidation', 'validation'],
+            'type',
             'value',
-            ['placeholder'],
-            ['readonly', 'required'],
-            ['debounce', 'debounceDelay'],
+            'placeholder',
+            'readonly',
+            'required',
+            'autocomplete',
+            'debounce',
+            'debounceDelay',
         ],
         customStylePropertiesOrder: [
-            'type',
             'placeholderColor',
             [
                 'precision',
@@ -361,5 +366,47 @@ export default {
             defaultValue: false,
         },
         /* wwEditor:end */
+        /* wwEditor:start */
+        form: {
+            editorOnly: true,
+            hidden: true,
+            defaultValue: false,
+        },
+        formInfobox: {
+            type: 'InfoBox',
+            section: 'settings',
+            options: (_, sidePanelContent) => ({
+                variant: sidePanelContent.form?.name ? 'success' : 'warning',
+                icon: 'pencil',
+                title: sidePanelContent.form?.name || 'Unnamed form',
+                content: !sidePanelContent.form?.name && 'Give your form a meaningful name.',
+            }),
+            hidden: (_, sidePanelContent) => !sidePanelContent.form?.uid,
+        },
+        /* wwEditor:end */
+        fieldName: {
+            label: 'Field name',
+            section: 'settings',
+            type: 'Text',
+            defaultValue: '',
+            bindable: true,
+            hidden: (_, sidePanelContent) => !sidePanelContent.form?.uid,
+        },
+        customValidation: {
+            label: 'Custom validation',
+            section: 'settings',
+            type: 'OnOff',
+            defaultValue: false,
+            bindable: true,
+            hidden: (_, sidePanelContent) => !sidePanelContent.form?.uid,
+        },
+        validation: {
+            label: 'Validation',
+            section: 'settings',
+            type: 'Formula',
+            defaultValue: '',
+            bindable: true,
+            hidden: (content, sidePanelContent) => !sidePanelContent.form?.uid || !content.customValidation,
+        },
     },
 };

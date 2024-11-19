@@ -79,7 +79,7 @@ export default {
             onBlur,
         } = useInput(props, emit);
 
-        const useForm = inject('wwUseForm', () => {});
+        const useForm = inject('_wwForm:useForm', () => {});
         useForm(
             variableValue,
             {

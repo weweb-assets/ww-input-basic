@@ -85,20 +85,10 @@ export default {
         const validation = computed(() => props.content.validation);
         const customValidation = computed(() => props.content.customValidation);
 
-        watch(
-            () => [fieldName.value, validation.value, customValidation.value],
-            () => {
-                useForm(
-                    variableValue,
-                    {
-                        fieldName: fieldName.value,
-                        validation: validation.value,
-                        customValidation: customValidation.value,
-                    },
-                    { elementState: props.wwElementState, emit, sidepanelFormPath: 'form' }
-                );
-            },
-            { immediate: true, deep: true }
+        useForm(
+            variableValue,
+            { fieldName, validation, customValidation },
+            { elementState: props.wwElementState, emit, sidepanelFormPath: 'form' }
         );
 
         const inputBindings = computed(() => ({

@@ -80,14 +80,25 @@ export default {
         } = useInput(props, emit);
 
         const useForm = inject('_wwForm:useForm', () => {});
-        useForm(
-            variableValue,
-            {
-                fieldName: props.content.fieldName,
-                validation: props.content.validation,
-                customValidation: props.content.customValidation,
+
+        const fieldName = computed(() => props.content.fieldName);
+        const validation = computed(() => props.content.validation);
+        const customValidation = computed(() => props.content.customValidation);
+
+        watch(
+            () => [fieldName.value, validation.value, customValidation.value],
+            () => {
+                useForm(
+                    variableValue,
+                    {
+                        fieldName: fieldName.value,
+                        validation: validation.value,
+                        customValidation: customValidation.value,
+                    },
+                    { elementState: props.wwElementState, emit, sidepanelFormPath: 'form' }
+                );
             },
-            { elementState: props.wwElementState, emit, sidepanelFormPath: 'form' }
+            { immediate: true, deep: true }
         );
 
         const inputBindings = computed(() => ({

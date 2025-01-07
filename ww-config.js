@@ -390,7 +390,10 @@ export default {
             type: 'Text',
             defaultValue: '',
             bindable: true,
-            hidden: (_, sidePanelContent) => !sidePanelContent.form?.uid,
+            hidden: (_, sidePanelContent) => {
+                console.log('fieldName.hidden', sidePanelContent, !sidePanelContent.form?.uid);
+                return !sidePanelContent.form?.uid;
+            },
         },
         customValidation: {
             label: 'Custom validation',
@@ -398,7 +401,10 @@ export default {
             type: 'OnOff',
             defaultValue: false,
             bindable: true,
-            hidden: (_, sidePanelContent) => !sidePanelContent.form?.uid,
+            hidden: (_, sidePanelContent) => {
+                console.log('customValidation.hidden', sidePanelContent, !sidePanelContent.form?.uid);
+                return !sidePanelContent.form?.uid;
+            },
         },
         validation: {
             label: 'Validation',
@@ -406,7 +412,15 @@ export default {
             type: 'Formula',
             defaultValue: '',
             bindable: true,
-            hidden: (content, sidePanelContent) => !sidePanelContent.form?.uid || !content.customValidation,
+            hidden: (content, sidePanelContent) => {
+                console.log(
+                    'validation.hidden',
+                    sidePanelContent,
+                    content,
+                    !sidePanelContent.form?.uid || !content.customValidation
+                );
+                return !sidePanelContent.form?.uid || !content.customValidation;
+            },
         },
     },
 };

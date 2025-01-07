@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import { computed, inject, watch } from 'vue';
+import { computed, inject } from 'vue';
 import { useInput } from './composables/useInput';
 /* wwEditor:start */
 import useParentSelection from './editor/useParentSelection';

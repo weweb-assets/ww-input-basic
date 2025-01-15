@@ -258,10 +258,15 @@ export default {
                         name: 'change',
                         event: { domEvent: event, value: newValue },
                     });
+                    this.$emit('element-event', {
+                        name: 'change',
+                        event: { domEvent: event, value: newValue },
+                    });
                     this.isDebouncing = false;
                 }, this.delay);
             } else {
                 this.$emit('trigger-event', { name: 'change', event: { domEvent: event, value: newValue } });
+                this.$emit('element-event', { name: 'change', event: { domEvent: event, value: newValue } });
             }
         },
         onKeyEnter(event) {

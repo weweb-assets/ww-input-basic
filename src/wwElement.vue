@@ -258,10 +258,15 @@ export default {
                         name: 'change',
                         event: { domEvent: event, value: newValue },
                     });
+                    this.$emit('element-event', {
+                        name: 'change',
+                        event: { domEvent: event, value: newValue },
+                    });
                     this.isDebouncing = false;
                 }, this.delay);
             } else {
                 this.$emit('trigger-event', { name: 'change', event: { domEvent: event, value: newValue } });
+                this.$emit('element-event', { name: 'change', event: { domEvent: event, value: newValue } });
             }
         },
         onKeyEnter(event) {
@@ -279,6 +284,7 @@ export default {
                 if (newValue === this.value) return;
                 this.setValue(newValue);
                 this.$emit('trigger-event', { name: 'change', event: { domEvent: event, value: newValue } });
+                this.$emit('element-event', { name: 'change', event: { domEvent: event, value: newValue } });
             }
         },
         // /!\ Use externally

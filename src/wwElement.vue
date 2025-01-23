@@ -221,6 +221,9 @@ export default {
             },
         },
     },
+    beforeUnmount() {
+        wwLib.getFrontDocument().removeEventListener('keyup', this.onKeyEnter);
+    },
     mounted() {
         wwLib.getFrontDocument().addEventListener('keyup', this.onKeyEnter);
 

@@ -41,6 +41,8 @@ Properties:
 - debounce: boolean - Enable debounce. Default: false
 - debounceDelay: string - Debounce delay (1-5000ms). Default: "500ms"
 - autocomplete: boolean - Enable browser autocomplete. Default: false
+- customValidation: boolean - Enable custom validation. Default: false
+- validation: Formula - Custom validation formula. Requires customValidation to be true!
 
 Children:
 - icon: ww-icon - Icon inside input field
@@ -55,3 +57,8 @@ Events:
 
 Variables:
 - value: string|number - Current input value
+
+Example:
+<elements>
+{"uid":0,"tag":"ww-input-basic","name":"Email Input","props":{"default":{"max":"10000","min":"0","rows":4,"step":1,"type":"text","value":"","resize":false,"maxDate":"","minDate":"","debounce":false,"readonly":false,"required":true,"fieldName":"email","precision":"0.1","hideArrows":false,"validation":{"code":"formulas['f4c7b005-33d0-4727-abf3-bf6191c7ad1f'](context.local.data?.['form']?.['fields']?.['email']?.['value'])","type":"f"},"autocomplete":false,"debounceDelay":"500ms","timePrecision":1,"displayPassword":false,"customValidation":true}},"styles":{"default":{"width":"100%","backgroundColor":"#FFFFFF"}}}
+</elements>

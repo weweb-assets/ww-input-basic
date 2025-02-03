@@ -143,7 +143,9 @@ export default {
             focusInput,
             selectInput,
             onBlur,
+            /* wwEditor:start */
             selectParentElement,
+            /* wwEditor:end */
             inputBindings,
             textareaBindings,
             inputClasses,

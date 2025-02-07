@@ -1,4 +1,4 @@
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 export function useInput(props, emit) {
     const isReallyFocused = ref(false);
@@ -22,12 +22,19 @@ export function useInput(props, emit) {
         return newValue;
     }
 
+    const defaultValue = computed(() => (props.content.value === undefined ? '' : formatValue(props.content.value)));
     const { value: variableValue, setValue } = wwLib.wwVariable.useComponentVariable({
         uid: props.uid,
         name: 'value',
         type: computed(() => (['decimal', 'number'].includes(type.value) ? 'number' : 'string')),
-        defaultValue: computed(() => (props.content.value === undefined ? '' : formatValue(props.content.value))),
+        defaultValue,
     });
+
+    /** wwEditor:start */
+    watch(defaultValue, () => {
+        setValue(defaultValue.value);
+    });
+    /* wwEditor:end */
 
     const inputType = computed(() => {
         if (!props.content) return 'text';

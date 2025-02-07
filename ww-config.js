@@ -391,7 +391,6 @@ export default {
             defaultValue: '',
             bindable: true,
             hidden: (_, sidePanelContent) => {
-                console.log('fieldName.hidden', sidePanelContent, !sidePanelContent.form?.uid);
                 return !sidePanelContent.form?.uid;
             },
         },
@@ -402,7 +401,6 @@ export default {
             defaultValue: false,
             bindable: true,
             hidden: (_, sidePanelContent) => {
-                console.log('customValidation.hidden', sidePanelContent, !sidePanelContent.form?.uid);
                 return !sidePanelContent.form?.uid;
             },
         },
@@ -413,12 +411,6 @@ export default {
             defaultValue: '',
             bindable: true,
             hidden: (content, sidePanelContent) => {
-                console.log(
-                    'validation.hidden',
-                    sidePanelContent,
-                    content,
-                    !sidePanelContent.form?.uid || !content.customValidation
-                );
                 return !sidePanelContent.form?.uid || !content.customValidation;
             },
         },

@@ -84,10 +84,11 @@ export default {
         const fieldName = computed(() => props.content.fieldName);
         const validation = computed(() => props.content.validation);
         const customValidation = computed(() => props.content.customValidation);
+        const required = computed(() => props.content.required);
 
         useForm(
             variableValue,
-            { fieldName, validation, customValidation },
+            { fieldName, validation, customValidation, required },
             { elementState: props.wwElementState, emit, sidepanelFormPath: 'form' }
         );
 

@@ -7,13 +7,18 @@ export default {
         label: { en: 'Form Input', fr: 'Entrée de Formulaire' },
         icon: 'text-input',
         customSettingsPropertiesOrder: [
+            'formInfobox',
+            ['fieldName', 'customValidation', 'validation'],
+            'type',
             'value',
-            ['placeholder'],
-            ['readonly', 'required'],
-            ['debounce', 'debounceDelay'],
+            'placeholder',
+            'readonly',
+            'required',
+            'autocomplete',
+            'debounce',
+            'debounceDelay',
         ],
         customStylePropertiesOrder: [
-            'type',
             'placeholderColor',
             [
                 'precision',
@@ -29,6 +34,21 @@ export default {
                 'resize',
             ],
         ],
+        hint: (_, sidePanelContent) => {
+            if (!sidePanelContent.parentSelection) return null;
+            const { header, text, button, args } = sidePanelContent.parentSelection;
+            const sections = ['style', 'settings'];
+            return sections.map(section => ({
+                section,
+                header: header,
+                text: text,
+                button: {
+                    text: button,
+                    action: 'selectParent',
+                    args,
+                },
+            }));
+        },
     },
     states: ['focus', 'readonly'],
     actions: [{ label: 'Focus element', action: 'focusInput' }],
@@ -339,6 +359,60 @@ export default {
                 tooltip: 'A boolean that defines if the autocomplete is activated: `true | false`',
             },
             /* wwEditor:end */
+        },
+        /* wwEditor:start */
+        parentSelection: {
+            editorOnly: true,
+            defaultValue: false,
+        },
+        /* wwEditor:end */
+        /* wwEditor:start */
+        form: {
+            editorOnly: true,
+            hidden: true,
+            defaultValue: false,
+        },
+        formInfobox: {
+            type: 'InfoBox',
+            section: 'settings',
+            options: (_, sidePanelContent) => ({
+                variant: sidePanelContent.form?.name ? 'success' : 'warning',
+                icon: 'pencil',
+                title: sidePanelContent.form?.name || 'Unnamed form',
+                content: !sidePanelContent.form?.name && 'Give your form a meaningful name.',
+            }),
+            hidden: (_, sidePanelContent) => !sidePanelContent.form?.uid,
+        },
+        /* wwEditor:end */
+        fieldName: {
+            label: 'Field name',
+            section: 'settings',
+            type: 'Text',
+            defaultValue: '',
+            bindable: true,
+            hidden: (_, sidePanelContent) => {
+                return !sidePanelContent.form?.uid;
+            },
+        },
+        customValidation: {
+            label: 'Custom validation',
+            section: 'settings',
+            type: 'OnOff',
+            defaultValue: false,
+            bindable: true,
+            hidden: (_, sidePanelContent) => {
+                return !sidePanelContent.form?.uid;
+            },
+        },
+        validation: {
+            label: 'Validation',
+            section: 'settings',
+            type: 'Formula',
+            defaultValue: '',
+            bindable: true,
+            hidden: (content, sidePanelContent) => {
+                return !sidePanelContent.form?.uid || !content.customValidation;
+            },
         },
     },
 };

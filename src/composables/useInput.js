@@ -153,6 +153,14 @@ export function useInput(props, emit) {
         if (inputRef.value) inputRef.value.select();
     }
 
+    watch(isReallyFocused, (isFocused, wasFocused) => {
+        if (isFocused && !wasFocused) {
+            emit('trigger-event', { name: 'focus' });
+        } else if (!isFocused && wasFocused) {
+            emit('trigger-event', { name: 'blur' });
+        }
+    });
+
     return {
         inputRef,
         variableValue,

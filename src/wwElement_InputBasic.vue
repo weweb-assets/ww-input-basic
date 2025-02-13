@@ -8,6 +8,7 @@
         @input="handleManualInput"
         @blur="onBlur"
         @focus="isReallyFocused = true"
+        @keyup.enter="onEnter"
     />
     <textarea
         v-else
@@ -18,11 +19,12 @@
         @input="handleManualInput"
         @focus="isReallyFocused = true"
         @blur="isReallyFocused = false"
+        @keyup.enter="onEnter"
     />
 </template>
 
 <script>
-import { computed, inject } from 'vue';
+import { computed, inject, watch } from 'vue';
 import { useInput } from './composables/useInput';
 /* wwEditor:start */
 import useParentSelection from './editor/useParentSelection';
@@ -127,6 +129,17 @@ export default {
             editing: isEditing.value,
         }));
 
+        function onEnter() {
+            emit('trigger-event', { name: 'onEnterKey', event: { value: variableValue.value } });
+        }
+
+        watch(
+            () => props.content.value,
+            v => {
+                emit('trigger-event', { name: 'initValueChange', event: { value: v } });
+            }
+        );
+
         return {
             inputRef,
             isReallyFocused,
@@ -150,6 +163,7 @@ export default {
             inputBindings,
             textareaBindings,
             inputClasses,
+            onEnter,
         };
     },
 };

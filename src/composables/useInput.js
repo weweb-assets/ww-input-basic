@@ -161,6 +161,54 @@ export function useInput(props, emit) {
         }
     });
 
+    const isFocused = computed(() => {
+        /* wwEditor:start */
+        if (props.wwEditorState.isSelected) {
+            return props.wwElementState.states.includes('focus');
+        }
+        /* wwEditor:end */
+        return isReallyFocused.value;
+    });
+
+    watch(
+        isFocused,
+        value => {
+            if (value) {
+                emit('add-state', 'focus');
+            } else {
+                emit('remove-state', 'focus');
+            }
+        },
+        {
+            immediate: true,
+        }
+    );
+
+    watch(
+        isReadonly,
+        value => {
+            if (value) {
+                emit('add-state', 'readonly');
+            } else {
+                emit('remove-state', 'readonly');
+            }
+        },
+        {
+            immediate: true,
+        }
+    );
+
+    /* wwEditor:start */
+    watch(
+        () => props.content.precision,
+        (newValue, oldValue) => {
+            if (newValue === oldValue) return;
+            const value = formatValue(variableValue.value);
+            setValue(value);
+        }
+    );
+    /* wwEditor:end */
+
     return {
         inputRef,
         variableValue,
@@ -178,5 +226,6 @@ export function useInput(props, emit) {
         focusInput,
         selectInput,
         onBlur,
+        isFocused,
     };
 }

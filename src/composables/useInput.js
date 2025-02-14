@@ -93,10 +93,9 @@ export function useInput(props, emit) {
 
     function correctDecimalValue(event) {
         if (type.value === 'decimal') {
-            const newValue = formatValue(props.value);
-
-            if (newValue === props.value) return;
-            props.setValue(newValue);
+            const newValue = formatValue(variableValue.value);
+            if (newValue === variableValue.value) return;
+            setValue(newValue);
             emit('trigger-event', { name: 'change', event: { domEvent: event, value: newValue } });
         }
     }

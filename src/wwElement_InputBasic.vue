@@ -85,6 +85,7 @@ export default {
 
         const fieldName = computed(() => props.content.fieldName);
         const validation = computed(() => props.content.validation);
+        console.log('validation', validation.value);
         const customValidation = computed(() => props.content.customValidation);
         const required = computed(() => props.content.required);
 

@@ -16,17 +16,25 @@ export function useInput(props, emit) {
     function formatValue(value) {
         if (type.value !== 'decimal') return value;
         if (!value && value !== 0) return '';
+
+        // Convert to string and ensure decimal point is '.'
         value = `${value}`.replace(',', '.');
-        const length = value.indexOf('.') !== -1 ? props.content.precision.split('.')[1].length : 0;
-        const newValue = parseFloat(Number(value).toFixed(length).replace(',', '.'));
-        return newValue;
+
+        // Determine decimal places from precision setting
+        // The precision is stored as "0.1", "0.01", etc.
+        // Count the zeros after the decimal point to get the precision
+        const precisionStr = props.content.precision;
+        const decimalPlaces = precisionStr.includes('.') ? precisionStr.split('.')[1].length : 0;
+
+        // Format the number with fixed decimal places
+        // We need to return a string to preserve trailing zeros
+        return Number(value).toFixed(decimalPlaces);
     }
 
     const defaultValue = computed(() => (props.content.value === undefined ? '' : formatValue(props.content.value)));
     const { value: variableValue, setValue } = wwLib.wwVariable.useComponentVariable({
         uid: props.uid,
         name: 'value',
-        type: computed(() => (['decimal', 'number'].includes(type.value) ? 'number' : 'string')),
         defaultValue,
     });
 
@@ -93,10 +101,14 @@ export function useInput(props, emit) {
 
     function correctDecimalValue(event) {
         if (type.value === 'decimal') {
-            const newValue = formatValue(variableValue.value);
-            if (newValue === variableValue.value) return;
-            setValue(newValue);
-            emit('trigger-event', { name: 'change', event: { domEvent: event, value: newValue } });
+            const formattedValue = formatValue(variableValue.value);
+            if (formattedValue !== variableValue.value) {
+                setValue(formattedValue);
+                emit('trigger-event', {
+                    name: 'change',
+                    event: { domEvent: event, value: parseFloat(formattedValue) },
+                });
+            }
         }
     }
 
@@ -119,6 +131,10 @@ export function useInput(props, emit) {
         if (newValue === props.value) return;
         setValue(newValue);
 
+        const parsedValue =
+            (inputType.value === 'number' || inputType.value === 'decimal') && typeof newValue === 'string'
+                ? parseFloat(newValue)
+                : newValue;
         if (props.content.debounce) {
             isDebouncing.value = true;
             if (debounceTimeout) {
@@ -127,14 +143,14 @@ export function useInput(props, emit) {
             debounceTimeout = setTimeout(() => {
                 emit('trigger-event', {
                     name: 'change',
-                    event: { domEvent: event, value: newValue },
+                    event: { domEvent: event, value: parsedValue },
                 });
-                emit('element-event', { type: 'change', value: { domEvent: event, value: newValue } });
+                emit('element-event', { type: 'change', value: { domEvent: event, value: parsedValue } });
                 isDebouncing.value = false;
             }, delay.value);
         } else {
-            emit('trigger-event', { name: 'change', event: { domEvent: event, value: newValue } });
-            emit('element-event', { type: 'change', value: { domEvent: event, value: newValue } });
+            emit('trigger-event', { name: 'change', event: { domEvent: event, value: parsedValue } });
+            emit('element-event', { type: 'change', value: { domEvent: event, value: parsedValue } });
         }
     }
 

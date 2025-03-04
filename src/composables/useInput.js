@@ -1,4 +1,4 @@
-import { computed, ref, watch } from 'vue';
+import { computed, ref, watch, onUnmounted, nextTick } from 'vue';
 
 export function useInput(props, emit) {
     const isReallyFocused = ref(false);
@@ -70,6 +70,7 @@ export function useInput(props, emit) {
         };
         delete computedStyle['whiteSpaceCollapse'];
         delete computedStyle['whiteSpace'];
+        
         return computedStyle;
     });
 
@@ -113,6 +114,7 @@ export function useInput(props, emit) {
     }
 
     function handleManualInput(event) {
+        // Regular input handling - all resize preservation is now handled by the directive
         const value = event.target.value;
         let newValue;
 
@@ -135,6 +137,7 @@ export function useInput(props, emit) {
             (inputType.value === 'number' || inputType.value === 'decimal') && typeof newValue === 'string'
                 ? parseFloat(newValue)
                 : newValue;
+                
         if (props.content.debounce) {
             isDebouncing.value = true;
             if (debounceTimeout) {
@@ -224,6 +227,9 @@ export function useInput(props, emit) {
     );
     /* wwEditor:end */
 
+    // No longer using resize observer - see handleManualInput
+    // for our approach to preserve textarea dimensions
+
     return {
         inputRef,
         variableValue,
@@ -242,6 +248,6 @@ export function useInput(props, emit) {
         selectInput,
         onBlur,
         isFocused,
-        setValue,
+        setValue
     };
 }

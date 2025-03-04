@@ -16,6 +16,7 @@
         v-bind="textareaBindings"
         class="ww-input-basic"
         :class="{ editing: isEditing }"
+        v-preserve-size="content.resize" 
         @input="handleManualInput"
         @focus="isReallyFocused = true"
         @blur="isReallyFocused = false"
@@ -30,7 +31,79 @@ import { useInput } from './composables/useInput';
 import useParentSelection from './editor/useParentSelection';
 /* wwEditor:end */
 
+// Custom directive to preserve textarea size during updates
+const vPreserveSize = {
+    created(el, binding) {
+        if (!binding.value) return;
+        el._preserveSize = {
+            observer: null,
+            width: null,
+            height: null
+        };
+
+        // Initialize with the current dimensions
+        updateSavedSize(el);
+
+        // Set up a mutation observer to track changes to the style attribute
+        const observer = new MutationObserver((mutations) => {
+            for (const mutation of mutations) {
+                if (mutation.attributeName === 'style') {
+                    updateSavedSize(el);
+                }
+            }
+        });
+
+        // Observe style attribute changes
+        observer.observe(el, { 
+            attributes: true,
+            attributeFilter: ['style']
+        });
+
+        el._preserveSize.observer = observer;
+
+        // Helper to update saved size from current element
+        function updateSavedSize(element) {
+            const computedStyle = window.getComputedStyle(element);
+            // Only save if not auto
+            if (computedStyle.width !== 'auto' && computedStyle.height !== 'auto') {
+                element._preserveSize.width = computedStyle.width;
+                element._preserveSize.height = computedStyle.height;
+            }
+        }
+    },
+    
+    beforeUpdate(el, binding) {
+        if (!binding.value || !el._preserveSize) return;
+        
+        // Before Vue updates, save any inline style dimensions 
+        if (el.style.width && el.style.height) {
+            el._preserveSize.width = el.style.width;
+            el._preserveSize.height = el.style.height;
+        }
+    },
+    
+    updated(el, binding) {
+        if (!binding.value || !el._preserveSize) return;
+        
+        // After Vue updates, restore dimensions if we have them
+        if (el._preserveSize.width && el._preserveSize.height) {
+            el.style.width = el._preserveSize.width;
+            el.style.height = el._preserveSize.height;
+        }
+    },
+    
+    unmounted(el) {
+        // Clean up the observer
+        if (el._preserveSize && el._preserveSize.observer) {
+            el._preserveSize.observer.disconnect();
+        }
+    }
+};
+
 export default {
+    directives: {
+        preserveSize: vPreserveSize
+    },
     props: {
         content: { type: Object, required: true },
         /* wwEditor:start */
@@ -121,7 +194,10 @@ export default {
             required: props.content.required,
             placeholder: wwLib.wwLang.getText(props.content.placeholder),
             rows: props.content.rows,
-            style: [style.value, { resize: props.content.resize ? '' : 'none' }],
+            style: { 
+                ...style.value,
+                resize: props.content.resize ? '' : 'none'
+            },
         }));
 
         const inputClasses = computed(() => ({

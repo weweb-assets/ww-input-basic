@@ -226,5 +226,6 @@ export function useInput(props, emit) {
         selectInput,
         onBlur,
         isFocused,
+        setValue,
     };
 }

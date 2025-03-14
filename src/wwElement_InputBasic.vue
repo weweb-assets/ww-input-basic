@@ -1,31 +1,38 @@
 <template>
     <!-- Currency Type -->
-    <div
-        v-if="content.type == 'currency'"
-        @click="focusInput"
-        class="input-wrapper"
-        :class="{ 'has-currency-symbol': showCurrencySymbol }"
-    >
-        <span v-if="showCurrencySymbol" ref="currencySymbolRef" class="currency-symbol" :style="[currencySymbolStyle, style]">
-            {{ currencySymbol }}
-        </span>
-        <input
-            ref="inputRef"
-            v-bind="inputBindings"
-            class="ww-input-basic"
-            :class="[inputClasses, { 'with-currency-symbol': showCurrencySymbol }]"
-            :style="showCurrencySymbol ? symbolPadding : {}"
-            @input="handleManualInput"
-            @blur="() => {
-                onBlur();
-                onCurrencyBlur();
-            }"
-            @focus="() => {
-                isReallyFocused = true;
-                onCurrencyFocus();
-            }"
-            @keyup.enter="onEnter"
-        />
+    <div v-if="content.type == 'currency'" @click="focusInput">
+        <div class="input-wrapper" :class="{ 'has-currency-symbol': showCurrencySymbol }">
+            <span
+                v-if="showCurrencySymbol"
+                ref="currencySymbolRef"
+                class="currency-symbol"
+                :style="[currencySymbolStyle, style]"
+            >
+                {{ currencySymbol }}
+            </span>
+            <input
+                ref="inputRef"
+                v-bind="inputBindings"
+                class="ww-input-basic"
+                :class="[inputClasses, { 'with-currency-symbol': showCurrencySymbol }]"
+                :style="showCurrencySymbol ? currencyInputStyle : {}"
+                @input="handleManualInput"
+                @blur="
+                    () => {
+                        isReallyFocused = false;
+                        onBlur();
+                        onCurrencyBlur();
+                    }
+                "
+                @focus="
+                    () => {
+                        isReallyFocused = true;
+                        onCurrencyFocus();
+                    }
+                "
+                @keyup.enter="onEnter"
+            />
+        </div>
     </div>
     <!-- Textarea Type -->
     <textarea
@@ -113,6 +120,18 @@ export default {
             setValue,
         } = useInput(props, emit);
 
+        const {
+            isCurrencyType,
+            showCurrencySymbol,
+            currencySymbol,
+            currencySymbolRef,
+            currencySymbolStyle,
+            currencyInputStyle,
+            onCurrencyBlur,
+            onCurrencyFocus,
+            formattedCurrencyValue,
+        } = useCurrency(props, { emit, setValue, variableValue });
+
         const useForm = inject('_wwForm:useForm', () => {});
 
         const fieldName = computed(() => props.content.fieldName);
@@ -129,7 +148,7 @@ export default {
         const inputBindings = computed(() => ({
             ...props.wwElementState.props.attributes,
             key: 'ww-input-basic-' + step.value,
-            value: variableValue.value,
+            value: isCurrencyType.value && !isReallyFocused.value ? formattedCurrencyValue?.value : variableValue.value,
             type: inputType.value,
             name: props.wwElementState.name,
             readonly: isReadonly.value || isEditing.value,
@@ -160,13 +179,6 @@ export default {
             '-readonly': isReadonly.value,
             editing: isEditing.value,
         }));
-
-        // Currency
-        const { showCurrencySymbol, currencySymbolRef, symbolPadding, currencySymbolStyle, currencySymbol, symbolPosition, onCurrencyBlur, onCurrencyFocus } = useCurrency(
-            props,
-            { emit, setValue, variableValue }
-        );
-        // End Currency
 
         function onEnter() {
             emit('trigger-event', { name: 'onEnterKey', event: { value: variableValue.value } });
@@ -208,9 +220,10 @@ export default {
             currencySymbolStyle,
             currencySymbol,
             currencySymbolRef,
-            symbolPadding,
+            currencyInputStyle,
             onCurrencyBlur,
             onCurrencyFocus,
+            formattedCurrencyValue,
             // End Currency
         };
     },
@@ -220,9 +233,16 @@ export default {
 <style lang="scss" scoped>
 .input-wrapper {
     position: relative;
+
+    &.has-currency-symbol {
+        display: flex;
+        align-items: center;
+        flex-direction: row;
+    }
 }
 
 .ww-input-basic {
+    all: unset;
     outline: none;
     border: none;
     position: relative;
@@ -273,10 +293,6 @@ export default {
 }
 
 .currency-symbol {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 1;
     pointer-events: none;
     font-size: inherit;
     color: var(--placeholder-color, #000000ad);

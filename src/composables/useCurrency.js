@@ -1,18 +1,28 @@
 import { computed, ref, watch, nextTick } from 'vue';
 
-export function useCurrency(props, { emit, setValue, variableValue } = {}) {
-    const isActive = computed(() => props.content.type === 'currency');
+export function useCurrency(props, { variableValue } = {}) {
+
+    // Computed
+    const isCurrencyType = computed(() => props.content.type === 'currency');
     const showCurrencySymbol = computed(
         () => props.content.type === 'currency' && props.content.currencyShowSymbol
     );
+
+    // Props
     const currencySymbol = computed(() => props.content.currencySymbol || '$');
     const symbolPosition = computed(() => props.content.currencySymbolPosition || 'prefix');
     const decimalPlaces = computed(() => props.content.currencyDecimalPlaces ?? 2);
     const decimalSeparator = computed(() => props.content.currencyDecimalSeparator || '.');
     const thousandsSeparator = computed(() => props.content.currencyThousandsSeparator || ',');
-
+    
+    // Refs
     const currencySymbolRef = ref(null);
-    const symbolPadding = ref(''); // Default padding
+    const currencyInputStyle = ref(''); // Default padding
+
+    const { value: formattedCurrencyValue, setValue: setFormattedValue } = wwLib.wwVariable.useComponentVariable({
+        uid: props.uid,
+        name: 'formatted value',
+    });
 
     // Styles
     const currencySymbolStyle = computed(() => ({
@@ -23,23 +33,22 @@ export function useCurrency(props, { emit, setValue, variableValue } = {}) {
     const onCurrencyBlur = () => {
         console.log('Currency blur');
         if (!variableValue.value) return '';
-        setValue(formatCurrency(variableValue.value));
+        const formattedValue = formatCurrency(variableValue.value);
+        setFormattedValue(formattedValue);
     };
 
     const onCurrencyFocus = () => {
         if (!variableValue.value) return '';
-        setValue(extractNumericValue(variableValue.value));
+        const formattedValue = formatCurrency(variableValue.value);
+        setFormattedValue(formattedValue);
     };
 
-    const updateSymbolPadding = async () => {
+    const updateCurrencyInputStyle = async () => {
         console.log(currencySymbolRef.value);
         await nextTick();
         if (showCurrencySymbol.value && currencySymbolRef.value) {
-            const symbolWidth = currencySymbolRef.value.getBoundingClientRect().width;
-            const paddingValue = symbolWidth + 2*parseInt(props.content.currencySymbolPadding);
-            const paddingUnit = props.content.currencySymbolPadding.replace(/[0-9]/g, '');
             // Add some extra space to ensure text doesn't overlap with the symbol
-            symbolPadding.value = { [`padding-${symbolPosition.value === 'prefix' ? 'left' : 'right'}`]: `${paddingValue}${paddingUnit}` };
+            currencyInputStyle.value = { [`padding-${symbolPosition.value === 'prefix' ? 'left' : 'right'}`]: `${props.content.currencySymbolPadding}` };
         }
     };
 
@@ -145,8 +154,8 @@ export function useCurrency(props, { emit, setValue, variableValue } = {}) {
             () => props.content.currencySymbolPadding
         ],
         async () => {
-            if (isActive.value) {
-                await updateSymbolPadding();
+            if (isCurrencyType.value) {
+                await updateCurrencyInputStyle();
             }
         }
     );
@@ -159,25 +168,26 @@ export function useCurrency(props, { emit, setValue, variableValue } = {}) {
             () => props.content.currencyThousandsSeparator
         ],
         async () => {
-            if (isActive.value) {
+            if (isCurrencyType.value) {
                 const formattedValue = formatCurrency(variableValue.value);
-                setValue(formattedValue);
+                setFormattedValue(formattedValue);
             }
         }
     );
 
     // Initial padding update
     watch(
-        isActive,
+        [isCurrencyType],
         async () => {
-            if (isActive.value) {
+            if (isCurrencyType.value) {
                 await nextTick();
-                await updateSymbolPadding();
+                await updateCurrencyInputStyle();
             }
         }
     );
 
     return {
+        isCurrencyType,
         showCurrencySymbol,
         currencySymbol,
         symbolPosition,
@@ -185,10 +195,11 @@ export function useCurrency(props, { emit, setValue, variableValue } = {}) {
         decimalSeparator,
         thousandsSeparator,
         currencySymbolRef,
-        symbolPadding,
+        currencyInputStyle,
         currencySymbolStyle,
-        updateSymbolPadding,
+        updateCurrencyInputStyle,
         onCurrencyBlur,
         onCurrencyFocus,
+        formattedCurrencyValue,
     };
 }

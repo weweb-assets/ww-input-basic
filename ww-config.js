@@ -39,6 +39,7 @@ export default {
                 'currencyThousandsSeparator',
                 'currencyDecimalSeparator',
                 'currencySymbolColor',
+                'currencySymbolFontSize',
                 'currencySymbolPadding',
             ],
         ],
@@ -582,6 +583,26 @@ export default {
                 'A string that represents a color code: `"rebeccapurple" | "#00ff00" | "rgb(214, 122, 127)"`',
             },
             /* wwEditor:end */
+            hidden: content => content.type !== "currency",
+          },
+          currencySymbolFontSize: {
+            label: {
+              en: "Symbol font size",
+            },
+            type: "Length",
+            options: {
+              unitChoices: [
+                { value: "px", label: "px", min: 0, max: 100 },
+                { value: "em", label: "em", min: 0, max: 10 },
+                { value: "%", label: "%", min: 0, max: 100 },
+              ],
+            },
+            classes: true,
+            bindable: true,
+            responsive: true,
+            states: true,
+            defaultValue: "1em",
+            responsive: true,
             hidden: content => content.type !== "currency",
           },
           currencySymbolPadding: {

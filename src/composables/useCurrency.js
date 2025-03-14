@@ -17,9 +17,12 @@ export function useCurrency(props, { variableValue } = {}) {
     
     // Refs
     const currencySymbolRef = ref(null);
-    const currencyInputStyle = ref(''); // Default padding
+    const currencyInputStyle = ref(''); // Default paddin
 
-    const { value: formattedCurrencyValue, setValue: setFormattedValue } = wwLib.wwVariable.useComponentVariable({
+    // const formattedCurrencyValue = ref(null);
+    // const setFormattedCurrencyValue = ref(null);
+
+    const { value: formattedCurrencyValue, setValue: setFormattedCurrencyValue } = wwLib.wwVariable.useComponentVariable({
         uid: props.uid,
         name: 'formatted value',
     });
@@ -28,23 +31,23 @@ export function useCurrency(props, { variableValue } = {}) {
     const currencySymbolStyle = computed(() => ({
         left: symbolPosition.value === 'prefix' ? props.content.currencySymbolPadding ?? '0px' : 'auto',
         right: symbolPosition.value === 'suffix' ? props.content.currencySymbolPadding ?? '0px' : 'auto',
+        fontSize: props.content.currencySymbolFontSize || 'inherit',
+        color: props.content.currencySymbolColor || 'inherit',
     }));
 
     const onCurrencyBlur = () => {
-        console.log('Currency blur');
         if (!variableValue.value) return '';
         const formattedValue = formatCurrency(variableValue.value);
-        setFormattedValue(formattedValue);
+        setFormattedCurrencyValue(formattedValue);
     };
 
     const onCurrencyFocus = () => {
         if (!variableValue.value) return '';
         const formattedValue = formatCurrency(variableValue.value);
-        setFormattedValue(formattedValue);
+        setFormattedCurrencyValue(formattedValue);
     };
 
     const updateCurrencyInputStyle = async () => {
-        console.log(currencySymbolRef.value);
         await nextTick();
         if (showCurrencySymbol.value && currencySymbolRef.value) {
             // Add some extra space to ensure text doesn't overlap with the symbol
@@ -82,7 +85,6 @@ export function useCurrency(props, { variableValue } = {}) {
 
         // Remove currency symbol if present
         let inputVal = value.toString();
-        console.log('Input value', inputVal);
         const symbol = currencySymbol.value;
         if (symbolPosition.value === 'prefix' && inputVal.startsWith(symbol)) {
             inputVal = inputVal.substring(symbol.length);
@@ -128,23 +130,6 @@ export function useCurrency(props, { variableValue } = {}) {
         return formattedValue;
     };
 
-    // Extract numeric value (for calculations)
-    const extractNumericValue = (value) => {
-        if (!value) return null;
-
-        let cleanValue = value.toString().replace(new RegExp(currencySymbol.value, 'g'), '');
-
-        if (thousandsSeparator.value) {
-            cleanValue = cleanValue.replace(new RegExp(thousandsSeparator.value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), '');
-        }
-
-        if (decimalSeparator.value !== '.') {
-            cleanValue = cleanValue.replace(decimalSeparator.value, '.');
-        }
-
-        return parseFloat(cleanValue);
-    };
-
     // Watch for padding changes
     watch(
         [
@@ -170,7 +155,7 @@ export function useCurrency(props, { variableValue } = {}) {
         async () => {
             if (isCurrencyType.value) {
                 const formattedValue = formatCurrency(variableValue.value);
-                setFormattedValue(formattedValue);
+                setFormattedCurrencyValue(formattedValue);
             }
         }
     );
@@ -183,6 +168,7 @@ export function useCurrency(props, { variableValue } = {}) {
                 await nextTick();
                 await updateCurrencyInputStyle();
             }
+            updateFormattedCurrencyValue();
         }
     );
 

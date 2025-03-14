@@ -1,17 +1,35 @@
 <template>
-    <input
-        v-if="content.type !== 'textarea'"
-        ref="inputRef"
-        v-bind="inputBindings"
-        class="ww-input-basic"
-        :class="inputClasses"
-        @input="handleManualInput"
-        @blur="onBlur"
-        @focus="isReallyFocused = true"
-        @keyup.enter="onEnter"
-    />
+    <!-- Currency Type -->
+    <div
+        v-if="content.type == 'currency'"
+        @click="focusInput"
+        class="input-wrapper"
+        :class="{ 'has-currency-symbol': showCurrencySymbol }"
+    >
+        <span v-if="showCurrencySymbol" ref="currencySymbolRef" class="currency-symbol" :style="currencySymbolStyle">
+            {{ currencySymbol }}
+        </span>
+        <input
+            ref="inputRef"
+            v-bind="inputBindings"
+            class="ww-input-basic"
+            :class="[inputClasses, { 'with-currency-symbol': showCurrencySymbol }]"
+            :style="showCurrencySymbol ? symbolPadding : {}"
+            @input="handleManualInput"
+            @blur="() => {
+                onBlur();
+                onCurrencyBlur();
+            }"
+            @focus="() => {
+                isReallyFocused = true;
+                onCurrencyFocus();
+            }"
+            @keyup.enter="onEnter"
+        />
+    </div>
+    <!-- Textarea Type -->
     <textarea
-        v-else
+        v-else-if="content.type == 'textarea'"
         ref="inputRef"
         v-bind="textareaBindings"
         class="ww-input-basic"
@@ -21,11 +39,24 @@
         @blur="isReallyFocused = false"
         @keyup.enter="onEnter"
     />
+    <!-- Default Type -->
+    <input
+        v-else
+        ref="inputRef"
+        v-bind="inputBindings"
+        class="ww-input-basic"
+        :class="[inputClasses]"
+        @input="handleManualInput"
+        @blur="onBlur"
+        @focus="isReallyFocused = true"
+        @keyup.enter="onEnter"
+    />
 </template>
 
 <script>
-import { computed, inject, watch } from 'vue';
+import { computed, inject, watch, nextTick, ref } from 'vue';
 import { useInput } from './composables/useInput';
+import { useCurrency } from './composables/useCurrency';
 /* wwEditor:start */
 import useParentSelection from './editor/useParentSelection';
 /* wwEditor:end */
@@ -130,6 +161,18 @@ export default {
             editing: isEditing.value,
         }));
 
+        // Currency
+        const { showCurrencySymbol, currencySymbolRef, symbolPadding, currencySymbol, symbolPosition, onCurrencyBlur, onCurrencyFocus } = useCurrency(
+            props,
+            { emit, setValue, variableValue }
+        );
+
+        const currencySymbolStyle = computed(() => ({
+            left: symbolPosition.value === 'prefix' ? '0.8rem' : 'auto',
+            right: symbolPosition.value === 'suffix' ? '0.8rem' : 'auto',
+        }));
+        // End Currency
+
         function onEnter() {
             emit('trigger-event', { name: 'onEnterKey', event: { value: variableValue.value } });
         }
@@ -165,17 +208,33 @@ export default {
             textareaBindings,
             inputClasses,
             onEnter,
+            // Currency-related
+            showCurrencySymbol,
+            currencySymbolStyle,
+            currencySymbol,
+            currencySymbolRef,
+            symbolPadding,
+            onCurrencyBlur,
+            onCurrencyFocus,
+            // End Currency
         };
     },
 };
 </script>
 
 <style lang="scss" scoped>
+.input-wrapper {
+    position: relative;
+}
+
 .ww-input-basic {
     outline: none;
     border: none;
     position: relative;
     isolation: isolate;
+    width: 100%;
+    height: 100%;
+
     &::placeholder {
         color: var(--placeholder-color, #000000ad);
         font-family: inherit;
@@ -216,5 +275,16 @@ export default {
         cursor: initial !important;
     }
     /* wwEditor:end */
+}
+
+.currency-symbol {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1;
+    pointer-events: none;
+    font-size: inherit;
+    color: var(--placeholder-color, #000000ad);
+    white-space: nowrap; /* Ensure symbol doesn't wrap */
 }
 </style>

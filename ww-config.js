@@ -32,6 +32,12 @@ export default {
                 'displayPassword',
                 'rows',
                 'resize',
+                'currencyShowSymbol',
+                'currencySymbol',
+                'currencySymbolPosition',
+                'currencyDecimalPlaces',
+                'currencyThousandsSeparator',
+                'currencyDecimalSeparator',
             ],
         ],
         hint: (_, sidePanelContent) => {
@@ -118,6 +124,7 @@ export default {
                     { value: 'time', label: { en: 'Time', fr: 'Heure' } },
                     { value: 'tel', label: { en: 'Phone', fr: 'Téléphone' } },
                     { value: 'color', label: { en: 'Color', fr: 'Couleur' } },
+                    { value: 'currency', label: { en: 'Currency', fr: 'Devise' } },
                 ],
             },
             defaultValue: 'text',
@@ -414,5 +421,146 @@ export default {
                 return !sidePanelContent.form?.uid || !content.customValidation;
             },
         },
+        // Currency type
+        currencyShowSymbol: {
+            label: {
+                en: "Show currency symbol",
+            },
+            type: "OnOff",
+            bindable: true,
+            defaultValue: true,
+            /* wwEditor:start */
+            bindingValidation: {
+                type: "boolean",
+                tooltip: "A boolean that defines if the currency symbol should be displayed: `true | false`",
+            },
+            propertyHelp: {
+                tooltip: "Choose whether to display the currency symbol",
+            },
+            /* wwEditor:end */
+            hidden: content => content.type !== "currency",
+        },
+        currencySymbol: {
+            label: {
+              en: "Currency symbol",
+            },
+            type: "Text",
+            bindable: true,
+            defaultValue: "$",
+            /* wwEditor:start */
+            bindingValidation: {
+              type: "string",
+              tooltip:
+                'A string representing the currency symbol: "$", "€", "£", etc.',
+            },
+            propertyHelp: {
+              tooltip: "The currency symbol to display before or after the value",
+            },
+            /* wwEditor:end */
+            hidden: content => !content.currencyShowSymbol || content.type !== "currency",
+          },
+          currencySymbolPosition: {
+            label: {
+              en: "Symbol position",
+            },
+            type: "TextRadioGroup",
+            bindable: true,
+            defaultValue: "prefix",
+            options: {
+              choices: [
+                { value: "prefix", title: "Before", icon: "align-left" },
+                { value: "suffix", title: "After", icon: "align-right" },
+              ],
+            },
+            /* wwEditor:start */
+            bindingValidation: {
+              type: "string",
+              tooltip:
+                'Position of the currency symbol: "prefix" (before) or "suffix" (after)',
+            },
+            propertyHelp: {
+              tooltip:
+                "Choose whether to display the currency symbol before or after the value",
+            },
+            /* wwEditor:end */
+            hidden: content => !content.currencyShowSymbol || content.type !== "currency",
+          },
+          currencyDecimalPlaces: {
+            label: {
+              en: "Decimal places",
+            },
+            type: "Number",
+            bindable: true,
+            defaultValue: 2,
+            options: {
+              min: 0,
+              max: 10,
+              step: 1,
+            },
+            /* wwEditor:start */
+            bindingValidation: {
+              type: "number",
+              tooltip: "Number of decimal places to display: 0-10",
+            },
+            propertyHelp: {
+              tooltip:
+                "The number of decimal places to display in the formatted value",
+            },
+            /* wwEditor:end */
+            hidden: content => content.type !== "currency",
+          },
+          currencyThousandsSeparator: {
+            label: {
+              en: "Thousands separator",
+            },
+            type: "TextSelect",
+            bindable: true,
+            defaultValue: ",",
+            options: {
+              options: [
+                { value: ",", label: "Comma (,)" },
+                { value: ".", label: "Period (.)" },
+                { value: " ", label: "Space ( )" },
+                { value: "'", label: "Apostrophe (')" },
+                { value: "", label: "None" },
+              ],
+            },
+            /* wwEditor:start */
+            bindingValidation: {
+              type: "string",
+              tooltip: 'Character to use as thousands separator: ",", ".", " ", etc.',
+            },
+            propertyHelp: {
+              tooltip:
+                "Sets the character used to separate thousands in the formatted value",
+            },
+            /* wwEditor:end */
+            hidden: content => content.type !== "currency",
+          },
+          currencyDecimalSeparator: {
+            label: {
+              en: "Decimal separator",
+            },
+            type: "TextSelect",
+            bindable: true,
+            defaultValue: ".",
+            options: {
+              options: [
+                { value: ".", label: "Period (.)" },
+                { value: ",", label: "Comma (,)" },
+              ],
+            },
+            /* wwEditor:start */
+            bindingValidation: {
+              type: "string",
+              tooltip: 'Character to use as decimal separator: "." or ","',
+            },
+            propertyHelp: {
+              tooltip:
+                "Sets the character used to separate the decimal part in the formatted value",
+            },
+            /* wwEditor:end */
+            hidden: content => content.type !== "currency",
+          },
     },
 };

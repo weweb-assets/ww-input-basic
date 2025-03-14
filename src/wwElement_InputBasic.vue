@@ -1,12 +1,16 @@
 <template>
     <!-- Currency Type -->
     <div v-if="content.type == 'currency'" @click="focusInput">
-        <div class="input-wrapper" :class="{ 'has-currency-symbol': showCurrencySymbol }">
+        <div
+            class="input-currency-wrapper"
+            :class="{ 'has-currency-symbol': showCurrencySymbol }"
+            :style="{ 'flex-direction': `${symbolPosition == 'prefix' ? 'row' : 'row-reverse'}` }"
+        >
             <span
                 v-if="showCurrencySymbol"
                 ref="currencySymbolRef"
                 class="currency-symbol"
-                :style="[currencySymbolStyle, style]"
+                :style="[currencySymbolStyle, { padding: style.padding }]"
             >
                 {{ currencySymbol }}
             </span>
@@ -14,7 +18,7 @@
                 ref="inputRef"
                 v-bind="inputBindings"
                 class="ww-input-basic"
-                :class="[inputClasses, { 'with-currency-symbol': showCurrencySymbol }]"
+                :class="[inputClasses]"
                 :style="showCurrencySymbol ? currencyInputStyle : {}"
                 @input="handleManualInput"
                 @blur="
@@ -127,6 +131,7 @@ export default {
             currencySymbolRef,
             currencySymbolStyle,
             currencyInputStyle,
+            symbolPosition,
             onCurrencyBlur,
             onCurrencyFocus,
             formattedCurrencyValue,
@@ -224,6 +229,7 @@ export default {
             onCurrencyBlur,
             onCurrencyFocus,
             formattedCurrencyValue,
+            symbolPosition,
             // End Currency
         };
     },
@@ -231,13 +237,19 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.input-wrapper {
+.input-currency-wrapper {
     position: relative;
 
     &.has-currency-symbol {
         display: flex;
         align-items: center;
-        flex-direction: row;
+
+        .currency-symbol {
+            pointer-events: none;
+            font-size: inherit;
+            color: var(--placeholder-color, #000000ad);
+            white-space: nowrap; /* Ensure symbol doesn't wrap */
+        }
     }
 }
 
@@ -247,8 +259,6 @@ export default {
     border: none;
     position: relative;
     isolation: isolate;
-    width: 100%;
-    height: 100%;
 
     &::placeholder {
         color: var(--placeholder-color, #000000ad);
@@ -290,12 +300,5 @@ export default {
         cursor: initial !important;
     }
     /* wwEditor:end */
-}
-
-.currency-symbol {
-    pointer-events: none;
-    font-size: inherit;
-    color: var(--placeholder-color, #000000ad);
-    white-space: nowrap; /* Ensure symbol doesn't wrap */
 }
 </style>

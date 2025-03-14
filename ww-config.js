@@ -38,6 +38,8 @@ export default {
                 'currencyDecimalPlaces',
                 'currencyThousandsSeparator',
                 'currencyDecimalSeparator',
+                'currencySymbolColor',
+                'currencySymbolPadding',
             ],
         ],
         hint: (_, sidePanelContent) => {
@@ -560,6 +562,46 @@ export default {
                 "Sets the character used to separate the decimal part in the formatted value",
             },
             /* wwEditor:end */
+            hidden: content => content.type !== "currency",
+          },
+          currencySymbolColor: {
+            label: {
+              en: "Symbol color",
+            },
+            type: "Color",
+            classes: true,
+            bindable: true,
+            responsive: true,
+            states: true,
+            defaultValue: "#666666",
+            /* wwEditor:start */
+            bindingValidation: {
+              cssSupports: "color",
+              type: "string",
+              tooltip:
+                'A string that represents a color code: `"rebeccapurple" | "#00ff00" | "rgb(214, 122, 127)"`',
+            },
+            /* wwEditor:end */
+            hidden: content => content.type !== "currency",
+          },
+          currencySymbolPadding: {
+            label: {
+              en: "Symbol padding",
+            },
+            type: "Length",
+            options: {
+              unitChoices: [
+                { value: "px", label: "px", min: 0, max: 100 },
+                { value: "em", label: "em", min: 0, max: 10 },
+                { value: "%", label: "%", min: 0, max: 100 },
+              ],
+            },
+            classes: true,
+            bindable: true,
+            responsive: true,
+            states: true,
+            defaultValue: "4px",
+            responsive: true,
             hidden: content => content.type !== "currency",
           },
     },

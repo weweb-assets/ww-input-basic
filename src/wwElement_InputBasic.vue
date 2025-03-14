@@ -6,7 +6,7 @@
         class="input-wrapper"
         :class="{ 'has-currency-symbol': showCurrencySymbol }"
     >
-        <span v-if="showCurrencySymbol" ref="currencySymbolRef" class="currency-symbol" :style="currencySymbolStyle">
+        <span v-if="showCurrencySymbol" ref="currencySymbolRef" class="currency-symbol" :style="[currencySymbolStyle, style]">
             {{ currencySymbol }}
         </span>
         <input
@@ -54,7 +54,7 @@
 </template>
 
 <script>
-import { computed, inject, watch, nextTick, ref } from 'vue';
+import { computed, inject, watch } from 'vue';
 import { useInput } from './composables/useInput';
 import { useCurrency } from './composables/useCurrency';
 /* wwEditor:start */
@@ -162,15 +162,10 @@ export default {
         }));
 
         // Currency
-        const { showCurrencySymbol, currencySymbolRef, symbolPadding, currencySymbol, symbolPosition, onCurrencyBlur, onCurrencyFocus } = useCurrency(
+        const { showCurrencySymbol, currencySymbolRef, symbolPadding, currencySymbolStyle, currencySymbol, symbolPosition, onCurrencyBlur, onCurrencyFocus } = useCurrency(
             props,
             { emit, setValue, variableValue }
         );
-
-        const currencySymbolStyle = computed(() => ({
-            left: symbolPosition.value === 'prefix' ? '0.8rem' : 'auto',
-            right: symbolPosition.value === 'suffix' ? '0.8rem' : 'auto',
-        }));
         // End Currency
 
         function onEnter() {

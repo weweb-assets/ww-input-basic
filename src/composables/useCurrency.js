@@ -14,6 +14,12 @@ export function useCurrency(props, { emit, setValue, variableValue } = {}) {
     const currencySymbolRef = ref(null);
     const symbolPadding = ref(''); // Default padding
 
+    // Styles
+    const currencySymbolStyle = computed(() => ({
+        left: symbolPosition.value === 'prefix' ? props.content.currencySymbolPadding ?? '0px' : 'auto',
+        right: symbolPosition.value === 'suffix' ? props.content.currencySymbolPadding ?? '0px' : 'auto',
+    }));
+
     const onCurrencyBlur = () => {
         console.log('Currency blur');
         if (!variableValue.value) return '';
@@ -30,8 +36,10 @@ export function useCurrency(props, { emit, setValue, variableValue } = {}) {
         await nextTick();
         if (showCurrencySymbol.value && currencySymbolRef.value) {
             const symbolWidth = currencySymbolRef.value.getBoundingClientRect().width;
+            const paddingValue = symbolWidth + 2*parseInt(props.content.currencySymbolPadding);
+            const paddingUnit = props.content.currencySymbolPadding.replace(/[0-9]/g, '');
             // Add some extra space to ensure text doesn't overlap with the symbol
-            symbolPadding.value = { [`padding-${symbolPosition.value === 'prefix' ? 'left' : 'right'}`]: `${symbolWidth + 20}px` };
+            symbolPadding.value = { [`padding-${symbolPosition.value === 'prefix' ? 'left' : 'right'}`]: `${paddingValue}${paddingUnit}` };
         }
     };
 
@@ -133,7 +141,8 @@ export function useCurrency(props, { emit, setValue, variableValue } = {}) {
         [
             showCurrencySymbol,
             () => props.content.currencySymbol,
-            () => props.content.currencySymbolPosition
+            () => props.content.currencySymbolPosition,
+            () => props.content.currencySymbolPadding
         ],
         async () => {
             if (isActive.value) {
@@ -177,6 +186,7 @@ export function useCurrency(props, { emit, setValue, variableValue } = {}) {
         thousandsSeparator,
         currencySymbolRef,
         symbolPadding,
+        currencySymbolStyle,
         updateSymbolPadding,
         onCurrencyBlur,
         onCurrencyFocus,

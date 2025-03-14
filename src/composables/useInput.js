@@ -30,7 +30,7 @@ export function useInput(props, emit) {
         defaultValue,
     });
 
-    /** wwEditor:start */
+    /* wwEditor:start */
     watch(defaultValue, () => {
         setValue(defaultValue.value);
     });

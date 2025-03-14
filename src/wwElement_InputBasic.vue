@@ -1,5 +1,4 @@
 <template>
-    <!-- Currency Type -->
     <div v-if="content.type == 'currency'" @click="focusInput">
         <div
             class="input-currency-wrapper"
@@ -38,7 +37,6 @@
             />
         </div>
     </div>
-    <!-- Textarea Type -->
     <textarea
         v-else-if="content.type == 'textarea'"
         ref="inputRef"
@@ -50,7 +48,6 @@
         @blur="isReallyFocused = false"
         @keyup.enter="onEnter"
     />
-    <!-- Default Type -->
     <input
         v-else
         ref="inputRef"

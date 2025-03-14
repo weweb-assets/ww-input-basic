@@ -13,22 +13,16 @@ export function useCurrency(props, { emit, setValue, variableValue } = {}) {
 
     const currencySymbolRef = ref(null);
     const symbolPadding = ref(''); // Default padding
-    const lastCaretPos = ref(0);
 
     const onCurrencyBlur = () => {
         console.log('Currency blur');
         if (!variableValue.value) return '';
-        setValue(formatCurrency(variableValue.value, true));
+        setValue(formatCurrency(variableValue.value));
     };
 
     const onCurrencyFocus = () => {
         if (!variableValue.value) return '';
         setValue(extractNumericValue(variableValue.value));
-    };
-
-    // Count specific characters in a string
-    const countOccurrences = (str, char) => {
-        return (str.match(new RegExp(char.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g')) || []).length;
     };
 
     const updateSymbolPadding = async () => {
@@ -66,12 +60,8 @@ export function useCurrency(props, { emit, setValue, variableValue } = {}) {
     };
 
     // Format the currency value
-    const formatCurrency = (value, isBlur = false, inputRef = null) => {
+    const formatCurrency = (value) => {
         if (!value) return '';
-
-        // Store cursor position
-        const caretPos = inputRef ? inputRef.selectionStart : lastCaretPos.value;
-        lastCaretPos.value = caretPos;
 
         // Remove currency symbol if present
         let inputVal = value.toString();
@@ -101,23 +91,12 @@ export function useCurrency(props, { emit, setValue, variableValue } = {}) {
             rightSide = rightSide.replace(/\D/g, "");
 
             // Handle decimal places
-            if (isBlur) {
-                // On blur, ensure we have exact decimal places
-                rightSide = rightSide.padEnd(decimalPlaces.value, '0').substring(0, decimalPlaces.value);
-            } else {
-                // During typing, just limit length
-                rightSide = rightSide.substring(0, decimalPlaces.value);
-            }
+            rightSide = rightSide.padEnd(decimalPlaces.value, '0').substring(0, decimalPlaces.value);
         } else {
             // No decimal part
             leftSide = inputVal;
-            rightSide = isBlur ? "0".repeat(decimalPlaces.value) : "";
+            rightSide = "";
         }
-
-        // Count separators before cursor for position tracking
-        const beforeCursor = inputVal.substring(0, caretPos);
-        const sepCountBeforeCursor = countOccurrences(beforeCursor, thousandsSeparator.value);
-        const isBeforeDecimal = caretPos <= decimalPos || decimalPos === -1;
 
         // Format left side with thousand separators
         const cleanLeftSide = leftSide.replace(/\D/g, "");
@@ -125,53 +104,8 @@ export function useCurrency(props, { emit, setValue, variableValue } = {}) {
 
         // Combine parts
         let formattedValue = leftSide;
-        if (rightSide || isBlur) {
+        if (rightSide) {
             formattedValue += decimalSeparator.value + rightSide;
-        }
-
-        // Calculate new cursor position
-        if (inputRef) {
-            let newCaretPos = 0;
-
-            if (isBeforeDecimal) {
-                // If cursor was in the left side (before decimal)
-                // Count separators in the formatted left side
-                const newSepCount = countOccurrences(leftSide, thousandsSeparator.value);
-
-                // Calculate position based on digits typed and separators added
-                const digitsPosInOriginal = beforeCursor.replace(/\D/g, "").length;
-
-                // Find where this digit position would be in the new formatted string
-                let digitCount = 0;
-                let i = 0;
-                for (; i < leftSide.length; i++) {
-                    if (/\d/.test(leftSide[i])) {
-                        digitCount++;
-                    }
-                    if (digitCount > digitsPosInOriginal) {
-                        break;
-                    }
-                }
-
-                newCaretPos = i;
-            } else if (decimalPos >= 0) {
-                // If cursor was in the right side (after decimal)
-                // Position = left side length + 1 (for decimal) + (cursor position - decimal position - 1)
-                newCaretPos = leftSide.length + 1 + (caretPos - decimalPos - 1);
-            } else {
-                // Fallback - put cursor at the end
-                newCaretPos = formattedValue.length;
-            }
-
-            // Ensure position is within bounds
-            newCaretPos = Math.max(0, Math.min(newCaretPos, formattedValue.length));
-
-            // Set cursor position after a small delay to ensure DOM is updated
-            setTimeout(() => {
-                if (inputRef) {
-                    inputRef.setSelectionRange(newCaretPos, newCaretPos);
-                }
-            }, 0);
         }
 
         return formattedValue;
@@ -217,7 +151,7 @@ export function useCurrency(props, { emit, setValue, variableValue } = {}) {
         ],
         async () => {
             if (isActive.value) {
-                const formattedValue = formatCurrency(variableValue.value, true);
+                const formattedValue = formatCurrency(variableValue.value);
                 setValue(formattedValue);
             }
         }

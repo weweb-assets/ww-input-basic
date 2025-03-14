@@ -1,4 +1,4 @@
-import { computed, ref, watch, nextTick } from 'vue';
+import { computed, ref, watch, nextTick, watchEffect } from 'vue';
 
 export function useCurrency(props, { variableValue } = {}) {
 
@@ -17,14 +17,12 @@ export function useCurrency(props, { variableValue } = {}) {
     
     // Refs
     const currencySymbolRef = ref(null);
-    const currencyInputStyle = ref(''); // Default paddin
-
-    // const formattedCurrencyValue = ref(null);
-    // const setFormattedCurrencyValue = ref(null);
+    const currencyInputStyle = ref('');
 
     const { value: formattedCurrencyValue, setValue: setFormattedCurrencyValue } = wwLib.wwVariable.useComponentVariable({
         uid: props.uid,
         name: 'formatted value',
+        isActive: isCurrencyType,
     });
 
     // Styles
@@ -45,7 +43,7 @@ export function useCurrency(props, { variableValue } = {}) {
         if (!variableValue.value) return '';
         const formattedValue = formatCurrency(variableValue.value);
         setFormattedCurrencyValue(formattedValue);
-    };
+    };   
 
     const updateCurrencyInputStyle = async () => {
         await nextTick();
@@ -161,16 +159,14 @@ export function useCurrency(props, { variableValue } = {}) {
     );
 
     // Initial padding update
-    watch(
-        [isCurrencyType],
-        async () => {
-            if (isCurrencyType.value) {
-                await nextTick();
-                await updateCurrencyInputStyle();
-            }
-            updateFormattedCurrencyValue();
+    watchEffect(async () => {
+        if (isCurrencyType.value) {
+            const formattedValue = formatCurrency(variableValue.value);
+            setFormattedCurrencyValue(formattedValue);
+            await nextTick();
+            await updateCurrencyInputStyle();
         }
-    );
+    }, { immediate: true });
 
     return {
         isCurrencyType,

@@ -109,7 +109,6 @@ export default {
             min: min.value,
             max: max.value,
             step: stepAttribute.value,
-            'data-ksdjgflkfdgjlkdkfgjfdkljgklfdjglkfdjgklfdjglkfdjglkfdjglkfdjglkdf': variableValue.value,
         }));
 
         const textareaBindings = computed(() => ({

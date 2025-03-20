@@ -19,7 +19,7 @@
                 class="ww-input-basic"
                 :class="[inputClasses]"
                 :style="showCurrencySymbol ? currencyInputStyle : {}"
-                @input="handleManualInput"
+                @input="handleCurrencyInput"
                 @blur="
                     () => {
                         isReallyFocused = false;
@@ -134,6 +134,20 @@ export default {
             formattedCurrencyValue,
         } = useCurrency(props, { emit, setValue, variableValue });
 
+        function handleCurrencyInput(event) {
+            console.log('handleCurrencyInput', event);
+            // Avoid multiple dots or commas
+            if(['.',','].includes(event.data) && event.target.value.match(/[.,]/g).length > 1) {
+                event.preventDefault();
+                setValue(variableValue.value);
+                return;
+            }
+            const newEvent = { ...event };
+            newEvent.target = { ...event.target };
+            newEvent.target.value = event.target.value.replaceAll(/[^0-9 \,\.]/g, '');
+            handleManualInput(newEvent); // from useInput
+        }
+
         const useForm = inject('_wwForm:useForm', () => {});
 
         const fieldName = computed(() => props.content.fieldName);
@@ -218,6 +232,7 @@ export default {
             inputClasses,
             onEnter,
             // Currency-related
+            handleCurrencyInput,
             showCurrencySymbol,
             currencySymbolStyle,
             currencySymbol,

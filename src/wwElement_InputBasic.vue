@@ -16,9 +16,10 @@
             <input
                 ref="inputRef"
                 v-bind="inputBindings"
-                class="ww-input-basic"
+                class="ww-input-basic currency-type"
                 :class="[inputClasses]"
                 :style="showCurrencySymbol ? currencyInputStyle : {}"
+                type="number"
                 @input="handleCurrencyInput"
                 @blur="
                     () => {
@@ -155,8 +156,6 @@ export default {
                 setValue(variableValue.value);
                 return;
             }
-
-            console.log('Still handling currency input');
 
             handleManualInput(newEvent); // from useInput
         }
@@ -325,5 +324,10 @@ export default {
         cursor: initial !important;
     }
     /* wwEditor:end */
+
+    &.currency-type {
+        background-color: transparent;
+        width: 100%;
+    }
 }
 </style>

@@ -262,6 +262,7 @@ export default {
     &.has-currency-symbol {
         display: flex;
         align-items: center;
+        height: 100%;
 
         .currency-symbol {
             pointer-events: none;
@@ -273,7 +274,6 @@ export default {
 }
 
 .ww-input-basic {
-    all: unset;
     outline: none;
     border: none;
     position: relative;

@@ -135,6 +135,7 @@ export default {
         } = useCurrency(props, { emit, setValue, variableValue });
 
         function handleCurrencyInput(event) {
+            console.log('handleCurrencyInput', event);
             // Avoid multiple dots or commas
             if(['.',','].includes(event.data) && event.target.value.match(/[.,]/g).length > 1) {
                 event.preventDefault();
@@ -145,12 +146,17 @@ export default {
             newEvent.target = { ...event.target };
             newEvent.target.value = event.target.value.replaceAll(/[^0-9 \,\.]/g, '');
 
+            console.log('newEvent.target.value', newEvent.target.value);
+            console.log('variableValue.value', variableValue.value);
+
             // Avoid logic if the value is the same
             if(newEvent.target.value === variableValue.value) {
                 event.preventDefault();
                 setValue(variableValue.value);
                 return;
             }
+
+            console.log('Still handling currency input');
 
             handleManualInput(newEvent); // from useInput
         }

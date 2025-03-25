@@ -1,5 +1,5 @@
 <template>
-    <div v-if="content.type == 'currency'" @click="focusInput">
+    <div v-if="content.type == 'currency'" class="input-currency-root" @click="focusInput">
         <div
             class="input-currency-wrapper"
             :class="{ 'has-currency-symbol': showCurrencySymbol }"
@@ -19,7 +19,6 @@
                 class="ww-input-basic currency-type"
                 :class="[inputClasses]"
                 :style="showCurrencySymbol ? currencyInputStyle : {}"
-                type="number"
                 @input="handleCurrencyInput"
                 @blur="
                     () => {
@@ -138,7 +137,7 @@ export default {
         function handleCurrencyInput(event) {
             console.log('handleCurrencyInput', event);
             // Avoid multiple dots or commas
-            if(['.',','].includes(event.data) && event.target.value.match(/[.,]/g).length > 1) {
+            if (['.', ','].includes(event.data) && event.target.value.match(/[.,]/g)?.length > 1) {
                 event.preventDefault();
                 setValue(variableValue.value);
                 return;
@@ -151,7 +150,7 @@ export default {
             console.log('variableValue.value', variableValue.value);
 
             // Avoid logic if the value is the same
-            if(newEvent.target.value === variableValue.value) {
+            if (newEvent.target.value === variableValue.value) {
                 event.preventDefault();
                 setValue(variableValue.value);
                 return;
@@ -177,7 +176,7 @@ export default {
             ...props.wwElementState.props.attributes,
             key: 'ww-input-basic-' + step.value,
             value: isCurrencyType.value && !isReallyFocused.value ? formattedCurrencyValue?.value : variableValue.value,
-            type: inputType.value,
+            type: isCurrencyType.value ? (!isReallyFocused.value ? 'text' : 'number') : inputType.value,
             name: props.wwElementState.name,
             readonly: isReadonly.value || isEditing.value,
             required: props.content.required,
@@ -261,19 +260,23 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.input-currency-wrapper {
-    position: relative;
+.input-currency-root {
+    width: 200px;
 
-    &.has-currency-symbol {
-        display: flex;
-        align-items: center;
-        height: 100%;
+    .input-currency-wrapper {
+        position: relative;
 
-        .currency-symbol {
-            pointer-events: none;
-            font-size: inherit;
-            color: var(--placeholder-color, #000000ad);
-            white-space: nowrap; /* Ensure symbol doesn't wrap */
+        &.has-currency-symbol {
+            display: flex;
+            align-items: center;
+            height: 100%;
+
+            .currency-symbol {
+                pointer-events: none;
+                font-size: inherit;
+                color: var(--placeholder-color, #000000ad);
+                white-space: nowrap; /* Ensure symbol doesn't wrap */
+            }
         }
     }
 }

@@ -4,9 +4,6 @@
         "type": "git",
         "url": "https://github.com/weweb-assets/ww-form-input"
     },
-    "weweb": {
-        "componentPath": "./src/wwElement_InputBasic.vue"
-    },
     "version": "3.3.1",
     "scripts": {
         "build": "weweb build",

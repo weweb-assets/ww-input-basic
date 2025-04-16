@@ -61,11 +61,15 @@ export function useInput(props, emit) {
             if (!isReallyFocused.value) {
                 displayValue.value = type.value === 'decimal' ? formatValue(newValue) : String(newValue ?? '');
             }
+
+            if (!variableValue.value) {
+                displayValue.value = '';
+            }
         },
         { immediate: true }
     );
 
-    /** wwEditor:start */
+    /* wwEditor:start */
     watch(defaultValue, () => {
         setValue(defaultValue.value);
     });

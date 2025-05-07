@@ -381,7 +381,10 @@ export default {
                 title: sidePanelContent.form?.name || 'Unnamed form',
                 content: !sidePanelContent.form?.name && 'Give your form a meaningful name.',
             }),
-            hidden: (_, sidePanelContent) => !sidePanelContent.form?.uid,
+            hidden: (_, sidePanelContent) => {
+                console.log('formInfobox hidden', !sidePanelContent.form, sidePanelContent, sidePanelContent.form);
+                return !sidePanelContent.form;
+            },
         },
         /* wwEditor:end */
         fieldName: {

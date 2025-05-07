@@ -43,3 +43,4 @@ typings/
 .next
 # Mac files
 .DS_STORE
+.claude

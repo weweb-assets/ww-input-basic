@@ -92,6 +92,18 @@ export default {
             inPopup: !!document.querySelector(`[data-ww-element-id="${props.uid}"]`)?.closest('.ww-popup'),
             mountedAt: Date.now()
         });
+        
+        // Re-check form context after a delay
+        setTimeout(() => {
+            const formContextDelayed = inject('_wwForm:info', null);
+            console.log('[INPUT DEBUG]', 'Form context re-check after delay', {
+                hasFormContext: !!formContextDelayed,
+                formContextData: formContextDelayed,
+                elementUid: props.uid,
+                inPopup: !!document.querySelector(`[data-ww-element-id="${props.uid}"]`)?.closest('.ww-popup'),
+                checkedAt: Date.now()
+            });
+        }, 1500);
 
         const fieldName = computed(() => props.content.fieldName);
         const validation = computed(() => props.content.validation);

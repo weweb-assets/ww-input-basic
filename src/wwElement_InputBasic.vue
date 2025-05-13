@@ -87,8 +87,10 @@ export default {
         
         console.log('[INPUT DEBUG]', 'Form context injection', {
             hasFormContext: !!formContext,
+            formContextData: formContext,
             elementUid: props.uid,
-            inPopup: !!document.querySelector(`[data-ww-element-id="${props.uid}"]`)?.closest('.ww-popup')
+            inPopup: !!document.querySelector(`[data-ww-element-id="${props.uid}"]`)?.closest('.ww-popup'),
+            mountedAt: Date.now()
         });
 
         const fieldName = computed(() => props.content.fieldName);

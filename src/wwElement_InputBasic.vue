@@ -83,6 +83,13 @@ export default {
         } = useInput(props, emit);
 
         const useForm = inject('_wwForm:useForm', () => {});
+        const formContext = inject('_wwForm:info', null);
+        
+        console.log('[INPUT DEBUG]', 'Form context injection', {
+            hasFormContext: !!formContext,
+            elementUid: props.uid,
+            inPopup: !!document.querySelector(`[data-ww-element-id="${props.uid}"]`)?.closest('.ww-popup')
+        });
 
         const fieldName = computed(() => props.content.fieldName);
         const validation = computed(() => props.content.validation);

@@ -1,4 +1,4 @@
-import { computed, ref, watch } from 'vue';
+import { computed, ref, watch, nextTick } from 'vue';
 
 export function useInput(props, emit) {
     const isReallyFocused = ref(false);
@@ -57,13 +57,14 @@ export function useInput(props, emit) {
     watch(
         variableValue,
         newValue => {
+            // Make sure the displayed value match the variable value
+            nextTick(() => {
+                displayValue.value = variableValue.value;
+            });
+
             // Only update display value if not focused, otherwise it will disrupt typing
             if (!isReallyFocused.value) {
                 displayValue.value = type.value === 'decimal' ? formatValue(newValue) : String(newValue ?? '');
-            }
-
-            if (!variableValue.value) {
-                displayValue.value = '';
             }
         },
         { immediate: true }

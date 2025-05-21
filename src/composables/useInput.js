@@ -1,4 +1,4 @@
-import { computed, ref, watch } from 'vue';
+import { computed, ref, watch, nextTick } from 'vue';
 
 export function useInput(props, emit) {
     const isReallyFocused = ref(false);
@@ -57,6 +57,11 @@ export function useInput(props, emit) {
     watch(
         variableValue,
         newValue => {
+            // Make sure the displayed value match the variable value
+            nextTick(() => {
+                displayValue.value = variableValue.value;
+            });
+
             // Only update display value if not focused, otherwise it will disrupt typing
             if (!isReallyFocused.value) {
                 displayValue.value = type.value === 'decimal' ? formatValue(newValue) : String(newValue ?? '');
@@ -65,11 +70,9 @@ export function useInput(props, emit) {
         { immediate: true }
     );
 
-    /** wwEditor:start */
     watch(defaultValue, () => {
         setValue(defaultValue.value);
     });
-    /* wwEditor:end */
 
     const inputType = computed(() => {
         if (!props.content) return 'text';

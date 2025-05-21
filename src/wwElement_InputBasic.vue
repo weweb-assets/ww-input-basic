@@ -1,5 +1,5 @@
 <template>
-    <div v-if="content.type == 'currency'" class="input-currency-root" @click="focusInput">
+    <div v-if="content.type == 'currency'" @click="focusInput">
         <div
             class="input-currency-wrapper"
             :class="{ 'has-currency-symbol': showCurrencySymbol }"
@@ -19,6 +19,7 @@
                 class="ww-input-basic currency-type"
                 :class="[inputClasses]"
                 :style="showCurrencySymbol ? currencyInputStyle : {}"
+                type="number"
                 @input="handleCurrencyInput"
                 @blur="
                     () => {
@@ -176,7 +177,7 @@ export default {
             ...props.wwElementState.props.attributes,
             key: 'ww-input-basic-' + step.value,
             value: isCurrencyType.value && !isReallyFocused.value ? formattedCurrencyValue?.value : variableValue.value,
-            type: isCurrencyType.value ? (!isReallyFocused.value ? 'text' : 'number') : inputType.value,
+            type: inputType.value,
             name: props.wwElementState.name,
             readonly: isReadonly.value || isEditing.value,
             required: props.content.required,
@@ -260,23 +261,19 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.input-currency-root {
-    width: 200px;
+.input-currency-wrapper {
+    position: relative;
 
-    .input-currency-wrapper {
-        position: relative;
+    &.has-currency-symbol {
+        display: flex;
+        align-items: center;
+        height: 100%;
 
-        &.has-currency-symbol {
-            display: flex;
-            align-items: center;
-            height: 100%;
-
-            .currency-symbol {
-                pointer-events: none;
-                font-size: inherit;
-                color: var(--placeholder-color, #000000ad);
-                white-space: nowrap; /* Ensure symbol doesn't wrap */
-            }
+        .currency-symbol {
+            pointer-events: none;
+            font-size: inherit;
+            color: var(--placeholder-color, #000000ad);
+            white-space: nowrap; /* Ensure symbol doesn't wrap */
         }
     }
 }

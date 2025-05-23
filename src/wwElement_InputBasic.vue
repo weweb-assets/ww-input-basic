@@ -186,6 +186,12 @@ export default {
             console.log('🐛 Thousands sep:', `"${thousandsSep}"`);
             console.log('🐛 Decimal sep:', `"${decimalSep}"`);
             
+            // Prevent multiple processing of the same value
+            if (rawValue === currencyDisplayValue.value) {
+                console.log('🐛 SKIPPING: Raw value same as current display value');
+                return;
+            }
+            
             // Check for conflicting separators
             if (thousandsSep === decimalSep) {
                 console.warn('⚠️ Warning: Thousands separator and decimal separator are the same:', thousandsSep);
@@ -222,10 +228,11 @@ export default {
             // Reconstruct the clean value with limited decimal places
             const limitedCleanValue = integerPart + (decimalPart ? '.' + decimalPart : '');
             
+            console.log('🐛 Limited clean value:', `"${limitedCleanValue}"`);
+            
             // Extract numeric value from the limited clean value
             const actualValue = parseFloat(limitedCleanValue) || 0;
-            console.log('🐛 Limited clean value:', `"${limitedCleanValue}"`);
-            console.log('🐛 Parsed numeric value:', actualValue);
+            console.log('🐛 Final parsed numeric value (should be limited):', actualValue);
             
             // Add thousands separators to integer part
             if (integerPart && thousandsSep) {

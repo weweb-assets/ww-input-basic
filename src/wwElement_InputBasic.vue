@@ -245,6 +245,21 @@ export default {
             const decimalSep = props.content.currencyDecimalSeparator || '.';
             const decimalPlaces = props.content.currencyDecimalPlaces ?? 2;
             
+            // Check for conflicting separators
+            if (thousandsSep === decimalSep) {
+                console.warn('⚠️ Warning: Thousands separator and decimal separator are the same:', thousandsSep);
+                
+                /* wwEditor:start */
+                wwLib.wwNotification.open({
+                    text: {
+                        en: `Currency input error: Thousands separator and decimal separator cannot be the same ("${thousandsSep}").<br/>Please change one of them in the component settings.`,
+                    },
+                    color: 'red',
+                    duration: 10000,
+                });
+                /* wwEditor:end */
+            }
+            
             console.log('💰 Cursor position before:', cursorPosition);
             
             // Clean input - remove any existing separators
@@ -390,6 +405,22 @@ export default {
                     const currentThousandsSep = props.content.currencyThousandsSeparator || ',';
                     const currentDecimalSep = props.content.currencyDecimalSeparator || '.';
                     const currentDecimalPlaces = props.content.currencyDecimalPlaces ?? 2;
+                    
+                    // Check for conflicting separators
+                    if (currentThousandsSep === currentDecimalSep) {
+                        console.warn('⚠️ Warning: Thousands separator and decimal separator are the same:', currentThousandsSep);
+                        
+                        /* wwEditor:start */
+                        wwLib.wwNotification.open({
+                            text: {
+                                en: `Currency input error: Thousands separator and decimal separator cannot be the same ("${currentThousandsSep}").<br/>Please change one of them in the component settings.`,
+                            },
+                            color: 'red',
+                            duration: 10000,
+                        });
+                        /* wwEditor:end */
+                        return; // Don't reformat if separators are invalid
+                    }
                     
                     // Get the numeric value from variableValue (which should be clean)
                     const numericValue = variableValue.value || 0;

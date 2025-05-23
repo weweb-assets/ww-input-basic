@@ -148,45 +148,40 @@ export default {
             const decimalSep = props.content.currencyDecimalSeparator || '.';
             const decimalPlaces = props.content.currencyDecimalPlaces ?? 2;
             
+            // Create mask pattern: 9 999 999,99 (where 9 is repeated, separators are custom)
+            // Build decimal part dynamically based on decimalPlaces
+            let decimalPart = '';
+            if (decimalPlaces > 0) {
+                decimalPart = decimalSep + '0'.repeat(decimalPlaces);
+            }
+            
             return {
-                mask: '#*',
+                mask: `9${thousandsSep ? ` 999${thousandsSep}999${thousandsSep}999` : ''}${decimalPart}`,
                 tokens: {
-                    '#': { pattern: /[0-9]/, repeated: true },
+                    '9': { pattern: /[0-9]/, repeated: true },
+                    '0': { pattern: /[0-9]/, optional: true },
                 },
-                preProcess: (val) => val.replace(/[^\d]/g, ''),
-                postProcess: (val) => {
-                    if (!val) return '';
-                    
-                    let num = parseFloat(val) / (10 ** decimalPlaces);
-                    
-                    // Format with separators
-                    let formatted = num.toLocaleString('en-US', {
-                        minimumFractionDigits: decimalPlaces,
-                        maximumFractionDigits: decimalPlaces,
-                        useGrouping: true,
-                    });
-                    
-                    // Replace separators with custom ones
-                    if (thousandsSep !== ',') {
-                        formatted = formatted.replace(/,/g, thousandsSep);
-                    }
-                    if (decimalSep !== '.') {
-                        formatted = formatted.replace(/\./g, decimalSep);
-                    }
-                    
-                    return formatted;
-                },
+                reversed: true, // Input from right to left like money
             };
         });
 
         function handleCurrencyInput(event) {
-            // The maska library will handle formatting, we just need to extract the numeric value
+            // Extract numeric value from masked input
             const maskedValue = event.target.value;
-            const numericValue = maskedValue.replace(/[^\d]/g, '');
-            const decimalPlaces = props.content.currencyDecimalPlaces ?? 2;
-            const actualValue = parseFloat(numericValue) / (10 ** decimalPlaces);
+            const thousandsSep = props.content.currencyThousandsSeparator || ',';
+            const decimalSep = props.content.currencyDecimalSeparator || '.';
             
-            setValue(actualValue || 0);
+            // Remove thousands separators and convert decimal separator to dot
+            let cleanValue = maskedValue;
+            if (thousandsSep) {
+                cleanValue = cleanValue.replace(new RegExp(`\\${thousandsSep.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`, 'g'), '');
+            }
+            if (decimalSep !== '.') {
+                cleanValue = cleanValue.replace(decimalSep, '.');
+            }
+            
+            const actualValue = parseFloat(cleanValue) || 0;
+            setValue(actualValue);
             
             if (!props.content.debounce) {
                 emit('trigger-event', { name: 'change', event: { domEvent: event, value: actualValue } });

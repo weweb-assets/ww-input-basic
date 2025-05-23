@@ -63,7 +63,7 @@
 </template>
 
 <script>
-import { computed, inject, watch } from 'vue';
+import { computed, inject, watch, nextTick } from 'vue';
 import { useInput } from './composables/useInput';
 import { useCurrency } from './composables/useCurrency';
 import { vMaska } from 'maska/vue';
@@ -237,13 +237,26 @@ export default {
             
             console.log('💰 Formatted for display:', formattedValue);
             
-            // Update the input value directly with formatted value
-            if (event.target.value !== formattedValue) {
-                event.target.value = formattedValue;
-            }
+            // Store cursor position
+            const input = event.target;
+            const cursorPosition = input.selectionStart;
+            const oldLength = rawValue.length;
+            const newLength = formattedValue.length;
             
-            // Set the numeric value for form handling
+            // Set the numeric value for form handling first
             setValue(actualValue);
+            
+            // Update the input value with formatted value
+            nextTick(() => {
+                if (input.value !== formattedValue) {
+                    input.value = formattedValue;
+                    
+                    // Restore cursor position, adjusting for length changes
+                    const lengthDiff = newLength - oldLength;
+                    const newCursorPosition = Math.max(0, cursorPosition + lengthDiff);
+                    input.setSelectionRange(newCursorPosition, newCursorPosition);
+                }
+            });
             
             if (!props.content.debounce) {
                 emit('trigger-event', { name: 'change', event: { domEvent: event, value: actualValue } });

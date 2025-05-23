@@ -218,15 +218,9 @@ export default {
                 return;
             }
             
-            // Allow numbers (0-9) from main keyboard (48-57)
-            if (event.keyCode >= 48 && event.keyCode <= 57 && !event.shiftKey) {
-                console.log('🔑 Allowing main keyboard number');
-                return;
-            }
-            
-            // Allow numbers from numpad (96-105)
-            if (event.keyCode >= 96 && event.keyCode <= 105) {
-                console.log('🔑 Allowing numpad number');
+            // Allow numbers (0-9) - check the actual key rather than keyCode+shift
+            if (/^[0-9]$/.test(event.key)) {
+                console.log('🔑 Allowing number:', event.key);
                 return;
             }
             
@@ -237,7 +231,7 @@ export default {
             }
             
             // Prevent all other characters
-            console.log('🔑 Preventing character');
+            console.log('🔑 Preventing character:', event.key);
             event.preventDefault();
         }
 

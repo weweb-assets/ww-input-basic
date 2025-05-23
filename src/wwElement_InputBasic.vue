@@ -209,23 +209,27 @@ export default {
             
             console.log('🐛 Cleaned value:', `"${cleanValue}"`);
             
-            // Extract numeric value
-            const actualValue = parseFloat(cleanValue) || 0;
-            console.log('🐛 Parsed numeric value:', actualValue);
-            
-            // Format for display
+            // Format for display first (this will also determine the final value)
             let parts = cleanValue.split('.');
             let integerPart = parts[0] || '';
             let decimalPart = parts[1] || '';
             
-            // Add thousands separators
-            if (integerPart && thousandsSep) {
-                integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, thousandsSep);
-            }
-            
-            // Limit decimal places
+            // Limit decimal places BEFORE parsing to ensure consistency
             if (decimalPart.length > decimalPlaces) {
                 decimalPart = decimalPart.substring(0, decimalPlaces);
+            }
+            
+            // Reconstruct the clean value with limited decimal places
+            const limitedCleanValue = integerPart + (decimalPart ? '.' + decimalPart : '');
+            
+            // Extract numeric value from the limited clean value
+            const actualValue = parseFloat(limitedCleanValue) || 0;
+            console.log('🐛 Limited clean value:', `"${limitedCleanValue}"`);
+            console.log('🐛 Parsed numeric value:', actualValue);
+            
+            // Add thousands separators to integer part
+            if (integerPart && thousandsSep) {
+                integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, thousandsSep);
             }
             
             // Combine formatted value

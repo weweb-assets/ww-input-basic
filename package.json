@@ -20,5 +20,8 @@
         "eslint-plugin-vue": "7.0.0-beta.4",
         "prettier": "^2.1.2"
     },
-    "license": "MIT"
+    "license": "MIT",
+    "dependencies": {
+        "maska": "^3.1.1"
+    }
 }

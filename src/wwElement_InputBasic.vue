@@ -16,10 +16,11 @@
             <input
                 ref="inputRef"
                 v-bind="inputBindings"
+                v-maska="currencyMaskaOptions"
                 class="ww-input-basic currency-type"
                 :class="[inputClasses]"
                 :style="showCurrencySymbol ? currencyInputStyle : {}"
-                type="number"
+                type="text"
                 @input="handleCurrencyInput"
                 @blur="
                     () => {
@@ -66,11 +67,15 @@
 import { computed, inject, watch } from 'vue';
 import { useInput } from './composables/useInput';
 import { useCurrency } from './composables/useCurrency';
+import { vMaska } from 'maska/vue';
 /* wwEditor:start */
 import useParentSelection from './editor/useParentSelection';
 /* wwEditor:end */
 
 export default {
+    directives: {
+        maska: vMaska,
+    },
     props: {
         content: { type: Object, required: true },
         /* wwEditor:start */
@@ -135,29 +140,58 @@ export default {
             formattedCurrencyValue,
         } = useCurrency(props, { emit, setValue, variableValue });
 
+        // Create maska options for currency formatting
+        const currencyMaskaOptions = computed(() => {
+            if (props.content.type !== 'currency') return null;
+            
+            const thousandsSep = props.content.currencyThousandsSeparator || ',';
+            const decimalSep = props.content.currencyDecimalSeparator || '.';
+            const decimalPlaces = props.content.currencyDecimalPlaces ?? 2;
+            
+            return {
+                mask: '#*',
+                tokens: {
+                    '#': { pattern: /[0-9]/, repeated: true },
+                },
+                preProcess: (val) => val.replace(/[^\d]/g, ''),
+                postProcess: (val) => {
+                    if (!val) return '';
+                    
+                    let num = parseFloat(val) / (10 ** decimalPlaces);
+                    
+                    // Format with separators
+                    let formatted = num.toLocaleString('en-US', {
+                        minimumFractionDigits: decimalPlaces,
+                        maximumFractionDigits: decimalPlaces,
+                        useGrouping: true,
+                    });
+                    
+                    // Replace separators with custom ones
+                    if (thousandsSep !== ',') {
+                        formatted = formatted.replace(/,/g, thousandsSep);
+                    }
+                    if (decimalSep !== '.') {
+                        formatted = formatted.replace(/\./g, decimalSep);
+                    }
+                    
+                    return formatted;
+                },
+            };
+        });
+
         function handleCurrencyInput(event) {
-            console.log('handleCurrencyInput', event);
-            // Avoid multiple dots or commas
-            if (['.', ','].includes(event.data) && event.target.value.match(/[.,]/g)?.length > 1) {
-                event.preventDefault();
-                setValue(variableValue.value);
-                return;
+            // The maska library will handle formatting, we just need to extract the numeric value
+            const maskedValue = event.target.value;
+            const numericValue = maskedValue.replace(/[^\d]/g, '');
+            const decimalPlaces = props.content.currencyDecimalPlaces ?? 2;
+            const actualValue = parseFloat(numericValue) / (10 ** decimalPlaces);
+            
+            setValue(actualValue || 0);
+            
+            if (!props.content.debounce) {
+                emit('trigger-event', { name: 'change', event: { domEvent: event, value: actualValue } });
+                emit('element-event', { type: 'change', value: { domEvent: event, value: actualValue } });
             }
-            const newEvent = { ...event };
-            newEvent.target = { ...event.target };
-            newEvent.target.value = event.target.value.replaceAll(/[^0-9 \,\.]/g, '');
-
-            console.log('newEvent.target.value', newEvent.target.value);
-            console.log('variableValue.value', variableValue.value);
-
-            // Avoid logic if the value is the same
-            if (newEvent.target.value === variableValue.value) {
-                event.preventDefault();
-                setValue(variableValue.value);
-                return;
-            }
-
-            handleManualInput(newEvent); // from useInput
         }
 
         const useForm = inject('_wwForm:useForm', () => {});
@@ -245,6 +279,7 @@ export default {
             onEnter,
             // Currency-related
             handleCurrencyInput,
+            currencyMaskaOptions,
             showCurrencySymbol,
             currencySymbolStyle,
             currencySymbol,

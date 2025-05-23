@@ -21,6 +21,7 @@
                 :style="showCurrencySymbol ? currencyInputStyle : {}"
                 type="text"
                 @input="handleCurrencyInput"
+                @keydown="handleCurrencyKeydown"
                 @blur="
                     () => {
                         isReallyFocused = false;
@@ -199,6 +200,36 @@ export default {
             return options;
         });
 
+        function handleCurrencyKeydown(event) {
+            const decimalSep = props.content.currencyDecimalSeparator || '.';
+            
+            // Allow: backspace, delete, tab, escape, enter
+            if ([8, 9, 27, 13, 46].indexOf(event.keyCode) !== -1 ||
+                // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+                (event.keyCode === 65 && event.ctrlKey === true) ||
+                (event.keyCode === 67 && event.ctrlKey === true) ||
+                (event.keyCode === 86 && event.ctrlKey === true) ||
+                (event.keyCode === 88 && event.ctrlKey === true) ||
+                // Allow: home, end, left, right, down, up
+                (event.keyCode >= 35 && event.keyCode <= 40)) {
+                return;
+            }
+            
+            // Allow numbers (0-9) from both main keyboard and numpad
+            if ((event.shiftKey || (event.keyCode < 48 || event.keyCode > 57)) && 
+                (event.keyCode < 96 || event.keyCode > 105)) {
+                
+                // Allow decimal separator only if it's not already present
+                if (event.key === decimalSep && !event.target.value.includes(decimalSep)) {
+                    return;
+                }
+                
+                // Prevent all other characters
+                event.preventDefault();
+                return;
+            }
+        }
+
         function handleCurrencyInput(event) {
             console.log('💰 handleCurrencyInput called with value:', event.target.value);
             
@@ -338,6 +369,7 @@ export default {
             onEnter,
             // Currency-related
             handleCurrencyInput,
+            handleCurrencyKeydown,
             currencyMaskaOptions,
             currencyDisplayValue,
             showCurrencySymbol,

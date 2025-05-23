@@ -16,7 +16,6 @@
             <input
                 ref="inputRef"
                 v-bind="inputBindings"
-                v-maska="currencyMaskaOptions"
                 class="ww-input-basic currency-type"
                 :class="[inputClasses]"
                 :style="showCurrencySymbol ? currencyInputStyle : {}"
@@ -199,21 +198,51 @@ export default {
 
         function handleCurrencyInput(event) {
             console.log('💰 handleCurrencyInput called with value:', event.target.value);
-            // Extract numeric value from formatted input
-            const maskedValue = event.target.value;
+            
+            const rawValue = event.target.value;
             const thousandsSep = props.content.currencyThousandsSeparator || ',';
             const decimalSep = props.content.currencyDecimalSeparator || '.';
+            const decimalPlaces = props.content.currencyDecimalPlaces ?? 2;
             
-            // Remove thousands separators and convert to standard decimal format
-            let cleanValue = maskedValue;
-            if (thousandsSep) {
-                cleanValue = cleanValue.replace(new RegExp(`\\${thousandsSep.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`, 'g'), '');
-            }
+            // Clean input - remove any existing separators
+            let cleanValue = rawValue.replace(new RegExp(`\\${thousandsSep.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`, 'g'), '');
             if (decimalSep !== '.') {
                 cleanValue = cleanValue.replace(decimalSep, '.');
             }
             
+            // Extract numeric value
             const actualValue = parseFloat(cleanValue) || 0;
+            console.log('💰 Cleaned value:', cleanValue, '→ Numeric:', actualValue);
+            
+            // Format for display
+            let parts = cleanValue.split('.');
+            let integerPart = parts[0] || '';
+            let decimalPart = parts[1] || '';
+            
+            // Add thousands separators
+            if (integerPart && thousandsSep) {
+                integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, thousandsSep);
+            }
+            
+            // Limit decimal places
+            if (decimalPart.length > decimalPlaces) {
+                decimalPart = decimalPart.substring(0, decimalPlaces);
+            }
+            
+            // Combine formatted value
+            let formattedValue = integerPart;
+            if (parts.length > 1) {
+                formattedValue += decimalSep + decimalPart;
+            }
+            
+            console.log('💰 Formatted for display:', formattedValue);
+            
+            // Update the input value directly with formatted value
+            if (event.target.value !== formattedValue) {
+                event.target.value = formattedValue;
+            }
+            
+            // Set the numeric value for form handling
             setValue(actualValue);
             
             if (!props.content.debounce) {

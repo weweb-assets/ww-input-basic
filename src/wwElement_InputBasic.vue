@@ -148,29 +148,47 @@ export default {
             const decimalSep = props.content.currencyDecimalSeparator || '.';
             const decimalPlaces = props.content.currencyDecimalPlaces ?? 2;
             
-            // Create mask pattern: 9 999 999,99 (where 9 is repeated, separators are custom)
-            // Build decimal part dynamically based on decimalPlaces
-            let decimalPart = '';
-            if (decimalPlaces > 0) {
-                decimalPart = decimalSep + '0'.repeat(decimalPlaces);
-            }
-            
             return {
-                mask: `9${thousandsSep ? ` 999${thousandsSep}999${thousandsSep}999` : ''}${decimalPart}`,
+                mask: '#*',
                 tokens: {
-                    '9': { pattern: /[0-9]/, repeated: true },
-                    '0': { pattern: /[0-9]/, optional: true },
+                    '#': { pattern: new RegExp(`[0-9\\${decimalSep.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}]`), repeated: true },
+                },
+                postProcess: (val) => {
+                    if (!val) return '';
+                    
+                    // Handle decimal separator (split by the configured separator)
+                    let parts = val.split(decimalSep);
+                    let integerPart = parts[0] || '';
+                    let decimalPart = parts[1] || '';
+                    
+                    // Limit decimal places
+                    if (decimalPart.length > decimalPlaces) {
+                        decimalPart = decimalPart.substring(0, decimalPlaces);
+                    }
+                    
+                    // Add thousands separators to integer part
+                    if (integerPart && thousandsSep) {
+                        integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, thousandsSep);
+                    }
+                    
+                    // Combine parts
+                    let result = integerPart;
+                    if (parts.length > 1) {
+                        result += decimalSep + decimalPart;
+                    }
+                    
+                    return result;
                 },
             };
         });
 
         function handleCurrencyInput(event) {
-            // Extract numeric value from masked input
+            // Extract numeric value from formatted input
             const maskedValue = event.target.value;
             const thousandsSep = props.content.currencyThousandsSeparator || ',';
             const decimalSep = props.content.currencyDecimalSeparator || '.';
             
-            // Remove thousands separators and convert decimal separator to dot
+            // Remove thousands separators and convert to standard decimal format
             let cleanValue = maskedValue;
             if (thousandsSep) {
                 cleanValue = cleanValue.replace(new RegExp(`\\${thousandsSep.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`, 'g'), '');

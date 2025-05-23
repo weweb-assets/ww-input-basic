@@ -173,7 +173,6 @@ export default {
                     
                     // Check if we're already at the decimal places limit
                     if (currentDecimalPart.length >= decimalPlaces) {
-                        console.log('🚫 Preventing digit: decimal places limit reached');
                         event.preventDefault();
                         return;
                     }
@@ -195,18 +194,8 @@ export default {
             const decimalSep = props.content.currencyDecimalSeparator || '.';
             const decimalPlaces = props.content.currencyDecimalPlaces ?? 2;
             
-            console.log('🐛 === CURRENCY INPUT DEBUG ===');
-            console.log('🐛 Input event data:', event.data);
-            console.log('🐛 Raw value:', `"${rawValue}"`);
-            console.log('🐛 Previous display value:', `"${currencyDisplayValue.value}"`);
-            console.log('🐛 Previous variable value:', variableValue.value);
-            console.log('🐛 Cursor position:', cursorPosition);
-            console.log('🐛 Thousands sep:', `"${thousandsSep}"`);
-            console.log('🐛 Decimal sep:', `"${decimalSep}"`);
-            
             // Prevent multiple processing of the same value
             if (rawValue === currencyDisplayValue.value) {
-                console.log('🐛 SKIPPING: Raw value same as current display value');
                 return;
             }
             
@@ -231,8 +220,6 @@ export default {
                 cleanValue = cleanValue.replace(decimalSep, '.');
             }
             
-            console.log('🐛 Cleaned value:', `"${cleanValue}"`);
-            
             // Format for display first (this will also determine the final value)
             let parts = cleanValue.split('.');
             let integerPart = parts[0] || '';
@@ -246,11 +233,8 @@ export default {
             // Reconstruct the clean value with limited decimal places
             const limitedCleanValue = integerPart + (decimalPart ? '.' + decimalPart : '');
             
-            console.log('🐛 Limited clean value:', `"${limitedCleanValue}"`);
-            
             // Extract numeric value from the limited clean value
             const actualValue = parseFloat(limitedCleanValue) || 0;
-            console.log('🐛 Final parsed numeric value (should be limited):', actualValue);
             
             // Add thousands separators to integer part
             if (integerPart && thousandsSep) {
@@ -262,8 +246,6 @@ export default {
             if (parts.length > 1) {
                 formattedValue += decimalSep + decimalPart;
             }
-            
-            console.log('🐛 Formatted value:', `"${formattedValue}"`);
             
             // Calculate cursor position adjustment
             const oldLength = rawValue.length;
@@ -278,18 +260,12 @@ export default {
                 Math.max(0, cursorPosition + (separatorsBeforeCursorNew - separatorsBeforeCursorOld))
             );
             
-            console.log('🐛 Cursor position adjustment:', cursorPosition, '→', newCursorPosition);
-            
             // Set the numeric value for form handling
-            console.log('🐛 Setting variable value to:', actualValue);
             setValue(actualValue);
             
             // Update the display value reactively only if it changed
             if (currencyDisplayValue.value !== formattedValue) {
-                console.log('🐛 Updating display value from:', `"${currencyDisplayValue.value}"`, 'to:', `"${formattedValue}"`);
                 currencyDisplayValue.value = formattedValue;
-            } else {
-                console.log('🐛 Display value unchanged:', `"${formattedValue}"`);
             }
             
             // Restore cursor position after Vue updates

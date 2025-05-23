@@ -50,6 +50,7 @@ export function useInput(props, emit) {
     const { value: variableValue, setValue } = wwLib.wwVariable.useComponentVariable({
         uid: props.uid,
         name: 'value',
+        type: computed(() => (['decimal', 'number', 'currency'].includes(type.value) ? 'number' : 'string')),
         defaultValue,
     });
 
@@ -70,9 +71,11 @@ export function useInput(props, emit) {
         { immediate: true }
     );
 
+    /* wwEditor:start */
     watch(defaultValue, () => {
         setValue(defaultValue.value);
     });
+    /* wwEditor:end */
 
     const inputType = computed(() => {
         if (!props.content) return 'text';

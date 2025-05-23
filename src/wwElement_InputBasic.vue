@@ -177,6 +177,15 @@ export default {
             const decimalSep = props.content.currencyDecimalSeparator || '.';
             const decimalPlaces = props.content.currencyDecimalPlaces ?? 2;
             
+            console.log('🐛 === CURRENCY INPUT DEBUG ===');
+            console.log('🐛 Input event data:', event.data);
+            console.log('🐛 Raw value:', `"${rawValue}"`);
+            console.log('🐛 Previous display value:', `"${currencyDisplayValue.value}"`);
+            console.log('🐛 Previous variable value:', variableValue.value);
+            console.log('🐛 Cursor position:', cursorPosition);
+            console.log('🐛 Thousands sep:', `"${thousandsSep}"`);
+            console.log('🐛 Decimal sep:', `"${decimalSep}"`);
+            
             // Check for conflicting separators
             if (thousandsSep === decimalSep) {
                 console.warn('⚠️ Warning: Thousands separator and decimal separator are the same:', thousandsSep);
@@ -198,8 +207,11 @@ export default {
                 cleanValue = cleanValue.replace(decimalSep, '.');
             }
             
+            console.log('🐛 Cleaned value:', `"${cleanValue}"`);
+            
             // Extract numeric value
             const actualValue = parseFloat(cleanValue) || 0;
+            console.log('🐛 Parsed numeric value:', actualValue);
             
             // Format for display
             let parts = cleanValue.split('.');
@@ -222,6 +234,8 @@ export default {
                 formattedValue += decimalSep + decimalPart;
             }
             
+            console.log('🐛 Formatted value:', `"${formattedValue}"`);
+            
             // Calculate cursor position adjustment
             const oldLength = rawValue.length;
             const newLength = formattedValue.length;
@@ -235,12 +249,18 @@ export default {
                 Math.max(0, cursorPosition + (separatorsBeforeCursorNew - separatorsBeforeCursorOld))
             );
             
+            console.log('🐛 Cursor position adjustment:', cursorPosition, '→', newCursorPosition);
+            
             // Set the numeric value for form handling
+            console.log('🐛 Setting variable value to:', actualValue);
             setValue(actualValue);
             
             // Update the display value reactively only if it changed
             if (currencyDisplayValue.value !== formattedValue) {
+                console.log('🐛 Updating display value from:', `"${currencyDisplayValue.value}"`, 'to:', `"${formattedValue}"`);
                 currencyDisplayValue.value = formattedValue;
+            } else {
+                console.log('🐛 Display value unchanged:', `"${formattedValue}"`);
             }
             
             // Restore cursor position after Vue updates

@@ -161,7 +161,6 @@ export default {
                     '9': { pattern: /[0-9]/, repeated: true },
                     '0': { pattern: /[0-9]/, optional: true },
                 },
-                reversed: true, // Input from right to left like money
             };
         });
 

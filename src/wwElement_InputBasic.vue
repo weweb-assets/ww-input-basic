@@ -142,6 +142,7 @@ export default {
 
         function handleCurrencyKeydown(event) {
             const decimalSep = props.content.currencyDecimalSeparator || '.';
+            const decimalPlaces = props.content.currencyDecimalPlaces ?? 2;
             
             // Allow: backspace, delete, tab, escape, enter
             if ([8, 9, 27, 13, 46].indexOf(event.keyCode) !== -1 ||
@@ -155,13 +156,30 @@ export default {
                 return;
             }
             
-            // Allow numbers (0-9) - check the actual key rather than keyCode+shift
-            if (/^[0-9]$/.test(event.key)) {
+            // Allow decimal separator only if it's not already present
+            if (event.key === decimalSep && !event.target.value.includes(decimalSep)) {
                 return;
             }
             
-            // Allow decimal separator only if it's not already present
-            if (event.key === decimalSep && !event.target.value.includes(decimalSep)) {
+            // Allow numbers (0-9) but check decimal places limit
+            if (/^[0-9]$/.test(event.key)) {
+                const currentValue = event.target.value;
+                const cursorPosition = event.target.selectionStart;
+                const decimalIndex = currentValue.indexOf(decimalSep);
+                
+                // If we have a decimal separator and cursor is after it
+                if (decimalIndex >= 0 && cursorPosition > decimalIndex) {
+                    const currentDecimalPart = currentValue.substring(decimalIndex + 1);
+                    
+                    // Check if we're already at the decimal places limit
+                    if (currentDecimalPart.length >= decimalPlaces) {
+                        console.log('🚫 Preventing digit: decimal places limit reached');
+                        event.preventDefault();
+                        return;
+                    }
+                }
+                
+                // Allow the digit
                 return;
             }
             

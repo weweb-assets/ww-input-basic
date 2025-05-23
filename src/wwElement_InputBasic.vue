@@ -67,15 +67,11 @@
 import { computed, inject, watch, nextTick, ref } from 'vue';
 import { useInput } from './composables/useInput';
 import { useCurrency } from './composables/useCurrency';
-import { vMaska } from 'maska/vue';
 /* wwEditor:start */
 import useParentSelection from './editor/useParentSelection';
 /* wwEditor:end */
 
 export default {
-    directives: {
-        maska: vMaska,
-    },
     props: {
         content: { type: Object, required: true },
         /* wwEditor:start */
@@ -143,49 +139,6 @@ export default {
         // Track the formatted display value separately for currency inputs
         const currencyDisplayValue = ref('');
 
-        // Create maska options for currency formatting
-        const currencyMaskaOptions = computed(() => {
-            if (props.content.type !== 'currency') return null;
-            
-            const thousandsSep = props.content.currencyThousandsSeparator || ',';
-            const decimalSep = props.content.currencyDecimalSeparator || '.';
-            const decimalPlaces = props.content.currencyDecimalPlaces ?? 2;
-            
-            const options = {
-                mask: '#*',
-                tokens: {
-                    '#': { pattern: new RegExp(`[0-9\\${decimalSep.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}]`), repeated: true },
-                },
-                postProcess: (val) => {
-                    if (!val) return '';
-                    
-                    // Handle decimal separator (split by the configured separator)
-                    let parts = val.split(decimalSep);
-                    let integerPart = parts[0] || '';
-                    let decimalPart = parts[1] || '';
-                    
-                    // Limit decimal places
-                    if (decimalPart.length > decimalPlaces) {
-                        decimalPart = decimalPart.substring(0, decimalPlaces);
-                    }
-                    
-                    // Add thousands separators to integer part
-                    if (integerPart && thousandsSep) {
-                        integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, thousandsSep);
-                    }
-                    
-                    // Combine parts
-                    let result = integerPart;
-                    if (parts.length > 1) {
-                        result += decimalSep + decimalPart;
-                    }
-                    
-                    return result;
-                },
-            };
-            
-            return options;
-        });
 
         function handleCurrencyKeydown(event) {
             const decimalSep = props.content.currencyDecimalSeparator || '.';
@@ -455,7 +408,6 @@ export default {
             // Currency-related
             handleCurrencyInput,
             handleCurrencyKeydown,
-            currencyMaskaOptions,
             currencyDisplayValue,
             showCurrencySymbol,
             currencySymbolStyle,

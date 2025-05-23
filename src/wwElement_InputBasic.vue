@@ -154,12 +154,18 @@ export default {
                     '#': { pattern: new RegExp(`[0-9\\${decimalSep.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}]`), repeated: true },
                 },
                 postProcess: (val) => {
+                    console.log('🔍 PostProcess called with value:', val);
+                    console.log('🔍 thousandsSep:', thousandsSep);
+                    console.log('🔍 decimalSep:', decimalSep);
+                    
                     if (!val) return '';
                     
                     // Handle decimal separator (split by the configured separator)
                     let parts = val.split(decimalSep);
                     let integerPart = parts[0] || '';
                     let decimalPart = parts[1] || '';
+                    
+                    console.log('🔍 Before formatting - integerPart:', integerPart, 'decimalPart:', decimalPart);
                     
                     // Limit decimal places
                     if (decimalPart.length > decimalPlaces) {
@@ -168,7 +174,9 @@ export default {
                     
                     // Add thousands separators to integer part
                     if (integerPart && thousandsSep) {
+                        const beforeFormat = integerPart;
                         integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, thousandsSep);
+                        console.log('🔍 Thousands formatting:', beforeFormat, '→', integerPart);
                     }
                     
                     // Combine parts
@@ -177,6 +185,7 @@ export default {
                         result += decimalSep + decimalPart;
                     }
                     
+                    console.log('🔍 Final result:', result);
                     return result;
                 },
             };

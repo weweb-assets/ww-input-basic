@@ -63,7 +63,7 @@
 </template>
 
 <script>
-import { computed, inject, watch, nextTick } from 'vue';
+import { computed, inject, watch, nextTick, ref } from 'vue';
 import { useInput } from './composables/useInput';
 import { useCurrency } from './composables/useCurrency';
 import { vMaska } from 'maska/vue';
@@ -138,6 +138,9 @@ export default {
             onCurrencyFocus,
             formattedCurrencyValue,
         } = useCurrency(props, { emit, setValue, variableValue });
+
+        // Track the formatted display value separately for currency inputs
+        const currencyDisplayValue = ref('');
 
         // Create maska options for currency formatting
         const currencyMaskaOptions = computed(() => {
@@ -237,26 +240,12 @@ export default {
             
             console.log('💰 Formatted for display:', formattedValue);
             
-            // Store cursor position
-            const input = event.target;
-            const cursorPosition = input.selectionStart;
-            const oldLength = rawValue.length;
-            const newLength = formattedValue.length;
-            
-            // Set the numeric value for form handling first
+            // Set the numeric value for form handling
             setValue(actualValue);
             
-            // Update the input value with formatted value
-            nextTick(() => {
-                if (input.value !== formattedValue) {
-                    input.value = formattedValue;
-                    
-                    // Restore cursor position, adjusting for length changes
-                    const lengthDiff = newLength - oldLength;
-                    const newCursorPosition = Math.max(0, cursorPosition + lengthDiff);
-                    input.setSelectionRange(newCursorPosition, newCursorPosition);
-                }
-            });
+            // Update the display value reactively
+            currencyDisplayValue.value = formattedValue;
+            console.log('💰 Updated currencyDisplayValue to:', currencyDisplayValue.value);
             
             if (!props.content.debounce) {
                 emit('trigger-event', { name: 'change', event: { domEvent: event, value: actualValue } });
@@ -280,7 +269,7 @@ export default {
         const inputBindings = computed(() => ({
             ...props.wwElementState.props.attributes,
             key: 'ww-input-basic-' + step.value,
-            value: variableValue.value,
+            value: isCurrencyType.value ? currencyDisplayValue.value : variableValue.value,
             type: inputType.value,
             name: props.wwElementState.name,
             readonly: isReadonly.value || isEditing.value,
@@ -350,6 +339,7 @@ export default {
             // Currency-related
             handleCurrencyInput,
             currencyMaskaOptions,
+            currencyDisplayValue,
             showCurrencySymbol,
             currencySymbolStyle,
             currencySymbol,

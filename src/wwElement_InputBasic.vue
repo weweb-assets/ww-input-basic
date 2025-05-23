@@ -142,13 +142,16 @@ export default {
 
         // Create maska options for currency formatting
         const currencyMaskaOptions = computed(() => {
+            console.log('🔧 Creating maska options, content.type:', props.content.type);
             if (props.content.type !== 'currency') return null;
             
             const thousandsSep = props.content.currencyThousandsSeparator || ',';
             const decimalSep = props.content.currencyDecimalSeparator || '.';
             const decimalPlaces = props.content.currencyDecimalPlaces ?? 2;
             
-            return {
+            console.log('🔧 Maska config:', { thousandsSep, decimalSep, decimalPlaces });
+            
+            const options = {
                 mask: '#*',
                 tokens: {
                     '#': { pattern: new RegExp(`[0-9\\${decimalSep.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}]`), repeated: true },
@@ -189,9 +192,13 @@ export default {
                     return result;
                 },
             };
+            
+            console.log('🔧 Final maska options:', options);
+            return options;
         });
 
         function handleCurrencyInput(event) {
+            console.log('💰 handleCurrencyInput called with value:', event.target.value);
             // Extract numeric value from formatted input
             const maskedValue = event.target.value;
             const thousandsSep = props.content.currencyThousandsSeparator || ',';

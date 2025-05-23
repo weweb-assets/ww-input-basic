@@ -285,8 +285,10 @@ export default {
             // Set the numeric value for form handling
             setValue(actualValue);
             
-            // Update the display value reactively
-            currencyDisplayValue.value = formattedValue;
+            // Update the display value reactively only if it changed
+            if (currencyDisplayValue.value !== formattedValue) {
+                currencyDisplayValue.value = formattedValue;
+            }
             
             // Restore cursor position after Vue updates
             nextTick(() => {
@@ -418,7 +420,10 @@ export default {
                         }
                     }
                     
-                    currencyDisplayValue.value = integerPart;
+                    // Update display value only if it changed
+                    if (currencyDisplayValue.value !== integerPart) {
+                        currencyDisplayValue.value = integerPart;
+                    }
                 }
             }
         );

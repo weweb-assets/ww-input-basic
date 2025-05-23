@@ -36,13 +36,17 @@ export function useCurrency(props, { variableValue } = {}) {
     const onCurrencyBlur = () => {
         if (!variableValue.value) return '';
         const formattedValue = formatCurrency(variableValue.value);
-        setFormattedCurrencyValue(formattedValue);
+        if (formattedCurrencyValue.value !== formattedValue) {
+            setFormattedCurrencyValue(formattedValue);
+        }
     };
 
     const onCurrencyFocus = () => {
         if (!variableValue.value) return '';
         const formattedValue = formatCurrency(variableValue.value);
-        setFormattedCurrencyValue(formattedValue);
+        if (formattedCurrencyValue.value !== formattedValue) {
+            setFormattedCurrencyValue(formattedValue);
+        }
     };   
 
     const updateCurrencyInputStyle = async () => {
@@ -153,7 +157,9 @@ export function useCurrency(props, { variableValue } = {}) {
         async () => {
             if (isCurrencyType.value) {
                 const formattedValue = formatCurrency(variableValue.value);
-                setFormattedCurrencyValue(formattedValue);
+                if (formattedCurrencyValue.value !== formattedValue) {
+                    setFormattedCurrencyValue(formattedValue);
+                }
             }
         }
     );
@@ -162,7 +168,9 @@ export function useCurrency(props, { variableValue } = {}) {
     watchEffect(async () => {
         if (isCurrencyType.value) {
             const formattedValue = formatCurrency(variableValue.value);
-            setFormattedCurrencyValue(formattedValue);
+            if (formattedCurrencyValue.value !== formattedValue) {
+                setFormattedCurrencyValue(formattedValue);
+            }
             await nextTick();
             await updateCurrencyInputStyle();
         }

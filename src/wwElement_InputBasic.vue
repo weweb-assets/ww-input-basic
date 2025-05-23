@@ -145,14 +145,11 @@ export default {
 
         // Create maska options for currency formatting
         const currencyMaskaOptions = computed(() => {
-            console.log('🔧 Creating maska options, content.type:', props.content.type);
             if (props.content.type !== 'currency') return null;
             
             const thousandsSep = props.content.currencyThousandsSeparator || ',';
             const decimalSep = props.content.currencyDecimalSeparator || '.';
             const decimalPlaces = props.content.currencyDecimalPlaces ?? 2;
-            
-            console.log('🔧 Maska config:', { thousandsSep, decimalSep, decimalPlaces });
             
             const options = {
                 mask: '#*',
@@ -160,18 +157,12 @@ export default {
                     '#': { pattern: new RegExp(`[0-9\\${decimalSep.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}]`), repeated: true },
                 },
                 postProcess: (val) => {
-                    console.log('🔍 PostProcess called with value:', val);
-                    console.log('🔍 thousandsSep:', thousandsSep);
-                    console.log('🔍 decimalSep:', decimalSep);
-                    
                     if (!val) return '';
                     
                     // Handle decimal separator (split by the configured separator)
                     let parts = val.split(decimalSep);
                     let integerPart = parts[0] || '';
                     let decimalPart = parts[1] || '';
-                    
-                    console.log('🔍 Before formatting - integerPart:', integerPart, 'decimalPart:', decimalPart);
                     
                     // Limit decimal places
                     if (decimalPart.length > decimalPlaces) {
@@ -180,9 +171,7 @@ export default {
                     
                     // Add thousands separators to integer part
                     if (integerPart && thousandsSep) {
-                        const beforeFormat = integerPart;
                         integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, thousandsSep);
-                        console.log('🔍 Thousands formatting:', beforeFormat, '→', integerPart);
                     }
                     
                     // Combine parts
@@ -191,18 +180,14 @@ export default {
                         result += decimalSep + decimalPart;
                     }
                     
-                    console.log('🔍 Final result:', result);
                     return result;
                 },
             };
             
-            console.log('🔧 Final maska options:', options);
             return options;
         });
 
         function handleCurrencyKeydown(event) {
-            console.log('🔑 Keydown:', event.key, 'KeyCode:', event.keyCode, 'ShiftKey:', event.shiftKey);
-            
             const decimalSep = props.content.currencyDecimalSeparator || '.';
             
             // Allow: backspace, delete, tab, escape, enter
@@ -214,30 +199,24 @@ export default {
                 (event.keyCode === 88 && event.ctrlKey === true) ||
                 // Allow: home, end, left, right, down, up
                 (event.keyCode >= 35 && event.keyCode <= 40)) {
-                console.log('🔑 Allowing control key');
                 return;
             }
             
             // Allow numbers (0-9) - check the actual key rather than keyCode+shift
             if (/^[0-9]$/.test(event.key)) {
-                console.log('🔑 Allowing number:', event.key);
                 return;
             }
             
             // Allow decimal separator only if it's not already present
             if (event.key === decimalSep && !event.target.value.includes(decimalSep)) {
-                console.log('🔑 Allowing decimal separator');
                 return;
             }
             
             // Prevent all other characters
-            console.log('🔑 Preventing character:', event.key);
             event.preventDefault();
         }
 
         function handleCurrencyInput(event) {
-            console.log('💰 handleCurrencyInput called with value:', event.target.value);
-            
             const input = event.target;
             const rawValue = input.value;
             const cursorPosition = input.selectionStart;
@@ -260,8 +239,6 @@ export default {
                 /* wwEditor:end */
             }
             
-            console.log('💰 Cursor position before:', cursorPosition);
-            
             // Clean input - remove any existing separators
             let cleanValue = rawValue.replace(new RegExp(`\\${thousandsSep.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`, 'g'), '');
             if (decimalSep !== '.') {
@@ -270,7 +247,6 @@ export default {
             
             // Extract numeric value
             const actualValue = parseFloat(cleanValue) || 0;
-            console.log('💰 Cleaned value:', cleanValue, '→ Numeric:', actualValue);
             
             // Format for display
             let parts = cleanValue.split('.');
@@ -293,8 +269,6 @@ export default {
                 formattedValue += decimalSep + decimalPart;
             }
             
-            console.log('💰 Formatted for display:', formattedValue);
-            
             // Calculate cursor position adjustment
             const oldLength = rawValue.length;
             const newLength = formattedValue.length;
@@ -308,20 +282,16 @@ export default {
                 Math.max(0, cursorPosition + (separatorsBeforeCursorNew - separatorsBeforeCursorOld))
             );
             
-            console.log('💰 Cursor adjustment:', cursorPosition, '→', newCursorPosition);
-            
             // Set the numeric value for form handling
             setValue(actualValue);
             
             // Update the display value reactively
             currencyDisplayValue.value = formattedValue;
-            console.log('💰 Updated currencyDisplayValue to:', currencyDisplayValue.value);
             
             // Restore cursor position after Vue updates
             nextTick(() => {
                 if (input.selectionStart !== newCursorPosition) {
                     input.setSelectionRange(newCursorPosition, newCursorPosition);
-                    console.log('💰 Restored cursor to:', newCursorPosition);
                 }
             });
             
@@ -399,8 +369,6 @@ export default {
             ],
             () => {
                 if (props.content.type === 'currency' && currencyDisplayValue.value) {
-                    console.log('🔄 Separator settings changed, reformatting...');
-                    
                     // Extract the current numeric value from display
                     const currentThousandsSep = props.content.currencyThousandsSeparator || ',';
                     const currentDecimalSep = props.content.currencyDecimalSeparator || '.';
@@ -451,7 +419,6 @@ export default {
                     }
                     
                     currencyDisplayValue.value = integerPart;
-                    console.log('🔄 Reformatted to:', currencyDisplayValue.value);
                 }
             }
         );

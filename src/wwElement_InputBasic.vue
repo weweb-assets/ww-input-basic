@@ -201,6 +201,8 @@ export default {
         });
 
         function handleCurrencyKeydown(event) {
+            console.log('🔑 Keydown:', event.key, 'KeyCode:', event.keyCode, 'ShiftKey:', event.shiftKey);
+            
             const decimalSep = props.content.currencyDecimalSeparator || '.';
             
             // Allow: backspace, delete, tab, escape, enter
@@ -212,22 +214,31 @@ export default {
                 (event.keyCode === 88 && event.ctrlKey === true) ||
                 // Allow: home, end, left, right, down, up
                 (event.keyCode >= 35 && event.keyCode <= 40)) {
+                console.log('🔑 Allowing control key');
                 return;
             }
             
-            // Allow numbers (0-9) from both main keyboard and numpad
-            if ((event.shiftKey || (event.keyCode < 48 || event.keyCode > 57)) && 
-                (event.keyCode < 96 || event.keyCode > 105)) {
-                
-                // Allow decimal separator only if it's not already present
-                if (event.key === decimalSep && !event.target.value.includes(decimalSep)) {
-                    return;
-                }
-                
-                // Prevent all other characters
-                event.preventDefault();
+            // Allow numbers (0-9) from main keyboard (48-57)
+            if (event.keyCode >= 48 && event.keyCode <= 57 && !event.shiftKey) {
+                console.log('🔑 Allowing main keyboard number');
                 return;
             }
+            
+            // Allow numbers from numpad (96-105)
+            if (event.keyCode >= 96 && event.keyCode <= 105) {
+                console.log('🔑 Allowing numpad number');
+                return;
+            }
+            
+            // Allow decimal separator only if it's not already present
+            if (event.key === decimalSep && !event.target.value.includes(decimalSep)) {
+                console.log('🔑 Allowing decimal separator');
+                return;
+            }
+            
+            // Prevent all other characters
+            console.log('🔑 Preventing character');
+            event.preventDefault();
         }
 
         function handleCurrencyInput(event) {

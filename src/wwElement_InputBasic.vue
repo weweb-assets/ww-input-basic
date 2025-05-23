@@ -375,6 +375,56 @@ export default {
             }
         );
 
+        // Watch for separator changes and reformat currency input
+        watch(
+            [
+                () => props.content.currencyThousandsSeparator,
+                () => props.content.currencyDecimalSeparator,
+                () => props.content.currencyDecimalPlaces
+            ],
+            () => {
+                if (props.content.type === 'currency' && currencyDisplayValue.value) {
+                    console.log('🔄 Separator settings changed, reformatting...');
+                    
+                    // Extract the current numeric value from display
+                    const currentThousandsSep = props.content.currencyThousandsSeparator || ',';
+                    const currentDecimalSep = props.content.currencyDecimalSeparator || '.';
+                    const currentDecimalPlaces = props.content.currencyDecimalPlaces ?? 2;
+                    
+                    // Get the numeric value from variableValue (which should be clean)
+                    const numericValue = variableValue.value || 0;
+                    
+                    // Reformat with new settings
+                    let cleanValueStr = numericValue.toString();
+                    let parts = cleanValueStr.split('.');
+                    let integerPart = parts[0] || '';
+                    let decimalPart = parts[1] || '';
+                    
+                    // Add thousands separators with new separator
+                    if (integerPart && currentThousandsSep) {
+                        integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, currentThousandsSep);
+                    }
+                    
+                    // Handle decimal places with new settings
+                    if (currentDecimalPlaces > 0) {
+                        // Pad or truncate decimal part
+                        if (decimalPart.length < currentDecimalPlaces) {
+                            decimalPart = decimalPart.padEnd(currentDecimalPlaces, '0');
+                        } else if (decimalPart.length > currentDecimalPlaces) {
+                            decimalPart = decimalPart.substring(0, currentDecimalPlaces);
+                        }
+                        
+                        if (decimalPart || parts.length > 1) {
+                            integerPart += currentDecimalSep + decimalPart;
+                        }
+                    }
+                    
+                    currencyDisplayValue.value = integerPart;
+                    console.log('🔄 Reformatted to:', currencyDisplayValue.value);
+                }
+            }
+        );
+
         return {
             inputRef,
             isReallyFocused,

@@ -176,7 +176,7 @@ export default {
         const inputBindings = computed(() => ({
             ...props.wwElementState.props.attributes,
             key: 'ww-input-basic-' + step.value,
-            value: isCurrencyType.value && !isReallyFocused.value ? formattedCurrencyValue?.value : variableValue.value,
+            value: variableValue.value,
             type: inputType.value,
             name: props.wwElementState.name,
             readonly: isReadonly.value || isEditing.value,

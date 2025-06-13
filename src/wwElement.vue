@@ -23,9 +23,9 @@
                 @input="handleCurrencyInput"
                 @keydown="handleCurrencyKeydown"
                 @blur="
-                    () => {
+                    event => {
                         isReallyFocused = false;
-                        onBlur();
+                        handleCurrencyBlur(event);
                         onCurrencyBlur();
                     }
                 "
@@ -134,75 +134,128 @@ export default {
             onCurrencyBlur,
             onCurrencyFocus,
             formattedCurrencyValue,
+            formatCurrency,
         } = useCurrency(props, { emit, setValue, variableValue });
 
         // Track the formatted display value separately for currency inputs
         const currencyDisplayValue = ref('');
 
+        // Track if we're currently typing to avoid re-formatting during input
+        let isTyping = false;
+
+        // Initialize currency display value from initial value
+        watch(
+            [() => props.content.type, variableValue],
+            ([type, value]) => {
+                if (type === 'currency' && value !== undefined && value !== null && value !== '' && !isTyping) {
+                    // Only auto-format if not currently typing
+                    const formattedValue = formatCurrency(value);
+                    if (currencyDisplayValue.value !== formattedValue) {
+                        currencyDisplayValue.value = formattedValue;
+                    }
+                }
+            },
+            { immediate: true }
+        );
 
         function handleCurrencyKeydown(event) {
             const decimalSep = props.content.currencyDecimalSeparator || '.';
             const decimalPlaces = props.content.currencyDecimalPlaces ?? 2;
-            
+
             // Allow: backspace, delete, tab, escape, enter
-            if ([8, 9, 27, 13, 46].indexOf(event.keyCode) !== -1 ||
+            if (
+                [8, 9, 27, 13, 46].indexOf(event.keyCode) !== -1 ||
                 // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
                 (event.keyCode === 65 && event.ctrlKey === true) ||
                 (event.keyCode === 67 && event.ctrlKey === true) ||
                 (event.keyCode === 86 && event.ctrlKey === true) ||
                 (event.keyCode === 88 && event.ctrlKey === true) ||
                 // Allow: home, end, left, right, down, up
-                (event.keyCode >= 35 && event.keyCode <= 40)) {
+                (event.keyCode >= 35 && event.keyCode <= 40)
+            ) {
                 return;
             }
-            
+
             // Allow decimal separator only if it's not already present
             if (event.key === decimalSep && !event.target.value.includes(decimalSep)) {
                 return;
             }
-            
+
             // Allow numbers (0-9) but check decimal places limit
             if (/^[0-9]$/.test(event.key)) {
                 const currentValue = event.target.value;
                 const cursorPosition = event.target.selectionStart;
                 const decimalIndex = currentValue.indexOf(decimalSep);
-                
+
                 // If we have a decimal separator and cursor is after it
                 if (decimalIndex >= 0 && cursorPosition > decimalIndex) {
                     const currentDecimalPart = currentValue.substring(decimalIndex + 1);
-                    
+
                     // Check if we're already at the decimal places limit
                     if (currentDecimalPart.length >= decimalPlaces) {
                         event.preventDefault();
                         return;
                     }
                 }
-                
+
                 // Allow the digit
                 return;
             }
-            
+
             // Prevent all other characters
             event.preventDefault();
         }
 
+        function handleCurrencyBlur(event) {
+            if (props.content.type !== 'currency') return;
+
+            isTyping = false; // Allow watcher to work again after typing is done
+
+            const input = event.target;
+            const rawValue = input.value;
+            const decimalSep = props.content.currencyDecimalSeparator || '.';
+            const decimalPlaces = props.content.currencyDecimalPlaces ?? 2;
+
+            // Apply final formatting with zero padding on blur
+            if (rawValue && decimalPlaces > 0) {
+                const parts = rawValue.split(decimalSep);
+                if (parts.length > 1) {
+                    let decimalPart = parts[1] || '';
+                    // Pad with zeros to reach required decimal places
+                    if (decimalPart.length < decimalPlaces) {
+                        decimalPart = decimalPart.padEnd(decimalPlaces, '0');
+                        const integerPart = parts[0];
+                        const finalValue = integerPart + decimalSep + decimalPart;
+
+                        // Update display value with padded zeros
+                        currencyDisplayValue.value = finalValue;
+                    }
+                }
+            }
+
+            // Call original blur handler
+            onBlur(event);
+        }
+
         function handleCurrencyInput(event) {
+            isTyping = true; // Prevent watcher from re-formatting during typing
+
             const input = event.target;
             const rawValue = input.value;
             const cursorPosition = input.selectionStart;
             const thousandsSep = props.content.currencyThousandsSeparator ?? ',';
             const decimalSep = props.content.currencyDecimalSeparator || '.';
             const decimalPlaces = props.content.currencyDecimalPlaces ?? 2;
-            
+
             // Prevent multiple processing of the same value
             if (rawValue === currencyDisplayValue.value) {
                 return;
             }
-            
+
             // Check for conflicting separators
             if (thousandsSep === decimalSep) {
                 console.warn('⚠️ Warning: Thousands separator and decimal separator are the same:', thousandsSep);
-                
+
                 /* wwEditor:start */
                 wwLib.wwNotification.open({
                     text: {
@@ -213,68 +266,175 @@ export default {
                 });
                 /* wwEditor:end */
             }
-            
-            // Clean input - remove any existing separators
-            let cleanValue = rawValue.replace(new RegExp(`\\${thousandsSep.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`, 'g'), '');
-            if (decimalSep !== '.') {
-                cleanValue = cleanValue.replace(decimalSep, '.');
+
+            // Clean input - smarter separator handling
+            let cleanValue = rawValue;
+            let hasUserDecimal = false;
+
+            // First, remove any invalid characters - keep only digits and common separators
+            const validChars = new RegExp(
+                `[^\\d\\.,\\s'${thousandsSep.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}${decimalSep.replace(
+                    /[.*+?^${}()|[\]\\]/g,
+                    '\\$&'
+                )}]`,
+                'g'
+            );
+            cleanValue = cleanValue.replace(validChars, '');
+
+            // First, detect if user entered a decimal separator (any common decimal separator)
+            const commonDecimalSeparators = [',', '.'];
+            let userDecimalSeparator = null;
+
+            for (const sep of commonDecimalSeparators) {
+                if (sep !== thousandsSep && cleanValue.includes(sep)) {
+                    userDecimalSeparator = sep;
+                    hasUserDecimal = true;
+                    break;
+                }
             }
-            
+
+            if (hasUserDecimal && userDecimalSeparator) {
+                // Replace the user's decimal separator with standard dot, but only the LAST occurrence
+                const lastDecimalIndex = cleanValue.lastIndexOf(userDecimalSeparator);
+                if (lastDecimalIndex !== -1) {
+                    cleanValue =
+                        cleanValue.substring(0, lastDecimalIndex) + '.' + cleanValue.substring(lastDecimalIndex + 1);
+                }
+            }
+
+            // Then remove thousands separators intelligently
+            if (thousandsSep) {
+                if (hasUserDecimal) {
+                    // User entered decimal separator - find the LAST dot (which is the decimal separator)
+                    // and only remove thousands separators from before it
+                    const lastDotIndex = cleanValue.lastIndexOf('.');
+                    if (lastDotIndex !== -1) {
+                        const integerPart = cleanValue.substring(0, lastDotIndex);
+                        const decimalPart = cleanValue.substring(lastDotIndex + 1); // exclude the dot itself
+
+                        // Remove thousands separators from integer part
+                        let cleanIntegerPart;
+                        if (thousandsSep === '.') {
+                            // Simple string replacement for dots
+                            cleanIntegerPart = integerPart.replace(/\./g, '');
+                        } else {
+                            // Use regex for other separators
+                            cleanIntegerPart = integerPart.replace(
+                                new RegExp(`\\${thousandsSep.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`, 'g'),
+                                ''
+                            );
+                        }
+
+                        // Reconstruct with decimal point - but if decimal part is empty and user just typed decimal separator, add the dot
+                        if (decimalPart || rawValue.endsWith(decimalSep)) {
+                            cleanValue = cleanIntegerPart + '.' + decimalPart;
+                        } else {
+                            cleanValue = cleanIntegerPart;
+                        }
+                    }
+                } else {
+                    // No user decimal separator entered yet
+                    if (thousandsSep === '.' && cleanValue.includes('.')) {
+                        // When thousands separator is dot, we need to be very careful
+                        // In this context, all dots should be treated as thousands separators
+                        // because the user hasn't entered a decimal separator (comma) yet
+                        cleanValue = cleanValue.replace(/\./g, '');
+                    } else {
+                        // Normal case: remove all thousands separators
+                        cleanValue = cleanValue.replace(
+                            new RegExp(`\\${thousandsSep.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`, 'g'),
+                            ''
+                        );
+                    }
+                }
+            }
+
             // Format for display first (this will also determine the final value)
             let parts = cleanValue.split('.');
             let integerPart = parts[0] || '';
             let decimalPart = parts[1] || '';
-            
+
             // Limit decimal places BEFORE parsing to ensure consistency
             if (decimalPart.length > decimalPlaces) {
                 decimalPart = decimalPart.substring(0, decimalPlaces);
             }
-            
+
             // Reconstruct the clean value with limited decimal places
             const limitedCleanValue = integerPart + (decimalPart ? '.' + decimalPart : '');
-            
+
             // Extract numeric value from the limited clean value
             const actualValue = parseFloat(limitedCleanValue) || 0;
-            
+
             // Add thousands separators to integer part
             if (integerPart && thousandsSep) {
                 integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, thousandsSep);
             }
-            
-            // Combine formatted value
+
+            // Combine formatted value - don't pad zeros while typing
             let formattedValue = integerPart;
-            if (parts.length > 1) {
+            if (parts.length > 1 || rawValue.includes(decimalSep)) {
+                // Show decimal separator if user typed it, even if no decimal digits yet
                 formattedValue += decimalSep + decimalPart;
             }
-            
+
             // Calculate cursor position adjustment
             const oldLength = rawValue.length;
             const newLength = formattedValue.length;
-            
-            // Count separators before cursor in old and new value
-            const separatorsBeforeCursorOld = (rawValue.substring(0, cursorPosition).match(new RegExp(`\\${thousandsSep.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`, 'g')) || []).length;
-            const separatorsBeforeCursorNew = (formattedValue.substring(0, cursorPosition + (newLength - oldLength)).match(new RegExp(`\\${thousandsSep.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`, 'g')) || []).length;
-            
-            const newCursorPosition = Math.min(
-                formattedValue.length,
-                Math.max(0, cursorPosition + (separatorsBeforeCursorNew - separatorsBeforeCursorOld))
-            );
-            
+
+            // Simpler cursor positioning logic
+            let newCursorPosition;
+
+            // If cursor is at the end, keep it at the end
+            if (cursorPosition >= rawValue.length) {
+                newCursorPosition = formattedValue.length;
+            } else {
+                // Find where to position cursor based on character-by-character comparison
+                const beforeCursor = rawValue.substring(0, cursorPosition);
+                const digitsAndDecimalBeforeCursor = beforeCursor.replace(
+                    new RegExp(`[^\\d${decimalSep.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}]`, 'g'),
+                    ''
+                );
+
+                // Count through the formatted value to find equivalent position
+                let count = 0;
+                newCursorPosition = 0;
+
+                for (let i = 0; i < formattedValue.length; i++) {
+                    const char = formattedValue[i];
+                    if (/\d/.test(char) || char === decimalSep) {
+                        if (count < digitsAndDecimalBeforeCursor.length) {
+                            count++;
+                            newCursorPosition = i + 1;
+                        } else {
+                            break;
+                        }
+                    }
+                }
+
+                // If we didn't find enough characters, position at end
+                if (count < digitsAndDecimalBeforeCursor.length) {
+                    newCursorPosition = formattedValue.length;
+                }
+            }
+
+            // Ensure cursor is within bounds
+            newCursorPosition = Math.min(formattedValue.length, Math.max(0, newCursorPosition));
+
             // Set the numeric value for form handling
             setValue(actualValue);
-            
+
             // Update the display value reactively only if it changed
             if (currencyDisplayValue.value !== formattedValue) {
                 currencyDisplayValue.value = formattedValue;
             }
-            
+
             // Restore cursor position after Vue updates
             nextTick(() => {
                 if (input.selectionStart !== newCursorPosition) {
                     input.setSelectionRange(newCursorPosition, newCursorPosition);
                 }
             });
-            
+
             if (!props.content.debounce) {
                 emit('trigger-event', { name: 'change', event: { domEvent: event, value: actualValue } });
                 emit('element-event', { type: 'change', value: { domEvent: event, value: actualValue } });
@@ -345,7 +505,7 @@ export default {
             [
                 () => props.content.currencyThousandsSeparator,
                 () => props.content.currencyDecimalSeparator,
-                () => props.content.currencyDecimalPlaces
+                () => props.content.currencyDecimalPlaces,
             ],
             () => {
                 if (props.content.type === 'currency' && currencyDisplayValue.value) {
@@ -353,11 +513,14 @@ export default {
                     const currentThousandsSep = props.content.currencyThousandsSeparator ?? ',';
                     const currentDecimalSep = props.content.currencyDecimalSeparator || '.';
                     const currentDecimalPlaces = props.content.currencyDecimalPlaces ?? 2;
-                    
+
                     // Check for conflicting separators
                     if (currentThousandsSep === currentDecimalSep) {
-                        console.warn('⚠️ Warning: Thousands separator and decimal separator are the same:', currentThousandsSep);
-                        
+                        console.warn(
+                            '⚠️ Warning: Thousands separator and decimal separator are the same:',
+                            currentThousandsSep
+                        );
+
                         /* wwEditor:start */
                         wwLib.wwNotification.open({
                             text: {
@@ -369,21 +532,21 @@ export default {
                         /* wwEditor:end */
                         return; // Don't reformat if separators are invalid
                     }
-                    
+
                     // Get the numeric value from variableValue (which should be clean)
                     const numericValue = variableValue.value || 0;
-                    
+
                     // Reformat with new settings
                     let cleanValueStr = numericValue.toString();
                     let parts = cleanValueStr.split('.');
                     let integerPart = parts[0] || '';
                     let decimalPart = parts[1] || '';
-                    
+
                     // Add thousands separators with new separator
                     if (integerPart && currentThousandsSep) {
                         integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, currentThousandsSep);
                     }
-                    
+
                     // Handle decimal places with new settings
                     if (currentDecimalPlaces > 0) {
                         // Pad or truncate decimal part
@@ -392,12 +555,12 @@ export default {
                         } else if (decimalPart.length > currentDecimalPlaces) {
                             decimalPart = decimalPart.substring(0, currentDecimalPlaces);
                         }
-                        
+
                         if (decimalPart || parts.length > 1) {
                             integerPart += currentDecimalSep + decimalPart;
                         }
                     }
-                    
+
                     // Update display value only if it changed
                     if (currencyDisplayValue.value !== integerPart) {
                         currencyDisplayValue.value = integerPart;
@@ -433,6 +596,7 @@ export default {
             // Currency-related
             handleCurrencyInput,
             handleCurrencyKeydown,
+            handleCurrencyBlur,
             currencyDisplayValue,
             showCurrencySymbol,
             currencySymbolStyle,

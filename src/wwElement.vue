@@ -190,7 +190,7 @@ export default {
             const input = event.target;
             const rawValue = input.value;
             const cursorPosition = input.selectionStart;
-            const thousandsSep = props.content.currencyThousandsSeparator || ',';
+            const thousandsSep = props.content.currencyThousandsSeparator ?? ',';
             const decimalSep = props.content.currencyDecimalSeparator || '.';
             const decimalPlaces = props.content.currencyDecimalPlaces ?? 2;
             
@@ -350,7 +350,7 @@ export default {
             () => {
                 if (props.content.type === 'currency' && currencyDisplayValue.value) {
                     // Extract the current numeric value from display
-                    const currentThousandsSep = props.content.currencyThousandsSeparator || ',';
+                    const currentThousandsSep = props.content.currencyThousandsSeparator ?? ',';
                     const currentDecimalSep = props.content.currencyDecimalSeparator || '.';
                     const currentDecimalPlaces = props.content.currencyDecimalPlaces ?? 2;
                     

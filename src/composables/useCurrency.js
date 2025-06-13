@@ -13,7 +13,7 @@ export function useCurrency(props, { variableValue } = {}) {
     const symbolPosition = computed(() => props.content.currencySymbolPosition || 'prefix');
     const decimalPlaces = computed(() => props.content.currencyDecimalPlaces ?? 2);
     const decimalSeparator = computed(() => props.content.currencyDecimalSeparator || '.');
-    const thousandsSeparator = computed(() => props.content.currencyThousandsSeparator || ',');
+    const thousandsSeparator = computed(() => props.content.currencyThousandsSeparator ?? ',');
     
     // Refs
     const currencySymbolRef = ref(null);

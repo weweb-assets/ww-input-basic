@@ -85,8 +85,8 @@ export function useCurrency(props, { variableValue } = {}) {
 
     // Format the currency value
     const formatCurrency = (value, options = {}) => {
-        const { padZeros = true } = options;
-        if (!value) return '';
+        const { padZeros = true, includeSymbol = true } = options;
+        if (value === undefined || value === null || value === '') return '';
 
         // Remove currency symbol if present
         let inputVal = value.toString();
@@ -97,8 +97,16 @@ export function useCurrency(props, { variableValue } = {}) {
             inputVal = inputVal.substring(0, inputVal.length - symbol.length);
         }
 
-        // Find decimal position (could be . or ,)
-        const decimalPos = Math.max(inputVal.lastIndexOf('.'), inputVal.lastIndexOf(','));
+        // Find decimal position - prioritize the configured decimal separator
+        let decimalPos = -1;
+        
+        // First, check if the configured decimal separator exists
+        if (decimalSeparator.value && inputVal.includes(decimalSeparator.value)) {
+            decimalPos = inputVal.lastIndexOf(decimalSeparator.value);
+        } else {
+            // Fallback: look for common decimal separators (dot or comma)
+            decimalPos = Math.max(inputVal.lastIndexOf('.'), inputVal.lastIndexOf(','));
+        }
 
         let leftSide = '';
         let rightSide = '';
@@ -137,8 +145,8 @@ export function useCurrency(props, { variableValue } = {}) {
             formattedValue += decimalSeparator.value + rightSide;
         }
 
-        // Add currency symbol if enabled
-        if (showCurrencySymbol.value && currencySymbol.value) {
+        // Add currency symbol if enabled and requested
+        if (includeSymbol && showCurrencySymbol.value && currencySymbol.value) {
             if (symbolPosition.value === 'prefix') {
                 formattedValue = currencySymbol.value + formattedValue;
             } else {

@@ -149,9 +149,10 @@ export default {
             ([type, value]) => {
                 if (type === 'currency' && value !== undefined && value !== null && value !== '' && !isTyping) {
                     // Only auto-format if not currently typing
-                    const formattedValue = formatCurrency(value);
-                    if (currencyDisplayValue.value !== formattedValue) {
-                        currencyDisplayValue.value = formattedValue;
+                    // For input field, use formatCurrency without symbol (no padding while editing, no symbol)
+                    const inputFormattedValue = formatCurrency(value, { padZeros: false, includeSymbol: false });
+                    if (currencyDisplayValue.value !== inputFormattedValue) {
+                        currencyDisplayValue.value = inputFormattedValue;
                     }
                 }
             },

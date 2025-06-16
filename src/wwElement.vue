@@ -174,8 +174,10 @@ export default {
 
         // Initialize currency display value from initial value
         watch(
-            [() => props.content.type, variableValue],
-            ([contentType, value]) => {
+            [() => props.content.type, () => props.content.value, variableValue],
+            ([contentType, propsValue, variableValue]) => {
+                // Use props.content.value if it exists (binding case), otherwise use variableValue
+                const value = propsValue !== undefined && propsValue !== null ? propsValue : variableValue;
                 console.log('💰 Currency watcher triggered:', { contentType, computedType: type.value, value, isTyping, currencyDisplayValue: currencyDisplayValue.value, uid: props.uid });
                 // Only process if this component is actually a currency input
                 if (contentType === 'currency' && value !== undefined && value !== null && value !== '' && !isTyping) {

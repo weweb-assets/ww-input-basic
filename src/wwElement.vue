@@ -122,6 +122,9 @@ export default {
             onBlur,
             setValue,
         } = useInput(props, emit);
+        
+        // Get delay value for currency debouncing
+        const delay = computed(() => wwLib.wwUtils.getLengthUnit(props.content.debounceDelay)[0]);
 
         const {
             isCurrencyType,
@@ -142,6 +145,9 @@ export default {
 
         // Track if we're currently typing to avoid re-formatting during input
         let isTyping = false;
+        
+        // Debounce timeout for currency input
+        let currencyDebounceTimeout = null;
 
         // Initialize currency display value from initial value
         watch(
@@ -436,7 +442,18 @@ export default {
                 }
             });
 
-            if (!props.content.debounce) {
+            // Trigger events based on debounce setting (same as regular input)
+            if (props.content.debounce) {
+                isDebouncing.value = true;
+                if (currencyDebounceTimeout) {
+                    clearTimeout(currencyDebounceTimeout);
+                }
+                currencyDebounceTimeout = setTimeout(() => {
+                    emit('trigger-event', { name: 'change', event: { domEvent: event, value: actualValue } });
+                    emit('element-event', { type: 'change', value: { domEvent: event, value: actualValue } });
+                    isDebouncing.value = false;
+                }, delay.value);
+            } else {
                 emit('trigger-event', { name: 'change', event: { domEvent: event, value: actualValue } });
                 emit('element-event', { type: 'change', value: { domEvent: event, value: actualValue } });
             }

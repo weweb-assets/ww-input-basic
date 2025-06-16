@@ -91,9 +91,6 @@ export default {
         'update:sidepanel-content',
     ],
     setup(props, { emit }) {
-        // Log component mounting
-        console.log('🏷️ Component mounted:', { uid: props.uid, type: props.content.type, value: props.content.value });
-        
         const isEditing = computed(() => {
             /* wwEditor:start */
             return props.wwEditorState.editMode === wwLib.wwEditorHelper.EDIT_MODES.EDITION;
@@ -128,26 +125,6 @@ export default {
         
         // Get delay value for currency debouncing
         const delay = computed(() => wwLib.wwUtils.getLengthUnit(props.content.debounceDelay)[0]);
-        
-        // Log variableValue changes for this specific component
-        watch(variableValue, (newValue, oldValue) => {
-            console.log('🔍 VariableValue changed in component:', { 
-                uid: props.uid, 
-                type: props.content.type, 
-                oldValue, 
-                newValue 
-            });
-        });
-        
-        // Log props.content.value changes for this specific component
-        watch(() => props.content.value, (newValue, oldValue) => {
-            console.log('🎯 Props.content.value changed in component:', { 
-                uid: props.uid, 
-                type: props.content.type, 
-                oldValue, 
-                newValue 
-            });
-        });
 
         const {
             isCurrencyType,
@@ -178,21 +155,13 @@ export default {
             ([contentType, propsValue, variableValue]) => {
                 // Use props.content.value if it exists (binding case), otherwise use variableValue
                 const value = propsValue !== undefined && propsValue !== null ? propsValue : variableValue;
-                console.log('💰 Currency watcher triggered:', { contentType, computedType: type.value, value, isTyping, currencyDisplayValue: currencyDisplayValue.value, uid: props.uid });
-                // Only process if this component is actually a currency input
                 if (contentType === 'currency' && value !== undefined && value !== null && value !== '' && !isTyping) {
                     // Only auto-format if not currently typing
-                    // For input field, use formatCurrency without symbol (no padding while editing, no symbol)
-                    const inputFormattedValue = formatCurrency(value, { padZeros: false, includeSymbol: false });
-                    console.log('💰 Formatting currency:', value, '→', inputFormattedValue);
+                    // For input field, use formatCurrency with zero padding and without symbol
+                    const inputFormattedValue = formatCurrency(value, { padZeros: true, includeSymbol: false });
                     if (currencyDisplayValue.value !== inputFormattedValue) {
-                        console.log('💰 Updating currencyDisplayValue:', currencyDisplayValue.value, '→', inputFormattedValue);
                         currencyDisplayValue.value = inputFormattedValue;
-                    } else {
-                        console.log('💰 No update needed, values are the same');
                     }
-                } else {
-                    console.log('💰 Skipping currency format:', { typeMatch: contentType === 'currency', hasValue: value !== undefined && value !== null && value !== '', notTyping: !isTyping });
                 }
             },
             { immediate: true }
@@ -259,17 +228,19 @@ export default {
             // Apply final formatting with zero padding on blur
             if (rawValue && decimalPlaces > 0) {
                 const parts = rawValue.split(decimalSep);
-                if (parts.length > 1) {
-                    let decimalPart = parts[1] || '';
-                    // Pad with zeros to reach required decimal places
-                    if (decimalPart.length < decimalPlaces) {
-                        decimalPart = decimalPart.padEnd(decimalPlaces, '0');
-                        const integerPart = parts[0];
-                        const finalValue = integerPart + decimalSep + decimalPart;
-
-                        // Update display value with padded zeros
-                        currencyDisplayValue.value = finalValue;
-                    }
+                const integerPart = parts[0];
+                let decimalPart = parts[1] || '';
+                
+                // Always pad with zeros to reach required decimal places, even if no decimal separator was typed
+                if (decimalPart.length < decimalPlaces) {
+                    decimalPart = decimalPart.padEnd(decimalPlaces, '0');
+                }
+                
+                const finalValue = integerPart + decimalSep + decimalPart;
+                
+                // Update display value with padded zeros
+                if (currencyDisplayValue.value !== finalValue) {
+                    currencyDisplayValue.value = finalValue;
                 }
             }
 
@@ -547,7 +518,6 @@ export default {
         watch(
             () => props.content.value,
             v => {
-                console.log('🔄 Init value changed:', v, 'type:', props.content.type);
                 emit('trigger-event', { name: 'initValueChange', event: { value: v } });
             }
         );

@@ -91,6 +91,9 @@ export default {
         'update:sidepanel-content',
     ],
     setup(props, { emit }) {
+        // Log component mounting
+        console.log('🏷️ Component mounted:', { uid: props.uid, type: props.content.type, value: props.content.value });
+        
         const isEditing = computed(() => {
             /* wwEditor:start */
             return props.wwEditorState.editMode === wwLib.wwEditorHelper.EDIT_MODES.EDITION;
@@ -125,6 +128,26 @@ export default {
         
         // Get delay value for currency debouncing
         const delay = computed(() => wwLib.wwUtils.getLengthUnit(props.content.debounceDelay)[0]);
+        
+        // Log variableValue changes for this specific component
+        watch(variableValue, (newValue, oldValue) => {
+            console.log('🔍 VariableValue changed in component:', { 
+                uid: props.uid, 
+                type: props.content.type, 
+                oldValue, 
+                newValue 
+            });
+        });
+        
+        // Log props.content.value changes for this specific component
+        watch(() => props.content.value, (newValue, oldValue) => {
+            console.log('🎯 Props.content.value changed in component:', { 
+                uid: props.uid, 
+                type: props.content.type, 
+                oldValue, 
+                newValue 
+            });
+        });
 
         const {
             isCurrencyType,
@@ -153,7 +176,8 @@ export default {
         watch(
             [() => props.content.type, variableValue],
             ([contentType, value]) => {
-                console.log('💰 Currency watcher triggered:', { contentType, computedType: type.value, value, isTyping, currencyDisplayValue: currencyDisplayValue.value });
+                console.log('💰 Currency watcher triggered:', { contentType, computedType: type.value, value, isTyping, currencyDisplayValue: currencyDisplayValue.value, uid: props.uid });
+                // Only process if this component is actually a currency input
                 if (contentType === 'currency' && value !== undefined && value !== null && value !== '' && !isTyping) {
                     // Only auto-format if not currently typing
                     // For input field, use formatCurrency without symbol (no padding while editing, no symbol)

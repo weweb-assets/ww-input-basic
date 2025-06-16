@@ -152,9 +152,9 @@ export default {
         // Initialize currency display value from initial value
         watch(
             [() => props.content.type, variableValue],
-            ([type, value]) => {
-                console.log('💰 Currency watcher triggered:', { type, value, isTyping, currencyDisplayValue: currencyDisplayValue.value });
-                if (type === 'currency' && value !== undefined && value !== null && value !== '' && !isTyping) {
+            ([contentType, value]) => {
+                console.log('💰 Currency watcher triggered:', { contentType, computedType: type.value, value, isTyping, currencyDisplayValue: currencyDisplayValue.value });
+                if (contentType === 'currency' && value !== undefined && value !== null && value !== '' && !isTyping) {
                     // Only auto-format if not currently typing
                     // For input field, use formatCurrency without symbol (no padding while editing, no symbol)
                     const inputFormattedValue = formatCurrency(value, { padZeros: false, includeSymbol: false });
@@ -166,7 +166,7 @@ export default {
                         console.log('💰 No update needed, values are the same');
                     }
                 } else {
-                    console.log('💰 Skipping currency format:', { typeMatch: type === 'currency', hasValue: value !== undefined && value !== null && value !== '', notTyping: !isTyping });
+                    console.log('💰 Skipping currency format:', { typeMatch: contentType === 'currency', hasValue: value !== undefined && value !== null && value !== '', notTyping: !isTyping });
                 }
             },
             { immediate: true }

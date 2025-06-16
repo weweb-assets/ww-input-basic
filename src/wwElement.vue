@@ -153,13 +153,20 @@ export default {
         watch(
             [() => props.content.type, variableValue],
             ([type, value]) => {
+                console.log('💰 Currency watcher triggered:', { type, value, isTyping, currencyDisplayValue: currencyDisplayValue.value });
                 if (type === 'currency' && value !== undefined && value !== null && value !== '' && !isTyping) {
                     // Only auto-format if not currently typing
                     // For input field, use formatCurrency without symbol (no padding while editing, no symbol)
                     const inputFormattedValue = formatCurrency(value, { padZeros: false, includeSymbol: false });
+                    console.log('💰 Formatting currency:', value, '→', inputFormattedValue);
                     if (currencyDisplayValue.value !== inputFormattedValue) {
+                        console.log('💰 Updating currencyDisplayValue:', currencyDisplayValue.value, '→', inputFormattedValue);
                         currencyDisplayValue.value = inputFormattedValue;
+                    } else {
+                        console.log('💰 No update needed, values are the same');
                     }
+                } else {
+                    console.log('💰 Skipping currency format:', { typeMatch: type === 'currency', hasValue: value !== undefined && value !== null && value !== '', notTyping: !isTyping });
                 }
             },
             { immediate: true }
@@ -514,6 +521,7 @@ export default {
         watch(
             () => props.content.value,
             v => {
+                console.log('🔄 Init value changed:', v, 'type:', props.content.type);
                 emit('trigger-event', { name: 'initValueChange', event: { value: v } });
             }
         );

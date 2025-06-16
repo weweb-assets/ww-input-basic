@@ -58,6 +58,7 @@ export function useInput(props, emit) {
     watch(
         variableValue,
         newValue => {
+            console.log('📊 useInput variableValue changed:', newValue, 'type:', type.value, 'focused:', isReallyFocused.value);
             // Make sure the displayed value match the variable value
             nextTick(() => {
                 displayValue.value = variableValue.value;
@@ -65,14 +66,19 @@ export function useInput(props, emit) {
 
             // Only update display value if not focused, otherwise it will disrupt typing
             if (!isReallyFocused.value) {
-                displayValue.value = type.value === 'decimal' ? formatValue(newValue) : String(newValue ?? '');
+                const newDisplayValue = type.value === 'decimal' ? formatValue(newValue) : String(newValue ?? '');
+                console.log('📊 Updating displayValue:', displayValue.value, '→', newDisplayValue);
+                displayValue.value = newDisplayValue;
+            } else {
+                console.log('📊 Skipping displayValue update - input is focused');
             }
         },
         { immediate: true }
     );
 
     /* wwEditor:start */
-    watch(defaultValue, () => {
+    watch(defaultValue, (newDefaultValue) => {
+        console.log('🎯 defaultValue changed:', newDefaultValue);
         setValue(defaultValue.value);
     });
     /* wwEditor:end */

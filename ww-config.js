@@ -79,6 +79,7 @@ export default {
             },
             bindable: true,
             responsive: true,
+            classes: true,
             states: true,
             hidden: content => content.advancedPlaceholder,
             /* wwEditor:start */

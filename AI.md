@@ -1,6 +1,6 @@
 ---
 name: ww-input-basic
-description: A versatile input field component supporting text, email, password, and more types with customizable properties for multi-language text, placeholder color, precision, and features like read-only mode, required validation, and debounce functionality.
+description: A versatile input field component supporting text, email, password, currency, and more types with customizable properties for multi-language text, placeholder color, precision, currency formatting, and features like read-only mode, required validation, and debounce functionality.
 keywords:
   - input field
   - multi-language support
@@ -13,6 +13,8 @@ keywords:
   - time precision
   - textarea resize
   - debounce input
+  - currency input
+  - currency formatting
 ---
 
 #### ww-input-basic
@@ -23,7 +25,7 @@ Properties:
 - text: string|object - Text to display. Default: "". Multi-language: {en:"Hello",fr:"Bonjour"}
 - placeholderColor: string|null - Placeholder text color. Default: null
 - value: string|number - Initial value. Default: ""
-- type: text|textarea|email|search|password|number|decimal|date|time|tel|color - Input type. Default: "text"
+- type: text|textarea|email|search|password|number|decimal|date|time|tel|color|currency - Input type. Default: "text"
 - displayPassword: boolean - Show password in plain text. Default: false
 - readonly: boolean - Read-only mode. Default: false
 - required: boolean - Required field. Default: true
@@ -43,6 +45,15 @@ Properties:
 - autocomplete: boolean - Enable browser autocomplete. Default: false
 - customValidation: boolean - Enable custom validation. Default: false
 - validation: Formula - Custom validation formula. Requires customValidation to be true!
+- currencyShowSymbol: boolean - Show currency symbol. Default: true
+- currencySymbol: string - Currency symbol text. Default: "$"
+- currencySymbolPosition: prefix|suffix - Symbol position. Default: "prefix"
+- currencyDecimalPlaces: number - Number of decimal places (0-10). Default: 2
+- currencyThousandsSeparator: string - Thousands separator (",", ".", " ", "'", ""). Default: ","
+- currencyDecimalSeparator: string - Decimal separator ("." or ","). Default: "."
+- currencySymbolColor: string - Symbol color. Default: "#666666"
+- currencySymbolFontSize: string - Symbol font size. Default: "1em"
+- currencySymbolPadding: string - Symbol padding. Default: "4px"
 
 Slots: none
 

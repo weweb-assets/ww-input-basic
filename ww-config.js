@@ -32,6 +32,15 @@ export default {
                 'displayPassword',
                 'rows',
                 'resize',
+                'currencyShowSymbol',
+                'currencySymbol',
+                'currencySymbolPosition',
+                'currencyDecimalPlaces',
+                'currencyThousandsSeparator',
+                'currencyDecimalSeparator',
+                'currencySymbolColor',
+                'currencySymbolFontSize',
+                'currencySymbolPadding',
             ],
         ],
         hint: (_, sidePanelContent) => {
@@ -118,6 +127,7 @@ export default {
                     { value: 'time', label: { en: 'Time', fr: 'Heure' } },
                     { value: 'tel', label: { en: 'Phone', fr: 'Téléphone' } },
                     { value: 'color', label: { en: 'Color', fr: 'Couleur' } },
+                    { value: 'currency', label: { en: 'Currency', fr: 'Devise' } },
                 ],
             },
             defaultValue: 'text',
@@ -413,6 +423,182 @@ export default {
             hidden: (content, sidePanelContent) => {
                 return !sidePanelContent.form?.uid || !content.customValidation;
             },
+        },
+        // Currency type
+        currencyShowSymbol: {
+            label: {
+                en: 'Show currency symbol',
+            },
+            type: 'OnOff',
+            bindable: true,
+            defaultValue: true,
+            /* wwEditor:start */
+            bindingValidation: {
+                type: 'boolean',
+                tooltip: 'A boolean that defines if the currency symbol should be displayed: `true | false`',
+            },
+            /* wwEditor:end */
+            hidden: content => content.type !== 'currency',
+        },
+        currencySymbol: {
+            label: {
+                en: 'Currency symbol',
+            },
+            type: 'Text',
+            bindable: true,
+            defaultValue: '$',
+            /* wwEditor:start */
+            bindingValidation: {
+                type: 'string',
+                tooltip: 'A string representing the currency symbol: "$", "€", "£", etc.',
+            },
+            /* wwEditor:end */
+            hidden: content => !content.currencyShowSymbol || content.type !== 'currency',
+        },
+        currencySymbolPosition: {
+            label: {
+                en: 'Symbol position',
+            },
+            type: 'TextRadioGroup',
+            bindable: true,
+            defaultValue: 'prefix',
+            options: {
+                choices: [
+                    { value: 'prefix', title: 'Before', icon: 'align-left' },
+                    { value: 'suffix', title: 'After', icon: 'align-right' },
+                ],
+            },
+            /* wwEditor:start */
+            bindingValidation: {
+                type: 'string',
+                tooltip: 'Position of the currency symbol: "prefix" (before) or "suffix" (after)',
+            },
+            /* wwEditor:end */
+            hidden: content => !content.currencyShowSymbol || content.type !== 'currency',
+        },
+        currencyDecimalPlaces: {
+            label: {
+                en: 'Decimal places',
+            },
+            type: 'Number',
+            bindable: true,
+            defaultValue: 2,
+            options: {
+                min: 0,
+                max: 10,
+                step: 1,
+            },
+            /* wwEditor:start */
+            bindingValidation: {
+                type: 'number',
+                tooltip: 'Number of decimal places to display: 0-10',
+            },
+            /* wwEditor:end */
+            hidden: content => content.type !== 'currency',
+        },
+        currencyThousandsSeparator: {
+            label: {
+                en: 'Thousands separator',
+            },
+            type: 'TextSelect',
+            bindable: true,
+            defaultValue: ',',
+            options: {
+                options: [
+                    { value: ',', label: 'Comma (,)' },
+                    { value: '.', label: 'Dot (.)' },
+                    { value: ' ', label: 'Space ( )' },
+                    { value: "'", label: "Apostrophe (')" },
+                    { value: '', label: 'None' },
+                ],
+            },
+            /* wwEditor:start */
+            bindingValidation: {
+                type: 'string',
+                tooltip: 'Character to use as thousands separator: ",", ".", " ", etc.',
+            },
+            /* wwEditor:end */
+            hidden: content => content.type !== 'currency',
+        },
+        currencyDecimalSeparator: {
+            label: {
+                en: 'Decimal separator',
+            },
+            type: 'TextSelect',
+            bindable: true,
+            defaultValue: '.',
+            options: {
+                options: [
+                    { value: '.', label: 'Dot (.)' },
+                    { value: ',', label: 'Comma (,)' },
+                ],
+            },
+            /* wwEditor:start */
+            bindingValidation: {
+                type: 'string',
+                tooltip: 'Character to use as decimal separator: "." or ","',
+            },
+            /* wwEditor:end */
+            hidden: content => content.type !== 'currency',
+        },
+        currencySymbolColor: {
+            label: {
+                en: 'Symbol color',
+            },
+            type: 'Color',
+            classes: true,
+            bindable: true,
+            responsive: true,
+            states: true,
+            defaultValue: '#666666',
+            /* wwEditor:start */
+            bindingValidation: {
+                cssSupports: 'color',
+                type: 'string',
+                tooltip: 'A string that represents a color code: `"rebeccapurple" | "#00ff00" | "rgb(214, 122, 127)"`',
+            },
+            /* wwEditor:end */
+            hidden: content => content.type !== 'currency',
+        },
+        currencySymbolFontSize: {
+            label: {
+                en: 'Symbol font size',
+            },
+            type: 'Length',
+            options: {
+                unitChoices: [
+                    { value: 'px', label: 'px', min: 0, max: 100 },
+                    { value: 'em', label: 'em', min: 0, max: 10 },
+                    { value: '%', label: '%', min: 0, max: 100 },
+                ],
+            },
+            classes: true,
+            bindable: true,
+            responsive: true,
+            states: true,
+            defaultValue: '1em',
+            responsive: true,
+            hidden: content => content.type !== 'currency',
+        },
+        currencySymbolPadding: {
+            label: {
+                en: 'Symbol padding',
+            },
+            type: 'Length',
+            options: {
+                unitChoices: [
+                    { value: 'px', label: 'px', min: 0, max: 100 },
+                    { value: 'em', label: 'em', min: 0, max: 10 },
+                    { value: '%', label: '%', min: 0, max: 100 },
+                ],
+            },
+            classes: true,
+            bindable: true,
+            responsive: true,
+            states: true,
+            defaultValue: '4px',
+            responsive: true,
+            hidden: content => content.type !== 'currency',
         },
     },
 };

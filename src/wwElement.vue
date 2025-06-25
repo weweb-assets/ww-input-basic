@@ -92,7 +92,7 @@ export default {
     ],
     setup(props, { emit }) {
         // Generate unique ID for the input
-        const generatedId = useId();
+        const generatedId = `ww-input-basic-${useId()}`;
         
         // Use custom ID if set, otherwise use generated ID
         const inputId = computed(() => props.wwElementState.props.attributes?.id || generatedId);

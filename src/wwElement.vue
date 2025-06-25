@@ -473,15 +473,18 @@ export default {
         const customValidation = computed(() => props.content.customValidation);
         const required = computed(() => props.content.required);
 
+        // Use custom ID if set, otherwise use generated ID
+        const finalElementId = computed(() => props.wwElementState.props.attributes?.id || inputId);
+        
         useForm(
             variableValue,
-            { fieldName, validation, customValidation, required, initialValue: computed(() => props.content.value), elementId: inputId },
+            { fieldName, validation, customValidation, required, initialValue: computed(() => props.content.value), elementId: finalElementId },
             { elementState: props.wwElementState, emit, sidepanelFormPath: 'form', setValue }
         );
 
         const inputBindings = computed(() => ({
             ...props.wwElementState.props.attributes,
-            id: inputId,
+            id: props.wwElementState.props.attributes?.id || inputId,
             key: 'ww-input-basic-' + step.value,
             value: props.content.type === 'currency' ? currencyDisplayValue.value : displayValue.value,
             type: inputType.value,
@@ -498,7 +501,7 @@ export default {
 
         const textareaBindings = computed(() => ({
             ...props.wwElementState.props.attributes,
-            id: inputId,
+            id: props.wwElementState.props.attributes?.id || inputId,
             value: displayValue.value,
             type: props.content.type,
             name: props.wwElementState.name,

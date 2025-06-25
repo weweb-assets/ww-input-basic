@@ -64,7 +64,7 @@
 </template>
 
 <script>
-import { computed, inject, watch, nextTick, ref } from 'vue';
+import { computed, inject, watch, nextTick, ref, useId } from 'vue';
 import { useInput } from './composables/useInput';
 import { useCurrency } from './composables/useCurrency';
 /* wwEditor:start */
@@ -91,6 +91,9 @@ export default {
         'update:sidepanel-content',
     ],
     setup(props, { emit }) {
+        // Generate unique ID for the input
+        const inputId = useId();
+        
         const isEditing = computed(() => {
             /* wwEditor:start */
             return props.wwEditorState.editMode === wwLib.wwEditorHelper.EDIT_MODES.EDITION;
@@ -472,12 +475,13 @@ export default {
 
         useForm(
             variableValue,
-            { fieldName, validation, customValidation, required, initialValue: computed(() => props.content.value) },
+            { fieldName, validation, customValidation, required, initialValue: computed(() => props.content.value), elementId: inputId },
             { elementState: props.wwElementState, emit, sidepanelFormPath: 'form', setValue }
         );
 
         const inputBindings = computed(() => ({
             ...props.wwElementState.props.attributes,
+            id: inputId,
             key: 'ww-input-basic-' + step.value,
             value: props.content.type === 'currency' ? currencyDisplayValue.value : displayValue.value,
             type: inputType.value,
@@ -494,6 +498,7 @@ export default {
 
         const textareaBindings = computed(() => ({
             ...props.wwElementState.props.attributes,
+            id: inputId,
             value: displayValue.value,
             type: props.content.type,
             name: props.wwElementState.name,

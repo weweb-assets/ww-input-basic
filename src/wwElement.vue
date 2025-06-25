@@ -91,8 +91,11 @@ export default {
         'update:sidepanel-content',
     ],
     setup(props, { emit }) {
+        // Generate unique ID for the input
+        const generatedId = useId();
+        
         // Use custom ID if set, otherwise use generated ID
-        const inputId = computed(() => props.wwElementState.props.attributes?.id || useId());
+        const inputId = computed(() => props.wwElementState.props.attributes?.id || generatedId);
         
         const isEditing = computed(() => {
             /* wwEditor:start */

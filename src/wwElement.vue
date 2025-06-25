@@ -91,8 +91,8 @@ export default {
         'update:sidepanel-content',
     ],
     setup(props, { emit }) {
-        // Generate unique ID for the input
-        const inputId = useId();
+        // Use custom ID if set, otherwise use generated ID
+        const inputId = computed(() => props.wwElementState.props.attributes?.id || useId());
         
         const isEditing = computed(() => {
             /* wwEditor:start */
@@ -473,18 +473,15 @@ export default {
         const customValidation = computed(() => props.content.customValidation);
         const required = computed(() => props.content.required);
 
-        // Use custom ID if set, otherwise use generated ID
-        const finalElementId = computed(() => props.wwElementState.props.attributes?.id || inputId);
-        
         useForm(
             variableValue,
-            { fieldName, validation, customValidation, required, initialValue: computed(() => props.content.value), elementId: finalElementId },
+            { fieldName, validation, customValidation, required, initialValue: computed(() => props.content.value), elementId: inputId },
             { elementState: props.wwElementState, emit, sidepanelFormPath: 'form', setValue }
         );
 
         const inputBindings = computed(() => ({
             ...props.wwElementState.props.attributes,
-            id: props.wwElementState.props.attributes?.id || inputId,
+            id: inputId.value,
             key: 'ww-input-basic-' + step.value,
             value: props.content.type === 'currency' ? currencyDisplayValue.value : displayValue.value,
             type: inputType.value,
@@ -501,7 +498,7 @@ export default {
 
         const textareaBindings = computed(() => ({
             ...props.wwElementState.props.attributes,
-            id: props.wwElementState.props.attributes?.id || inputId,
+            id: inputId.value,
             value: displayValue.value,
             type: props.content.type,
             name: props.wwElementState.name,

@@ -97,6 +97,12 @@ export default {
         // Use custom ID if set, otherwise use generated ID
         const inputId = computed(() => props.wwElementState.props.attributes?.id || generatedId);
         
+        // Register with parent label if available
+        const useLabelChild = inject('_wwLabel:useLabelChild', null);
+        if (useLabelChild) {
+            const { isInsideLabel } = useLabelChild();
+        }
+        
         const isEditing = computed(() => {
             /* wwEditor:start */
             return props.wwEditorState.editMode === wwLib.wwEditorHelper.EDIT_MODES.EDITION;

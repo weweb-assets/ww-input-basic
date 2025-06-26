@@ -99,8 +99,10 @@ export default {
         
         // Register with parent label if available
         const useLabelChild = inject('_wwLabel:useLabelChild', null);
+        let labelRegistration = null;
         if (useLabelChild) {
-            const { isInsideLabel } = useLabelChild();
+            // Will be initialized after fieldName is defined
+            labelRegistration = null;
         }
         
         const isEditing = computed(() => {
@@ -481,6 +483,19 @@ export default {
         const validation = computed(() => props.content.validation);
         const customValidation = computed(() => props.content.customValidation);
         const required = computed(() => props.content.required);
+        
+        // Register with label using fieldName
+        if (useLabelChild) {
+            watch(fieldName, (newName) => {
+                if (labelRegistration) {
+                    // Re-register with new name
+                    labelRegistration = useLabelChild({ name: newName });
+                } else {
+                    // Initial registration
+                    labelRegistration = useLabelChild({ name: newName });
+                }
+            }, { immediate: true });
+        }
 
         useForm(
             variableValue,

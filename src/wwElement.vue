@@ -99,10 +99,8 @@ export default {
         
         // Register with parent label if available
         const useLabelChild = inject('_wwLabel:useLabelChild', null);
-        console.log('ww-input-basic: useLabelChild found:', !!useLabelChild);
         if (useLabelChild) {
             const { isInsideLabel } = useLabelChild();
-            console.log('ww-input-basic: Called useLabelChild, isInsideLabel:', isInsideLabel);
         }
         
         const isEditing = computed(() => {

@@ -93,18 +93,13 @@ export default {
     setup(props, { emit }) {
         // Generate unique ID for the input
         const generatedId = `ww-input-basic-${useId()}`;
-        
+
         // Use custom ID if set, otherwise use generated ID
         const inputId = computed(() => props.wwElementState.props.attributes?.id || generatedId);
-        
+
         // Register with parent label if available
         const useLabelChild = inject('_wwLabel:useLabelChild', null);
-        let labelRegistration = null;
-        if (useLabelChild) {
-            // Will be initialized after fieldName is defined
-            labelRegistration = null;
-        }
-        
+
         const isEditing = computed(() => {
             /* wwEditor:start */
             return props.wwEditorState.editMode === wwLib.wwEditorHelper.EDIT_MODES.EDITION;
@@ -136,7 +131,7 @@ export default {
             onBlur,
             setValue,
         } = useInput(props, emit);
-        
+
         // Get delay value for currency debouncing
         const delay = computed(() => wwLib.wwUtils.getLengthUnit(props.content.debounceDelay)[0]);
 
@@ -159,7 +154,7 @@ export default {
 
         // Track if we're currently typing to avoid re-formatting during input
         let isTyping = false;
-        
+
         // Debounce timeout for currency input
         let currencyDebounceTimeout = null;
 
@@ -244,14 +239,14 @@ export default {
                 const parts = rawValue.split(decimalSep);
                 const integerPart = parts[0];
                 let decimalPart = parts[1] || '';
-                
+
                 // Always pad with zeros to reach required decimal places, even if no decimal separator was typed
                 if (decimalPart.length < decimalPlaces) {
                     decimalPart = decimalPart.padEnd(decimalPlaces, '0');
                 }
-                
+
                 const finalValue = integerPart + decimalSep + decimalPart;
-                
+
                 // Update display value with padded zeros
                 if (currencyDisplayValue.value !== finalValue) {
                     currencyDisplayValue.value = finalValue;
@@ -483,23 +478,37 @@ export default {
         const validation = computed(() => props.content.validation);
         const customValidation = computed(() => props.content.customValidation);
         const required = computed(() => props.content.required);
-        
-        // Register with label using fieldName
+
+        // Create computed name for label - use fieldName or element name
+        const inputName = computed(() => {
+            // First priority: field name from form
+            if (fieldName.value) {
+                return fieldName.value;
+            }
+            // Second priority: element name from editor state
+            /* wwEditor:start */
+            if (props.wwEditorState?.name) {
+                return props.wwEditorState.name;
+            }
+            /* wwEditor:end */
+            return null;
+        });
+
+        // Register with label if inside one
         if (useLabelChild) {
-            watch(fieldName, (newName) => {
-                if (labelRegistration) {
-                    // Re-register with new name
-                    labelRegistration = useLabelChild({ name: newName });
-                } else {
-                    // Initial registration
-                    labelRegistration = useLabelChild({ name: newName });
-                }
-            }, { immediate: true });
+            useLabelChild(props.uid, inputName);
         }
 
         useForm(
             variableValue,
-            { fieldName, validation, customValidation, required, initialValue: computed(() => props.content.value), elementId: inputId },
+            {
+                fieldName,
+                validation,
+                customValidation,
+                required,
+                initialValue: computed(() => props.content.value),
+                elementId: inputId,
+            },
             { elementState: props.wwElementState, emit, sidepanelFormPath: 'form', setValue }
         );
 

@@ -152,15 +152,30 @@ export default {
         // Initialize currency display value from initial value
         watch(
             [() => props.content.type, () => props.content.value, variableValue],
-            ([contentType, propsValue, variableValue]) => {
+            ([contentType, propsValue, variableValue], [oldContentType, oldPropsValue, oldVariableValue]) => {
                 // Use props.content.value if it exists (binding case), otherwise use variableValue
                 const value = propsValue !== undefined && propsValue !== null ? propsValue : variableValue;
-                if (contentType === 'currency' && value !== undefined && value !== null && value !== '' && !isTyping) {
-                    // Only auto-format if not currently typing
-                    // For input field, use formatCurrency with zero padding and without symbol
-                    const inputFormattedValue = formatCurrency(value, { padZeros: true, includeSymbol: false });
-                    if (currencyDisplayValue.value !== inputFormattedValue) {
-                        currencyDisplayValue.value = inputFormattedValue;
+                
+                // Check if props.content.value (init value) has changed
+                const isInitValueChange = propsValue !== oldPropsValue && propsValue !== undefined && propsValue !== null;
+                
+                if (contentType === 'currency' && (!isTyping || isInitValueChange)) {
+                    if (value !== undefined && value !== null && value !== '') {
+                        // Format when not typing OR when init value changes (override typing)
+                        // For input field, use formatCurrency with zero padding and without symbol
+                        const inputFormattedValue = formatCurrency(value, { padZeros: true, includeSymbol: false });
+                        if (currencyDisplayValue.value !== inputFormattedValue) {
+                            currencyDisplayValue.value = inputFormattedValue;
+                        }
+                        // Reset isTyping when init value changes
+                        if (isInitValueChange) {
+                            isTyping = false;
+                        }
+                    } else {
+                        // Clear the display value when the actual value is empty/null/undefined
+                        if (currencyDisplayValue.value !== '') {
+                            currencyDisplayValue.value = '';
+                        }
                     }
                 }
             },
@@ -374,7 +389,8 @@ export default {
             const limitedCleanValue = integerPart + (decimalPart ? '.' + decimalPart : '');
 
             // Extract numeric value from the limited clean value
-            const actualValue = parseFloat(limitedCleanValue) || 0;
+            // If the clean value is empty, keep it as empty string instead of defaulting to 0
+            const actualValue = limitedCleanValue === '' ? '' : (parseFloat(limitedCleanValue) || 0);
 
             // Add thousands separators to integer part
             if (integerPart && thousandsSep) {

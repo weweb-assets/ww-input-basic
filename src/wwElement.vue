@@ -274,7 +274,6 @@ export default {
 
             // Check for conflicting separators
             if (thousandsSep === decimalSep) {
-                console.warn('⚠️ Warning: Thousands separator and decimal separator are the same:', thousandsSep);
 
                 /* wwEditor:start */
                 wwLib.wwNotification.open({
@@ -518,7 +517,7 @@ export default {
             key: 'ww-input-basic-' + step.value,
             value: props.content.type === 'currency' ? currencyDisplayValue.value : displayValue.value,
             type: inputType.value,
-            name: props.wwElementState.name,
+            name: inputId.value,
             readonly: isReadonly.value || isEditing.value,
             required: props.content.required,
             autocomplete: props.content.autocomplete ? 'on' : 'off',
@@ -534,7 +533,7 @@ export default {
             id: inputId.value,
             value: displayValue.value,
             type: props.content.type,
-            name: props.wwElementState.name,
+            name: inputId.value,
             readonly: isReadonly.value || isEditing.value,
             required: props.content.required,
             placeholder: wwLib.wwLang.getText(props.content.placeholder),
@@ -576,10 +575,6 @@ export default {
 
                     // Check for conflicting separators
                     if (currentThousandsSep === currentDecimalSep) {
-                        console.warn(
-                            '⚠️ Warning: Thousands separator and decimal separator are the same:',
-                            currentThousandsSep
-                        );
 
                         /* wwEditor:start */
                         wwLib.wwNotification.open({

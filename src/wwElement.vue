@@ -91,6 +91,7 @@ export default {
         'update:sidepanel-content',
     ],
     setup(props, { emit }) {
+
         const isEditing = computed(() => {
             /* wwEditor:start */
             return props.wwEditorState.editMode === wwLib.wwEditorHelper.EDIT_MODES.EDITION;

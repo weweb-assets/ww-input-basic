@@ -59,6 +59,7 @@
         @input="handleManualInput"
         @blur="onBlur"
         @focus="isReallyFocused = true"
+        @click="handleColorInputClick"
         @keyup.enter="onEnter"
     />
 </template>
@@ -91,7 +92,6 @@ export default {
         'update:sidepanel-content',
     ],
     setup(props, { emit }) {
-
         const isEditing = computed(() => {
             /* wwEditor:start */
             return props.wwEditorState.editMode === wwLib.wwEditorHelper.EDIT_MODES.EDITION;
@@ -123,7 +123,7 @@ export default {
             onBlur,
             setValue,
         } = useInput(props, emit);
-        
+
         // Get delay value for currency debouncing
         const delay = computed(() => wwLib.wwUtils.getLengthUnit(props.content.debounceDelay)[0]);
 
@@ -146,7 +146,7 @@ export default {
 
         // Track if we're currently typing to avoid re-formatting during input
         let isTyping = false;
-        
+
         // Debounce timeout for currency input
         let currencyDebounceTimeout = null;
 
@@ -156,10 +156,11 @@ export default {
             ([contentType, propsValue, variableValue], [oldContentType, oldPropsValue, oldVariableValue]) => {
                 // Use props.content.value if it exists (binding case), otherwise use variableValue
                 const value = propsValue !== undefined && propsValue !== null ? propsValue : variableValue;
-                
+
                 // Check if props.content.value (init value) has changed
-                const isInitValueChange = propsValue !== oldPropsValue && propsValue !== undefined && propsValue !== null;
-                
+                const isInitValueChange =
+                    propsValue !== oldPropsValue && propsValue !== undefined && propsValue !== null;
+
                 if (contentType === 'currency' && (!isTyping || isInitValueChange)) {
                     if (value !== undefined && value !== null && value !== '') {
                         // Format when not typing OR when init value changes (override typing)
@@ -246,14 +247,14 @@ export default {
                 const parts = rawValue.split(decimalSep);
                 const integerPart = parts[0];
                 let decimalPart = parts[1] || '';
-                
+
                 // Always pad with zeros to reach required decimal places, even if no decimal separator was typed
                 if (decimalPart.length < decimalPlaces) {
                     decimalPart = decimalPart.padEnd(decimalPlaces, '0');
                 }
-                
+
                 const finalValue = integerPart + decimalSep + decimalPart;
-                
+
                 // Update display value with padded zeros
                 if (currencyDisplayValue.value !== finalValue) {
                     currencyDisplayValue.value = finalValue;
@@ -391,7 +392,7 @@ export default {
 
             // Extract numeric value from the limited clean value
             // If the clean value is empty, keep it as empty string instead of defaulting to 0
-            const actualValue = limitedCleanValue === '' ? '' : (parseFloat(limitedCleanValue) || 0);
+            const actualValue = limitedCleanValue === '' ? '' : parseFloat(limitedCleanValue) || 0;
 
             // Add thousands separators to integer part
             if (integerPart && thousandsSep) {
@@ -532,6 +533,15 @@ export default {
             emit('trigger-event', { name: 'onEnterKey', event: { value: variableValue.value } });
         }
 
+        function handleColorInputClick(event) {
+            // Prevent color picker from opening when input is readonly (either from isReadonly or isEditing)
+            if (props.content.type === 'color' && (isReadonly.value || isEditing.value)) {
+                event.preventDefault();
+                event.stopPropagation();
+                return false;
+            }
+        }
+
         watch(
             () => props.content.value,
             v => {
@@ -632,6 +642,7 @@ export default {
             textareaBindings,
             inputClasses,
             onEnter,
+            handleColorInputClick,
             // Currency-related
             handleCurrencyInput,
             handleCurrencyKeydown,

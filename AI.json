@@ -1,0 +1,413 @@
+{
+  "metadata": {
+    "name": "ww-input-basic",
+    "description": "A versatile form input element supporting text, email, password, number, decimal, date, time, phone, color, and currency types with validation.",
+    "keywords": [
+      "input",
+      "text input",
+      "form field",
+      "text field"
+    ],
+    "features": [
+      "Multiple input types (text, textarea, email, password, number, decimal, date, time, tel, color, currency)",
+      "Currency formatting with symbol, separators, decimal places",
+      "Debounce support",
+      "Custom validation",
+      "Min/max constraints for numbers and dates",
+      "Placeholder with multi-language support",
+      "Read-only and required states",
+      "Password visibility toggle",
+      "Textarea with configurable rows and resize"
+    ],
+    "inherit": [
+      "ww-text"
+    ]
+  },
+  "properties": [
+    {
+      "name": "placeholderColor",
+      "description": "Mandatory color of the placeholder text. Inactive when advancedPlaceholder (inherited from ww-text) is true.",
+      "type": "string",
+      "responsive": true,
+      "inactiveProperty": {
+        "description": "Inactive when advancedPlaceholder (inherited from ww-text) is true."
+      }
+    },
+    {
+      "name": "initValue",
+      "wewebName": "value",
+      "description": "Initial value of the input",
+      "type": "string",
+      "defaultValue": ""
+    },
+    {
+      "name": "type",
+      "description": "Input type",
+      "type": "string",
+      "options": [
+        "text",
+        "textarea",
+        "email",
+        "search",
+        "password",
+        "number",
+        "decimal",
+        "date",
+        "time",
+        "tel",
+        "color",
+        "currency"
+      ],
+      "defaultValue": "text"
+    },
+    {
+      "name": "displayPassword",
+      "description": "Show/hide password toggle. Inactive when type is not 'password'.",
+      "type": "boolean",
+      "defaultValue": false,
+      "inactiveProperty": {
+        "description": "Inactive when type is not 'password'."
+      }
+    },
+    {
+      "name": "readonly",
+      "description": "Whether the input is read-only",
+      "type": "boolean",
+      "defaultValue": false
+    },
+    {
+      "name": "required",
+      "description": "Whether the input is required",
+      "type": "boolean",
+      "defaultValue": true
+    },
+    {
+      "name": "precision",
+      "description": "Decimal precision for decimal type. Inactive when type is not 'decimal'.",
+      "type": "string",
+      "options": [
+        "0.1",
+        "0.01",
+        "0.001",
+        "0.0001",
+        "0.00001",
+        "0.000001",
+        "0.0000001",
+        "0.00000001"
+      ],
+      "defaultValue": "0.1",
+      "inactiveProperty": {
+        "description": "Inactive when type is not 'decimal'."
+      }
+    },
+    {
+      "name": "step",
+      "description": "Step increment for number/decimal types. Inactive when type is not 'decimal' and not 'number'.",
+      "type": "number",
+      "defaultValue": 1,
+      "inactiveProperty": {
+        "description": "Inactive when type is not 'decimal' and not 'number'."
+      }
+    },
+    {
+      "name": "timePrecision",
+      "description": "Time precision: 3600 (hh), 60 (hh:mm), 1 (hh:mm:ss), 0.1 (hh:mm:ss.s). Inactive when type is not 'time'.",
+      "type": "number",
+      "options": [
+        3600,
+        60,
+        1,
+        0.1
+      ],
+      "defaultValue": 1,
+      "inactiveProperty": {
+        "description": "Inactive when type is not 'time'."
+      }
+    },
+    {
+      "name": "placeholder",
+      "description": "Placeholder text. Supports multi-language object. Inactive when type is 'date' or 'time'.",
+      "type": "object",
+      "defaultValue": {},
+      "inactiveProperty": {
+        "description": "Inactive when type is 'date' or 'time'."
+      }
+    },
+    {
+      "name": "rows",
+      "description": "Number of rows for textarea type. Inactive when type is not 'textarea'.",
+      "type": "number",
+      "defaultValue": 4,
+      "inactiveProperty": {
+        "description": "Inactive when type is not 'textarea'."
+      }
+    },
+    {
+      "name": "resize",
+      "description": "Allow textarea resize. Inactive when type is not 'textarea'.",
+      "type": "boolean",
+      "defaultValue": false,
+      "inactiveProperty": {
+        "description": "Inactive when type is not 'textarea'."
+      }
+    },
+    {
+      "name": "min",
+      "description": "Minimum value for number/decimal types. Inactive when type is not 'number' and not 'decimal'.",
+      "type": "number",
+      "defaultValue": 0,
+      "inactiveProperty": {
+        "description": "Inactive when type is not 'number' and not 'decimal'."
+      }
+    },
+    {
+      "name": "max",
+      "description": "Maximum value for number/decimal types. Inactive when type is not 'number' and not 'decimal'.",
+      "type": "number",
+      "defaultValue": 10000,
+      "inactiveProperty": {
+        "description": "Inactive when type is not 'number' and not 'decimal'."
+      }
+    },
+    {
+      "name": "minDate",
+      "description": "Minimum date in yyyy-mm-dd format. Inactive when type is not 'date'.",
+      "type": "string",
+      "defaultValue": "",
+      "inactiveProperty": {
+        "description": "Inactive when type is not 'date'."
+      }
+    },
+    {
+      "name": "maxDate",
+      "description": "Maximum date in yyyy-mm-dd format. Inactive when type is not 'date'.",
+      "type": "string",
+      "defaultValue": "",
+      "inactiveProperty": {
+        "description": "Inactive when type is not 'date'."
+      }
+    },
+    {
+      "name": "hideArrows",
+      "description": "Hide number input arrows. Inactive when type is not 'number' and not 'decimal'.",
+      "type": "boolean",
+      "defaultValue": false,
+      "inactiveProperty": {
+        "description": "Inactive when type is not 'number' and not 'decimal'."
+      }
+    },
+    {
+      "name": "debounce",
+      "description": "Enable debounce on value changes",
+      "type": "boolean",
+      "defaultValue": false
+    },
+    {
+      "name": "debounceDelay",
+      "description": "Debounce delay (1-5000ms). Inactive when debounce is false.",
+      "type": "string",
+      "defaultValue": "500ms",
+      "responsive": true,
+      "inactiveProperty": {
+        "description": "Inactive when debounce is false."
+      }
+    },
+    {
+      "name": "autocomplete",
+      "description": "Enable browser autocomplete",
+      "type": "boolean",
+      "defaultValue": false
+    },
+    {
+      "name": "fieldName",
+      "description": "Field name used for form data when inside a form container. Inactive when the element is not placed inside a form container.",
+      "type": "string",
+      "defaultValue": "",
+      "inactiveProperty": {
+        "description": "Inactive when the element is not placed inside a form container (sidePanelContent.form?.uid is falsy)."
+      }
+    },
+    {
+      "name": "customValidation",
+      "description": "Enable custom validation formula. Inactive when the element is not placed inside a form container.",
+      "type": "boolean",
+      "defaultValue": false,
+      "inactiveProperty": {
+        "description": "Inactive when the element is not placed inside a form container (sidePanelContent.form?.uid is falsy)."
+      }
+    },
+    {
+      "name": "validation",
+      "description": "Custom validation formula. Inactive when the element is not in a form container or when customValidation is false.",
+      "type": "formula",
+      "defaultValue": "",
+      "inactiveProperty": {
+        "description": "Inactive when the element is not placed inside a form container (sidePanelContent.form?.uid is falsy) or when customValidation is false."
+      }
+    },
+    {
+      "name": "currencyShowSymbol",
+      "description": "Show currency symbol. Inactive when type is not 'currency'.",
+      "type": "boolean",
+      "defaultValue": true,
+      "inactiveProperty": {
+        "description": "Inactive when type is not 'currency'."
+      }
+    },
+    {
+      "name": "currencySymbol",
+      "description": "Currency symbol character. Inactive when currencyShowSymbol is false or type is not 'currency'.",
+      "type": "string",
+      "defaultValue": "$",
+      "inactiveProperty": {
+        "description": "Inactive when currencyShowSymbol is false or type is not 'currency'."
+      }
+    },
+    {
+      "name": "currencySymbolPosition",
+      "description": "Currency symbol position: before or after. Inactive when currencyShowSymbol is false or type is not 'currency'.",
+      "type": "string",
+      "options": [
+        "prefix",
+        "suffix"
+      ],
+      "defaultValue": "prefix",
+      "inactiveProperty": {
+        "description": "Inactive when currencyShowSymbol is false or type is not 'currency'."
+      }
+    },
+    {
+      "name": "currencyDecimalPlaces",
+      "description": "Number of decimal places for currency. Inactive when type is not 'currency'.",
+      "type": "number",
+      "defaultValue": 2,
+      "inactiveProperty": {
+        "description": "Inactive when type is not 'currency'."
+      }
+    },
+    {
+      "name": "currencyThousandsSeparator",
+      "description": "Thousands separator character. Inactive when type is not 'currency'.",
+      "type": "string",
+      "options": [
+        ",",
+        ".",
+        " ",
+        "'",
+        ""
+      ],
+      "defaultValue": ",",
+      "inactiveProperty": {
+        "description": "Inactive when type is not 'currency'."
+      }
+    },
+    {
+      "name": "currencyDecimalSeparator",
+      "description": "Decimal separator character. Inactive when type is not 'currency'.",
+      "type": "string",
+      "options": [
+        ".",
+        ","
+      ],
+      "defaultValue": ".",
+      "inactiveProperty": {
+        "description": "Inactive when type is not 'currency'."
+      }
+    },
+    {
+      "name": "currencySymbolColor",
+      "description": "Color of the currency symbol. Inactive when type is not 'currency'.",
+      "type": "string",
+      "responsive": true,
+      "inactiveProperty": {
+        "description": "Inactive when type is not 'currency'."
+      }
+    },
+    {
+      "name": "currencySymbolFontSize",
+      "description": "Font size of the currency symbol. Inactive when type is not 'currency'.",
+      "type": "string",
+      "defaultValue": "1em",
+      "responsive": true,
+      "inactiveProperty": {
+        "description": "Inactive when type is not 'currency'."
+      }
+    },
+    {
+      "name": "currencySymbolPadding",
+      "description": "Padding around the currency symbol. Inactive when type is not 'currency'.",
+      "type": "string",
+      "defaultValue": "4px",
+      "responsive": true,
+      "inactiveProperty": {
+        "description": "Inactive when type is not 'currency'."
+      }
+    }
+  ],
+  "states": [
+    {
+      "name": "focus",
+      "description": "Input has focus"
+    },
+    {
+      "name": "readonly",
+      "description": "Input is read-only"
+    }
+  ],
+  "events": [
+    {
+      "name": "change",
+      "description": "Triggered when the input value changes",
+      "payload": {
+        "domEvent": "object",
+        "value": "string"
+      }
+    },
+    {
+      "name": "initValueChange",
+      "description": "Triggered when the initial bound value changes",
+      "payload": {
+        "value": "string"
+      }
+    },
+    {
+      "name": "onEnterKey",
+      "description": "Triggered when the Enter key is pressed",
+      "payload": {
+        "value": "string"
+      }
+    },
+    {
+      "name": "focus",
+      "description": "Triggered when the input receives focus"
+    },
+    {
+      "name": "blur",
+      "description": "Triggered when the input loses focus"
+    }
+  ],
+  "actions": [
+    {
+      "label": "Focus element",
+      "actionName": "focusInput",
+      "description": "Programmatically focus the input element"
+    }
+  ],
+  "slots": [],
+  "variables": [
+    {
+      "name": "value",
+      "description": "The current value of the input",
+      "type": "string"
+    }
+  ],
+  "specifications": [
+    "Inherits text properties from ww-text",
+    "Use type 'textarea' for multi-line input",
+    "Date constraints use yyyy-mm-dd format",
+    "Currency type provides formatted number input with symbol display",
+    "Inside a form container, set fieldName for form data binding",
+    "For styling, always set placeholderColor, especially in dark mode"
+  ],
+  "examples": []
+}

@@ -407,7 +407,9 @@
     "Date constraints use yyyy-mm-dd format",
     "Currency type provides formatted number input with symbol display",
     "Inside a form container, set fieldName for form data binding",
-    "For styling, always set placeholderColor, especially in dark mode"
+    "For styling, always set placeholderColor, especially in dark mode",
+    "Debounce delays the change event firing. Set debounce to true and debounceDelay to the desired delay (e.g. '500ms').",
+    "Use debounce with debounceDelay for auto-saving, searching scenarios or when the 'change' workflow performs expensive work (API calls, heavy computations) to avoid firing on every changes."
   ],
   "examples": []
 }

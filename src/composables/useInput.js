@@ -94,12 +94,6 @@ export function useInput(props, emit) {
             : props.wwElementState.props.readonly;
     });
 
-    const style = computed(() => {
-        return {
-            '--placeholder-color': props.content.placeholderColor,
-        };
-    });
-
     const min = computed(() => {
         if (type.value === 'date') {
             return props.content.minDate;
@@ -277,7 +271,6 @@ export function useInput(props, emit) {
         step,
         inputType,
         isReadonly,
-        style,
         min,
         max,
         stepAttribute,

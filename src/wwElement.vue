@@ -9,7 +9,7 @@
                 v-if="showCurrencySymbol"
                 ref="currencySymbolRef"
                 class="currency-symbol"
-                :style="[currencySymbolStyle, { padding: style.padding }]"
+                :style="currencySymbolStyle"
             >
                 {{ currencySymbol }}
             </span>
@@ -113,7 +113,6 @@ export default {
             step,
             inputType,
             isReadonly,
-            style,
             min,
             max,
             stepAttribute,
@@ -504,7 +503,6 @@ export default {
             required: props.content.required,
             autocomplete: props.content.autocomplete ? 'on' : 'off',
             placeholder: wwLib.wwLang.getText(props.content.placeholder),
-            style: style.value,
             min: min.value,
             max: max.value,
             step: stepAttribute.value,
@@ -519,7 +517,7 @@ export default {
             required: props.content.required,
             placeholder: wwLib.wwLang.getText(props.content.placeholder),
             rows: props.content.rows,
-            style: [style.value, { resize: props.content.resize ? '' : 'none' }],
+            style: { resize: props.content.resize ? '' : 'none' },
         }));
 
         const inputClasses = computed(() => ({
@@ -626,7 +624,6 @@ export default {
             step,
             inputType,
             isReadonly,
-            style,
             isEditing,
             min,
             max,

@@ -678,6 +678,17 @@ export default {
             color: var(--placeholder-color, #000000ad);
             white-space: nowrap; /* Ensure symbol doesn't wrap */
         }
+
+        .ww-input-basic {
+            font: inherit;
+            color: inherit;
+            text-align: inherit;
+            text-transform: inherit;
+            text-shadow: inherit;
+            letter-spacing: inherit;
+            word-spacing: inherit;
+            text-decoration: inherit;
+        }
     }
 }
 
@@ -686,6 +697,9 @@ export default {
     border: none;
     position: relative;
     isolation: isolate;
+    white-space: var(--ww-text-white-space, initial);
+    overflow: var(--ww-text-overflow, initial);
+    text-overflow: var(--ww-text-text-overflow, initial);
 
     &::placeholder {
         color: var(--placeholder-color, #000000ad);

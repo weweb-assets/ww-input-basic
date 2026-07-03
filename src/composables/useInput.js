@@ -95,13 +95,9 @@ export function useInput(props, emit) {
     });
 
     const style = computed(() => {
-        const computedStyle = {
-            ...wwLib.wwUtils.getTextStyleFromContent(props.content),
+        return {
             '--placeholder-color': props.content.placeholderColor,
         };
-        delete computedStyle['whiteSpaceCollapse'];
-        delete computedStyle['whiteSpace'];
-        return computedStyle;
     });
 
     const min = computed(() => {

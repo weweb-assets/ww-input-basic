@@ -9,7 +9,7 @@
                 v-if="showCurrencySymbol"
                 ref="currencySymbolRef"
                 class="currency-symbol"
-                :style="[currencySymbolStyle, { padding: style.padding }]"
+                :style="currencySymbolStyle"
             >
                 {{ currencySymbol }}
             </span>
@@ -113,7 +113,6 @@ export default {
             step,
             inputType,
             isReadonly,
-            style,
             min,
             max,
             stepAttribute,
@@ -504,7 +503,6 @@ export default {
             required: props.content.required,
             autocomplete: props.content.autocomplete ? 'on' : 'off',
             placeholder: wwLib.wwLang.getText(props.content.placeholder),
-            style: style.value,
             min: min.value,
             max: max.value,
             step: stepAttribute.value,
@@ -519,7 +517,7 @@ export default {
             required: props.content.required,
             placeholder: wwLib.wwLang.getText(props.content.placeholder),
             rows: props.content.rows,
-            style: [style.value, { resize: props.content.resize ? '' : 'none' }],
+            style: { resize: props.content.resize ? '' : 'none' },
         }));
 
         const inputClasses = computed(() => ({
@@ -626,7 +624,6 @@ export default {
             step,
             inputType,
             isReadonly,
-            style,
             isEditing,
             min,
             max,
@@ -686,6 +683,9 @@ export default {
     border: none;
     position: relative;
     isolation: isolate;
+    overflow: var(--ww-text-overflow, initial);
+    text-overflow: var(--ww-text-text-overflow, initial);
+    white-space: var(--ww-text-white-space, initial);
 
     &::placeholder {
         color: var(--placeholder-color, #000000ad);
@@ -730,7 +730,18 @@ export default {
 
     &.currency-type {
         background-color: transparent;
+        color: inherit;
+        font: inherit;
+        letter-spacing: inherit;
+        line-height: inherit;
+        text-align: inherit;
+        text-decoration: inherit;
+        text-decoration-color: inherit;
+        text-decoration-style: inherit;
+        text-shadow: inherit;
+        text-transform: inherit;
         width: 100%;
+        word-spacing: inherit;
     }
 }
 </style>

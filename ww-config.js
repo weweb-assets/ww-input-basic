@@ -1,42 +1,12 @@
-function getTextSurfaceCss(content) {
-    return [
-        {
-            property: '--ww-text-white-space',
-            value: content._mapValue('_ww-text_nowrap', 'white-space', {
-                trueValue: 'nowrap',
-                falseValue: 'initial',
-            }),
-        },
-        {
-            property: '--ww-text-overflow',
-            value: content._mapValue('_ww-text_nowrap', 'overflow', {
-                trueValue: 'hidden',
-                falseValue: 'initial',
-            }),
-        },
-        {
-            property: '--ww-text-text-overflow',
-            value: content._mapValue('_ww-text_ellipsis', 'text-overflow', {
-                trueValue: 'ellipsis',
-                falseValue: 'initial',
-            }),
-        },
-    ];
-}
-
 export default {
     inherit: {
         type: 'ww-text',
         exclude: ['text'],
     },
     css({ content }) {
-        const css = getTextSurfaceCss(content);
+        if (!content.placeholderColor) return [];
 
-        if (content.placeholderColor) {
-            css.push({ property: '--placeholder-color', value: content.placeholderColor });
-        }
-
-        return css;
+        return [{ property: '--placeholder-color', value: content.placeholderColor }];
     },
     editor: {
         label: { en: 'Form Input', fr: 'Entrée de Formulaire' },

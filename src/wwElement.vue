@@ -86,8 +86,6 @@ export default {
     emits: [
         'element-event',
         'trigger-event',
-        'add-state',
-        'remove-state',
         'update:content:effect',
         'update:sidepanel-content',
     ],

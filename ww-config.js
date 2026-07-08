@@ -64,7 +64,10 @@ export default {
             }));
         },
     },
-    states: ['focus', 'readonly'],
+    states: [
+        { label: 'focus', selector: '&:focus-within' },
+        { label: 'readonly', selectors: ['&:read-only', '&:has(:read-only)'] },
+    ],
     actions: [{ label: 'Focus element', action: 'focusInput' }],
     triggerEvents: [
         { name: 'change', label: { en: 'On change' }, event: { value: '' }, default: true },

@@ -220,34 +220,6 @@ export function useInput(props, emit) {
         return isReallyFocused.value;
     });
 
-    watch(
-        isFocused,
-        value => {
-            if (value) {
-                emit('add-state', 'focus');
-            } else {
-                emit('remove-state', 'focus');
-            }
-        },
-        {
-            immediate: true,
-        }
-    );
-
-    watch(
-        isReadonly,
-        value => {
-            if (value) {
-                emit('add-state', 'readonly');
-            } else {
-                emit('remove-state', 'readonly');
-            }
-        },
-        {
-            immediate: true,
-        }
-    );
-
     /* wwEditor:start */
     watch(
         () => props.content.precision,

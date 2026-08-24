@@ -94,16 +94,6 @@ export function useInput(props, emit) {
             : props.wwElementState.props.readonly;
     });
 
-    const style = computed(() => {
-        const computedStyle = {
-            ...wwLib.wwUtils.getTextStyleFromContent(props.content),
-            '--placeholder-color': props.content.placeholderColor,
-        };
-        delete computedStyle['whiteSpaceCollapse'];
-        delete computedStyle['whiteSpace'];
-        return computedStyle;
-    });
-
     const min = computed(() => {
         if (type.value === 'date') {
             return props.content.minDate;
@@ -221,43 +211,6 @@ export function useInput(props, emit) {
         }
     });
 
-    const isFocused = computed(() => {
-        /* wwEditor:start */
-        if (props.wwEditorState.isSelected) {
-            return props.wwElementState.states.includes('focus');
-        }
-        /* wwEditor:end */
-        return isReallyFocused.value;
-    });
-
-    watch(
-        isFocused,
-        value => {
-            if (value) {
-                emit('add-state', 'focus');
-            } else {
-                emit('remove-state', 'focus');
-            }
-        },
-        {
-            immediate: true,
-        }
-    );
-
-    watch(
-        isReadonly,
-        value => {
-            if (value) {
-                emit('add-state', 'readonly');
-            } else {
-                emit('remove-state', 'readonly');
-            }
-        },
-        {
-            immediate: true,
-        }
-    );
-
     /* wwEditor:start */
     watch(
         () => props.content.precision,
@@ -281,7 +234,6 @@ export function useInput(props, emit) {
         step,
         inputType,
         isReadonly,
-        style,
         min,
         max,
         stepAttribute,
@@ -289,7 +241,6 @@ export function useInput(props, emit) {
         focusInput,
         selectInput,
         onBlur,
-        isFocused,
         setValue,
     };
 }

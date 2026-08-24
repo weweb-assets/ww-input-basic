@@ -66,7 +66,10 @@ export default {
     },
     states: [
         { label: 'focus', selector: '&:focus-within' },
-        { label: 'readonly', selectors: ['&:read-only', '&:has(:read-only)'] },
+        {
+            label: 'readonly',
+            selectors: ['&:read-only:not(.editing)', '&:has(:read-only:not(.editing))'],
+        },
     ],
     actions: [{ label: 'Focus element', action: 'focusInput' }],
     triggerEvents: [

@@ -689,6 +689,7 @@ export default {
     overflow: var(--ww-text-overflow, initial);
     text-overflow: var(--ww-text-text-overflow, initial);
     white-space: var(--ww-text-white-space, initial);
+    white-space-collapse: preserve;
 
     &::placeholder {
         color: var(--placeholder-color, #000000ad);

@@ -68,7 +68,10 @@ export default {
         { label: 'focus', selector: '&:focus-within' },
         {
             label: 'readonly',
-            selectors: ['&:read-only:not(.editing)', '&:has(:read-only:not(.editing))'],
+            selectors: [
+                '&.ww-input-basic:read-only:not(.editing)',
+                '&:has(.ww-input-basic:read-only:not(.editing))',
+            ],
         },
     ],
     actions: [{ label: 'Focus element', action: 'focusInput' }],

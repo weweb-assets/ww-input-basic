@@ -211,15 +211,6 @@ export function useInput(props, emit) {
         }
     });
 
-    const isFocused = computed(() => {
-        /* wwEditor:start */
-        if (props.wwEditorState.isSelected) {
-            return props.wwElementState.states.includes('focus');
-        }
-        /* wwEditor:end */
-        return isReallyFocused.value;
-    });
-
     /* wwEditor:start */
     watch(
         () => props.content.precision,
@@ -250,7 +241,6 @@ export function useInput(props, emit) {
         focusInput,
         selectInput,
         onBlur,
-        isFocused,
         setValue,
     };
 }

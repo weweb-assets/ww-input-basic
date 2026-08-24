@@ -736,11 +736,8 @@ export default {
         color: inherit;
         font: inherit;
         letter-spacing: inherit;
-        line-height: inherit;
         text-align: inherit;
         text-decoration: inherit;
-        text-decoration-color: inherit;
-        text-decoration-style: inherit;
         text-shadow: inherit;
         text-transform: inherit;
         width: 100%;
